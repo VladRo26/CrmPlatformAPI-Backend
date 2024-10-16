@@ -3,9 +3,9 @@ using System.Collections;
 
 namespace CrmPlatformAPI.Models.Domain
 {
-    public class Role : IdentityRole
+    public class Role : IdentityRole<int>
     {
-        public ICollection<Role> Roles { get; set; } = [];
+        public ICollection<UserRole> UserRoles { get; set; } = [];
 
     }
 }

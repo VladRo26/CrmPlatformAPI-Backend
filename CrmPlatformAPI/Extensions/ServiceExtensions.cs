@@ -18,7 +18,7 @@ namespace CrmPlatformAPI.Extensions
                 options.UseSqlServer(configuration.GetConnectionString("CRMConnectionString"));
             });
             services.AddCors();
-            services.AddScoped<IRepositoryBeneficiaryCompanies, RepositoryBeneficiaryCompanies>();
+            services.AddScoped<IRepositoryBeneficiaryCompany, RepositoryBeneficiaryCompany>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             return services;
 

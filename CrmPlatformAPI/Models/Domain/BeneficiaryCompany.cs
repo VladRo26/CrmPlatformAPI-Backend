@@ -1,6 +1,6 @@
-﻿namespace CrmPlatformAPI.Models.DTO
+﻿namespace CrmPlatformAPI.Models.Domain
 {
-    public class BeneficiaryCompaniesDTO
+    public class BeneficiaryCompany
     {
         public Guid Id { get; set; }
 
@@ -9,5 +9,8 @@
         public string? ActivityDomain { get; set; }
         public string? Address { get; set; }
         public DateOnly EstablishmentDate { get; set; }
+
+
     }
 }
+

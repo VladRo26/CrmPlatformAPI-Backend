@@ -8,8 +8,8 @@ namespace CrmPlatformAPI.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<BeneficiaryCompanies, BeneficiaryCompaniesDTO>();
-            CreateMap<CreateBeneficiaryCompanyDTO, BeneficiaryCompanies>();
+            CreateMap<BeneficiaryCompany, BeneficiaryCompanyDTO>();
+            CreateMap<CreateBeneficiaryCompanyDTO, BeneficiaryCompany>();
         }
     }
 }

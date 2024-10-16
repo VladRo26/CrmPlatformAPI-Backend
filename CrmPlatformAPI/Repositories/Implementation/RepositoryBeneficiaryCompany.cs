@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CrmPlatformAPI.Repositories.Implementation
 {
-    public class RepositoryBeneficiaryCompanies : IRepositoryBeneficiaryCompanies
+    public class RepositoryBeneficiaryCompany : IRepositoryBeneficiaryCompany
     {
         private readonly ApplicationDbContext? _context;
 
-        public RepositoryBeneficiaryCompanies(ApplicationDbContext context)
+        public RepositoryBeneficiaryCompany(ApplicationDbContext context)
         {
             _context = context;
         }
-        public async Task<BeneficiaryCompanies?> CreateAsync(BeneficiaryCompanies beneficiaryCompanies )
+        public async Task<BeneficiaryCompany?> CreateAsync(BeneficiaryCompany beneficiaryCompanies )
         {
 
             if (_context == null)
@@ -27,7 +27,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         }
 
-        public async Task<IEnumerable<BeneficiaryCompanies>?> GetBeneficiaryCompaniesAsync()
+        public async Task<IEnumerable<BeneficiaryCompany>?> GetBeneficiaryCompaniesAsync()
         {
             if (_context == null)
             {

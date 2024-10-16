@@ -8,12 +8,12 @@ namespace CrmPlatformAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BeneficiaryCompaniesController : Controller
+    public class BeneficiaryCompanyController : Controller
     {
-        private readonly IRepositoryBeneficiaryCompanies _repositoryBeneficiaryCompanies;
+        private readonly IRepositoryBeneficiaryCompany _repositoryBeneficiaryCompanies;
         private readonly IMapper _mapper;
 
-        public BeneficiaryCompaniesController(IRepositoryBeneficiaryCompanies repositoryBeneficiaryCompanies, IMapper mapper)
+        public BeneficiaryCompanyController(IRepositoryBeneficiaryCompany repositoryBeneficiaryCompanies, IMapper mapper)
         {
             _repositoryBeneficiaryCompanies = repositoryBeneficiaryCompanies;
             _mapper= mapper;
@@ -22,11 +22,11 @@ namespace CrmPlatformAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBeneficiaryCompany(CreateBeneficiaryCompanyDTO createBeneficiaryCompanyDTO)
         {
-           var createBeneficiaryCompany = _mapper.Map<BeneficiaryCompanies>(createBeneficiaryCompanyDTO);
+           var createBeneficiaryCompany = _mapper.Map<BeneficiaryCompany>(createBeneficiaryCompanyDTO);
 
            await _repositoryBeneficiaryCompanies.CreateAsync(createBeneficiaryCompany);
 
-           var response = _mapper.Map<BeneficiaryCompaniesDTO>(createBeneficiaryCompany);
+           var response = _mapper.Map<BeneficiaryCompanyDTO>(createBeneficiaryCompany);
 
             return Ok(response);
         }
@@ -36,7 +36,7 @@ namespace CrmPlatformAPI.Controllers
         {
             var beneficiaryCompanies = await _repositoryBeneficiaryCompanies.GetBeneficiaryCompaniesAsync();
 
-            var response = _mapper.Map<IEnumerable<BeneficiaryCompaniesDTO>>(beneficiaryCompanies);
+            var response = _mapper.Map<IEnumerable<BeneficiaryCompanyDTO>>(beneficiaryCompanies);
 
             return Ok(response);
         }

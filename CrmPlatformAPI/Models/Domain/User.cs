@@ -2,7 +2,7 @@
 
 namespace CrmPlatformAPI.Models.Domain
 {
-    public class User:IdentityUser
+    public class User:IdentityUser<int>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -11,6 +11,6 @@ namespace CrmPlatformAPI.Models.Domain
         public string Country { get; set; }
         public string PostalCode { get; set; }
         public string PhoneNumber { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }
