@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrmPlatformAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241016213554_useradded")]
-    partial class useradded
+    [Migration("20241017231301_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace CrmPlatformAPI.Migrations
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.BeneficiaryCompany", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ActivityDomain")
                         .HasColumnType("nvarchar(max)");
@@ -81,6 +83,28 @@ namespace CrmPlatformAPI.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.SoftwareCompany", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("EstablishmentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SoftwareCompanies");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
                 {
                     b.Property<int>("Id")
@@ -92,20 +116,8 @@ namespace CrmPlatformAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -147,12 +159,11 @@ namespace CrmPlatformAPI.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SoftwareCompanyId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -170,6 +181,8 @@ namespace CrmPlatformAPI.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("SoftwareCompanyId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -277,6 +290,16 @@ namespace CrmPlatformAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
+                {
+                    b.HasOne("CrmPlatformAPI.Models.Domain.SoftwareCompany", "SoftwareCompany")
+                        .WithMany("Users")
+                        .HasForeignKey("SoftwareCompanyId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SoftwareCompany");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.UserRole", b =>
                 {
                     b.HasOne("CrmPlatformAPI.Models.Domain.Role", "Role")
@@ -335,6 +358,11 @@ namespace CrmPlatformAPI.Migrations
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Role", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.SoftwareCompany", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>

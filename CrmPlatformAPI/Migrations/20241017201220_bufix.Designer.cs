@@ -4,6 +4,7 @@ using CrmPlatformAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrmPlatformAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241017201220_bufix")]
+    partial class bufix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +162,7 @@ namespace CrmPlatformAPI.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SoftwareCompanyId")
+                    b.Property<int>("SoftwareCompanyId")
                         .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -179,7 +182,8 @@ namespace CrmPlatformAPI.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("SoftwareCompanyId");
+                    b.HasIndex("SoftwareCompanyId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -290,9 +294,10 @@ namespace CrmPlatformAPI.Migrations
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
                 {
                     b.HasOne("CrmPlatformAPI.Models.Domain.SoftwareCompany", "SoftwareCompany")
-                        .WithMany("Users")
-                        .HasForeignKey("SoftwareCompanyId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithOne("User")
+                        .HasForeignKey("CrmPlatformAPI.Models.Domain.User", "SoftwareCompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("SoftwareCompany");
                 });
@@ -359,7 +364,7 @@ namespace CrmPlatformAPI.Migrations
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.SoftwareCompany", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>

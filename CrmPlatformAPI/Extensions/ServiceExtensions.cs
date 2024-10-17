@@ -19,6 +19,8 @@ namespace CrmPlatformAPI.Extensions
             });
             services.AddCors();
             services.AddScoped<IRepositoryBeneficiaryCompany, RepositoryBeneficiaryCompany>();
+            services.AddScoped<IRepositorySoftwareCompany, RepositorySoftwareCompany>();
+            services.AddScoped<IRepositoryAccount, RepositoryAccount>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             return services;
 

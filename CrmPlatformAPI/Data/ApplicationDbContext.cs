@@ -9,16 +9,26 @@ namespace CrmPlatformAPI.Data
         UserRole,IdentityUserLogin<int>,IdentityRoleClaim<int>,IdentityUserToken<int>>(options)
     {
         public DbSet<BeneficiaryCompany> BeneficiaryCompanies { get; set; }
+        public DbSet<SoftwareCompany> SoftwareCompanies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.Entity<User>()
+                .HasKey(u => u.Id);
+
+            builder.Entity<User>()
                 .HasMany(ur => ur.UserRoles)
                 .WithOne(u => u.User)
-                .HasForeignKey(ur => ur.UserId)
-                .IsRequired();
+                .HasForeignKey(ur => ur.UserId);
+
+            builder.Entity<SoftwareCompany>()
+                   .HasMany(sc => sc.Users)
+                   .WithOne(u => u.SoftwareCompany)
+                   .HasForeignKey(u => u.SoftwareCompanyId)
+                   .OnDelete(DeleteBehavior.SetNull);
+
 
             builder.Entity<Role>()
                 .HasMany(ur => ur.UserRoles)

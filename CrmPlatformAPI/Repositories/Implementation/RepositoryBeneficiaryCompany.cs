@@ -13,7 +13,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
         {
             _context = context;
         }
-        public async Task<BeneficiaryCompany?> CreateAsync(BeneficiaryCompany beneficiaryCompanies )
+        public async Task<BeneficiaryCompany?> CreateAsync(BeneficiaryCompany beneficiaryCompanies)
         {
 
             if (_context == null)

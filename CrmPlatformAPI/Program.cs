@@ -43,8 +43,8 @@ namespace CrmPlatformAPI
                 IdentityOptions.Password.RequireLowercase = false;
                 IdentityOptions.Password.RequireNonAlphanumeric = false;
                 IdentityOptions.Password.RequireUppercase = false;
-                IdentityOptions.Password.RequiredLength = 6;
-                IdentityOptions.User.RequireUniqueEmail = true;
+                IdentityOptions.Password.RequiredLength = 4;
+                IdentityOptions.User.RequireUniqueEmail = false;
             });
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
