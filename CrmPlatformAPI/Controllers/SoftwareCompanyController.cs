@@ -2,6 +2,7 @@
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -21,6 +22,7 @@ namespace CrmPlatformAPI.Controllers
         }
             
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateSoftwareCompany(CreateSoftwareCompanyDTO createSoftwareCompanyDTO)
         {
             var createSoftwareCompany = _mapper.Map<SoftwareCompany>(createSoftwareCompanyDTO);

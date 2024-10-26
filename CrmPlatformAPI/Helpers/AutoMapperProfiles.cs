@@ -18,6 +18,12 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.CompanyName, opt => opt.MapFrom<CompanyNameResolver>());
             CreateMap<RegisterDTO, User>()
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
+            CreateMap<User, UserDTO>()
+                .ForMember(dest => dest.SoftwareCompanyName, opt => opt.MapFrom(src => src.SoftwareCompany.Name));
+            CreateMap<UserDTO, User>()
+                    .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
+            CreateMap<ImageDTO, HomeImage>();
+            CreateMap<HomeImage, ImageDTO>();
         }
     }
 }

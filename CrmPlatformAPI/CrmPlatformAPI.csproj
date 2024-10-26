@@ -20,4 +20,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Images\homeimg1.PNG" />
+    <None Include="wwwroot\Images\homeimg2.PNG" />
+    <None Include="wwwroot\Images\homeimg3.PNG" />
+  </ItemGroup>
+
 </Project>

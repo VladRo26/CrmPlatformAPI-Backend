@@ -15,12 +15,14 @@ namespace CrmPlatformAPI.Extensions
             services.AddSwaggerGen();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("CRMConnectionString"));
+                options.UseSqlServer(configuration.GetConnectionString("CRMConnectionString")).EnableSensitiveDataLogging();
             });
+
             services.AddCors();
             services.AddScoped<IRepositoryBeneficiaryCompany, RepositoryBeneficiaryCompany>();
             services.AddScoped<IRepositorySoftwareCompany, RepositorySoftwareCompany>();
-            services.AddScoped<IRepositoryAccount, RepositoryAccount>();
+            services.AddScoped<IRepositoryHomeImage, RepositoryHomeImage>();
+            services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             return services;
 

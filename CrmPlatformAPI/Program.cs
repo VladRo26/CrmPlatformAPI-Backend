@@ -27,40 +27,9 @@ namespace CrmPlatformAPI
             builder.Services.AddServices(builder.Configuration);
             //here i included all the services from the extension class
 
-            builder.Services.AddIdentityCore<User>(
-                options =>
-                {
-                    options.Password.RequireDigit = false;
-                })
-                   .AddRoles<Role>()
-                    .AddRoleManager<RoleManager<Role>>()
-                   .AddEntityFrameworkStores<ApplicationDbContext>();
-                  
+           builder.Services.AddIdentityServices(builder.Configuration);
 
-            builder.Services.Configure<IdentityOptions>(IdentityOptions =>
-            {
-                IdentityOptions.Password.RequireDigit = false;
-                IdentityOptions.Password.RequireLowercase = false;
-                IdentityOptions.Password.RequireNonAlphanumeric = false;
-                IdentityOptions.Password.RequireUppercase = false;
-                IdentityOptions.Password.RequiredLength = 4;
-                IdentityOptions.User.RequireUniqueEmail = false;
-            });
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-                    };
-                });
 
 
             var app = builder.Build();
@@ -75,13 +44,16 @@ namespace CrmPlatformAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
 
 
             app.UseCors(builder => builder
             .AllowAnyMethod()
             .AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseStaticFiles();
 
             app.MapControllers();
 

@@ -11,6 +11,8 @@ namespace CrmPlatformAPI.Data
         public DbSet<BeneficiaryCompany> BeneficiaryCompanies { get; set; }
         public DbSet<SoftwareCompany> SoftwareCompanies { get; set; }
 
+        public DbSet<HomeImage> HomeImages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

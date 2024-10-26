@@ -10,6 +10,8 @@ namespace CrmPlatformAPI.Models.Domain
         public int? SoftwareCompanyId { get; set; } 
         public SoftwareCompany? SoftwareCompany { get; set; }
 
+        public string Email { get; set; }
+
         public string PhoneNumber { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
