@@ -2,6 +2,7 @@
 using CrmPlatformAPI.Data;
 using CrmPlatformAPI.Extensions;
 using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Middleware;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
@@ -23,7 +24,7 @@ namespace CrmPlatformAPI
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-
+            
             builder.Services.AddServices(builder.Configuration);
             //here i included all the services from the extension class
 
@@ -33,7 +34,7 @@ namespace CrmPlatformAPI
 
 
             var app = builder.Build();
-
+            //custom exceptions middleware
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -45,7 +46,7 @@ namespace CrmPlatformAPI
             app.UseHttpsRedirection();
 
 
-
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseCors(builder => builder
             .AllowAnyMethod()
             .AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend

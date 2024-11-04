@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
@@ -12,7 +13,7 @@ namespace CrmPlatformAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(UserManager<User> userManager,IRepositorySoftwareCompany _repositorySoftwareCompany, IMapper _mapper, ITokenService tokenService) : Controller
+    public class AccountController(UserManager<User> userManager,IRepositorySoftwareCompany _repositorySoftwareCompany, IRepositoryBeneficiaryCompany _repositoryBeneficiaryCompany ,IMapper _mapper, ITokenService tokenService) : Controller
     {
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> RegisterAsync([FromBody] RegisterDTO registerDTO)
@@ -22,27 +23,38 @@ namespace CrmPlatformAPI.Controllers
                 return BadRequest("Username already exists");
             }
 
-            var existingCompany = await _repositorySoftwareCompany.GetSoftwareCompanyByIdAsync(registerDTO.CompanyName);
-
-            if (existingCompany == null && !string.IsNullOrEmpty(registerDTO.CompanyName))
-            {
-                return BadRequest("Company does not exist");
-
-            }
-
-            var user = _mapper.Map<User>(registerDTO);
-
-            user.SoftwareCompanyId = existingCompany?.Id;
-
+            User user = _mapper.Map<User>(registerDTO);
             user.UserName = registerDTO.UserName.ToLower();
 
+            // Determine the company type and set references accordingly
+            if (registerDTO.UserType == UserType.SoftwareCompanyUser)
+            {
+                var existingSoftwareCompany = await _repositorySoftwareCompany.GetSoftwareCompanyByNameAsync(registerDTO.CompanyName);
+                if (existingSoftwareCompany == null && !string.IsNullOrEmpty(registerDTO.CompanyName))
+                {
+                    return BadRequest("Software company does not exist");
+                }
+                user.SoftwareCompanyId = existingSoftwareCompany?.Id;
+            }
+            else if (registerDTO.UserType == UserType.BeneficiaryCompanyUser)
+            {
+                var existingBeneficiaryCompany = await _repositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(registerDTO.CompanyName);
+                if (existingBeneficiaryCompany == null && !string.IsNullOrEmpty(registerDTO.CompanyName))
+                {
+                    return BadRequest("Beneficiary company does not exist");
+                }
+                user.BeneficiaryCompanyId = existingBeneficiaryCompany?.Id;
+            }
+
             var result = await userManager.CreateAsync(user, registerDTO.Password);
-
-
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
+
+            string? companyName = user.UserType == UserType.SoftwareCompanyUser
+                ? user.SoftwareCompany?.Name
+                : user.BeneficiaryCompany?.Name;
 
             return new UserDTO
             {
@@ -52,24 +64,25 @@ namespace CrmPlatformAPI.Controllers
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                SoftwareCompanyName = existingCompany?.Name
+                CompanyName = companyName,
+                UserType = user.UserType
             };
-
         }
+
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> LoginAsync([FromBody] LoginDTO loginDTO)
         {
-
-            if(string.IsNullOrEmpty(loginDTO.UserName) || string.IsNullOrEmpty(loginDTO.Password))
+            if (string.IsNullOrEmpty(loginDTO.UserName) || string.IsNullOrEmpty(loginDTO.Password))
             {
                 return Unauthorized("Invalid username or password");
             }
 
+            // Fetch the user including both company types
             var user = await userManager.Users
                 .Include(u => u.SoftwareCompany)
+                .Include(u => u.BeneficiaryCompany)
                 .FirstOrDefaultAsync(u => u.NormalizedUserName == loginDTO.UserName.ToUpper());
-
 
             if (user == null || user.UserName == null)
             {
@@ -83,6 +96,14 @@ namespace CrmPlatformAPI.Controllers
                 return Unauthorized("Invalid username or password");
             }
 
+            // Determine the company name based on UserType
+            string? companyName = user.UserType switch
+            {
+                UserType.SoftwareCompanyUser => user.SoftwareCompany?.Name,
+                UserType.BeneficiaryCompanyUser => user.BeneficiaryCompany?.Name,
+                _ => null
+            };
+
             return new UserDTO
             {
                 UserName = user.UserName,
@@ -91,10 +112,11 @@ namespace CrmPlatformAPI.Controllers
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                SoftwareCompanyName = user.SoftwareCompany?.Name
+                CompanyName = companyName,
+                UserType = user.UserType
             };
-
         }
+
 
         private async Task<bool> UserExists(string username)
         {

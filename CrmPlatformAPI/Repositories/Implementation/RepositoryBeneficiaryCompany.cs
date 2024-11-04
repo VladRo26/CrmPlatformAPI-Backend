@@ -35,5 +35,10 @@ namespace CrmPlatformAPI.Repositories.Implementation
             }
             return await _context.BeneficiaryCompanies.ToListAsync();
         }
+
+        Task<BeneficiaryCompany?> IRepositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(string name)
+        {
+            return _context.BeneficiaryCompanies.FirstOrDefaultAsync(c => c.Name == name);
+        }
     }
 }

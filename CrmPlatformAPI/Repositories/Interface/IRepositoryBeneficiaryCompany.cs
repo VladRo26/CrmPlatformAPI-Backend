@@ -8,5 +8,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<BeneficiaryCompany>> GetBeneficiaryCompaniesAsync();
 
+        Task<BeneficiaryCompany?> GetBeneficiaryCompanyByNameAsync(string name);
+
     }
 }

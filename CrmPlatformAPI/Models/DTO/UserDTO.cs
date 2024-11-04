@@ -1,4 +1,6 @@
-﻿namespace CrmPlatformAPI.Models.DTO
+﻿using CrmPlatformAPI.Helpers.Enums;
+
+namespace CrmPlatformAPI.Models.DTO
 {
     public class UserDTO
     {
@@ -12,7 +14,8 @@
 
         public string? PhoneNumber { get; set; }
 
-        public string? SoftwareCompanyName { get; set; }
+        public string? CompanyName { get; set; }
+        public UserType UserType { get; set; }
 
         public string? Token { get; set; }
     }

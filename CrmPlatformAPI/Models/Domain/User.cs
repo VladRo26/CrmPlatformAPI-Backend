@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CrmPlatformAPI.Helpers.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CrmPlatformAPI.Models.Domain
@@ -10,6 +11,10 @@ namespace CrmPlatformAPI.Models.Domain
         public int? SoftwareCompanyId { get; set; } 
         public SoftwareCompany? SoftwareCompany { get; set; }
 
+        public int? BeneficiaryCompanyId { get; set; }
+        public BeneficiaryCompany? BeneficiaryCompany { get; set; }
+
+        public UserType UserType { get; set; }
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }

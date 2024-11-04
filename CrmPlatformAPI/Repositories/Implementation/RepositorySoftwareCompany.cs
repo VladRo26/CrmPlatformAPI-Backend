@@ -37,7 +37,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return _context.SoftwareCompanies.AnyAsync(c => c.Name == name);
         }
 
-        Task<SoftwareCompany?> IRepositorySoftwareCompany.GetSoftwareCompanyByIdAsync(string name)
+        Task<SoftwareCompany?> IRepositorySoftwareCompany.GetSoftwareCompanyByNameAsync(string name)
         {
 
             return _context.SoftwareCompanies.FirstOrDefaultAsync(c => c.Name == name);

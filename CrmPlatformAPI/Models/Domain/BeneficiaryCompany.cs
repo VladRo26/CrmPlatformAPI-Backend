@@ -10,6 +10,8 @@
         public string? Address { get; set; }
         public DateOnly EstablishmentDate { get; set; }
 
+        public ICollection<User> Users { get; set; } = new List<User>();
+
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CrmPlatformAPI.Helpers.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CrmPlatformAPI.Models.DTO
 {
@@ -14,6 +15,7 @@ namespace CrmPlatformAPI.Models.DTO
         public string? Email { get; set; }
         public string? CompanyName { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
+        public UserType UserType { get; set; }
 
         [Required]
         [StringLength(12, MinimumLength = 4)]

@@ -31,6 +31,12 @@ namespace CrmPlatformAPI.Data
                    .HasForeignKey(u => u.SoftwareCompanyId)
                    .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Entity<BeneficiaryCompany>()
+               .HasMany(bc => bc.Users)
+               .WithOne(u => u.BeneficiaryCompany)
+               .HasForeignKey(u => u.BeneficiaryCompanyId)
+               .OnDelete(DeleteBehavior.SetNull);
+
 
             builder.Entity<Role>()
                 .HasMany(ur => ur.UserRoles)
