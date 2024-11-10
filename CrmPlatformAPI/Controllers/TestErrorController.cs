@@ -1,4 +1,5 @@
 ﻿using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Models.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +18,13 @@ namespace CrmPlatformAPI.Controllers
 
         [Authorize]
         [HttpGet("auth")]
-        public IActionResult GetSecret()
+        public ActionResult<string> GetSecret()
         {
-            return Ok("Secret text");
+            return "Secret text";
         }
 
         [HttpGet("notfound")]
-        public IActionResult GetNotFoundRequest()
+        public ActionResult<User> GetNotFoundRequest()
         {
             var thing = _context.Users.Find(42);
 
@@ -32,17 +33,15 @@ namespace CrmPlatformAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(thing);
+            return thing;
         }
 
         [HttpGet("servererror")]
-        public IActionResult GetServerError()
+        public ActionResult<User> GetServerError()
         {
-            var thing = _context.Users.Find(-1).ToString() ?? throw new Exception("error server");
+            var thing = _context.Users.Find(-1) ?? throw new Exception("error server");
 
-            var thingToReturn = thing.ToString();
-
-            return Ok(thingToReturn);
+            return thing;
         }
 
         [HttpGet("badrequest")]

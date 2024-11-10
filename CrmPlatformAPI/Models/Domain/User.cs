@@ -1,4 +1,5 @@
-﻿using CrmPlatformAPI.Helpers.Enums;
+﻿using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Helpers.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,5 +20,14 @@ namespace CrmPlatformAPI.Models.Domain
 
         public string PhoneNumber { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+
+        public Photo? Photo { get; set; }
+
+        public DateOnly HireDate { get; set; }
+
+        public int GetAge()
+        {
+            return HireDate.CalculateAge();
+        }
     }
 }

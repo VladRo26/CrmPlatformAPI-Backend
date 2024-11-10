@@ -4,6 +4,7 @@ using CrmPlatformAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrmPlatformAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241109212207_CONTRACTS")]
+    partial class CONTRACTS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,7 +89,7 @@ namespace CrmPlatformAPI.Migrations
 
                     b.HasIndex("SoftwareCompanyId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Contract");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.HomeImage", b =>

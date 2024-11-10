@@ -16,7 +16,7 @@ namespace CrmPlatformAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +57,25 @@ namespace CrmPlatformAPI
             app.UseStaticFiles();
 
             app.MapControllers();
+
+            using var scope = app.Services.CreateScope();
+
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                await context.Database.MigrateAsync();
+                await Seed.SeedSoftwareComp(context);
+                await Seed.SeedBeneficiaryComp(context);
+                await Seed.SeedContract(context);
+
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occured during migration");
+            }
 
             app.Run();
         }

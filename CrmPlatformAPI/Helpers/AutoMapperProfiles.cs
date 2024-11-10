@@ -41,6 +41,14 @@ namespace CrmPlatformAPI.Helpers
             // HomeImage mappings
             CreateMap<ImageDTO, HomeImage>();
             CreateMap<HomeImage, ImageDTO>();
+
+            // Contract mappings
+            CreateMap<Contract, ContractDTO>()
+            .ForMember(dto => dto.BeneficiaryCompanyName, opt => opt.MapFrom(src => src.BeneficiaryCompany.Name))
+            .ForMember(dto => dto.SoftwareCompanyName, opt => opt.MapFrom(src => src.SoftwareCompany.Name));
+
+            CreateMap<ContractDTO, Contract>();
+
         }
     }
 }

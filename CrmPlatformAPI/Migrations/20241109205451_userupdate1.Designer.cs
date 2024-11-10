@@ -4,6 +4,7 @@ using CrmPlatformAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrmPlatformAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241109205451_userupdate1")]
+    partial class userupdate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,45 +51,6 @@ namespace CrmPlatformAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BeneficiaryCompanies");
-                });
-
-            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Contract", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BeneficiaryCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Budget")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateOnly>("EstimatedFinishDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("OffersSupport")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ProjectName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SoftwareCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BeneficiaryCompanyId");
-
-                    b.HasIndex("SoftwareCompanyId");
-
-                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.HomeImage", b =>
@@ -388,25 +352,6 @@ namespace CrmPlatformAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Contract", b =>
-                {
-                    b.HasOne("CrmPlatformAPI.Models.Domain.BeneficiaryCompany", "BeneficiaryCompany")
-                        .WithMany("Contracts")
-                        .HasForeignKey("BeneficiaryCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CrmPlatformAPI.Models.Domain.SoftwareCompany", "SoftwareCompany")
-                        .WithMany("Contracts")
-                        .HasForeignKey("SoftwareCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BeneficiaryCompany");
-
-                    b.Navigation("SoftwareCompany");
-                });
-
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Photo", b =>
                 {
                     b.HasOne("CrmPlatformAPI.Models.Domain.User", "User")
@@ -492,8 +437,6 @@ namespace CrmPlatformAPI.Migrations
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.BeneficiaryCompany", b =>
                 {
-                    b.Navigation("Contracts");
-
                     b.Navigation("Users");
                 });
 
@@ -504,8 +447,6 @@ namespace CrmPlatformAPI.Migrations
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.SoftwareCompany", b =>
                 {
-                    b.Navigation("Contracts");
-
                     b.Navigation("Users");
                 });
 

@@ -12,6 +12,8 @@
 
         public ICollection<User> Users { get; set; } = new List<User>();
 
+        public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+
 
     }
 }
