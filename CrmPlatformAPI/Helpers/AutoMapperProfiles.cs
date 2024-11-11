@@ -38,6 +38,9 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore());
 
+            CreateMap<User, UpdateUserDTO>();
+            CreateMap<UpdateUserDTO, User>();
+
             // HomeImage mappings
             CreateMap<ImageDTO, HomeImage>();
             CreateMap<HomeImage, ImageDTO>();
@@ -47,7 +50,10 @@ namespace CrmPlatformAPI.Helpers
             .ForMember(dto => dto.BeneficiaryCompanyName, opt => opt.MapFrom(src => src.BeneficiaryCompany.Name))
             .ForMember(dto => dto.SoftwareCompanyName, opt => opt.MapFrom(src => src.SoftwareCompany.Name));
 
-            CreateMap<ContractDTO, Contract>();
+            CreateMap<CreateContractDTO, Contract>()
+                .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
+
 
         }
     }
