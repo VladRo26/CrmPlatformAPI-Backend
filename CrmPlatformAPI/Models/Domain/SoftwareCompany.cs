@@ -11,5 +11,8 @@
 
         public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 
+        public CompanyPhoto? CompanyPhoto { get; set; }
+
+
     }
 }

@@ -25,6 +25,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<IRepositoryContract, RepositoryContract>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRepositoryUser, RepositoryUser>();
+            services.AddScoped<IRepositoryCompanyPhoto, RepositoryCompanyPhoto>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             return services;
 

@@ -4,35 +4,42 @@
     "ShortDescription": "Worldwide retail company",
     "ActivityDomain": "Retail",
     "Address": "100 Market Street",
-    "EstablishmentDate": "2000-01-01"
+    "EstablishmentDate": "2000-01-01",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto6.PNG"
   },
   {
     "Name": "Tech Health Inc.",
     "ShortDescription": "Healthcare technology solutions",
     "ActivityDomain": "Healthcare",
     "Address": "200 Health Ave",
-    "EstablishmentDate": "2010-05-15"
+    "EstablishmentDate": "2010-05-15",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto7.PNG"
   },
   {
     "Name": "Finance Solutions Ltd.",
     "ShortDescription": "Financial advisory and solutions",
     "ActivityDomain": "Finance",
     "Address": "300 Wall Street",
-    "EstablishmentDate": "1998-10-10"
+    "EstablishmentDate": "1998-10-10",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto8.PNG"
+
   },
   {
     "Name": "Green Energy Corp.",
     "ShortDescription": "Renewable energy solutions",
     "ActivityDomain": "Energy",
     "Address": "400 Solar Dr",
-    "EstablishmentDate": "2015-08-20"
+    "EstablishmentDate": "2015-08-20",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto9.PNG"
+
   },
   {
     "Name": "EduTech Ltd.",
     "ShortDescription": "Education technology services",
     "ActivityDomain": "Education",
     "Address": "500 Knowledge Way",
-    "EstablishmentDate": "2020-07-07"
+    "EstablishmentDate": "2020-07-07",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto10.PNG"
   }
 ]
 

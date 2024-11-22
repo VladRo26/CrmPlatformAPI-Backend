@@ -31,6 +31,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return await _context.Users
                .Include(u => u.SoftwareCompany)
                .Include(u => u.BeneficiaryCompany)
+               .Include(u => u.Photo)
                .ToListAsync();
         }
 
@@ -44,6 +45,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return await _context.Users
                 .Include(u => u.SoftwareCompany)
                 .Include(u => u.BeneficiaryCompany)
+                .Include(u => u.Photo)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -54,6 +56,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 return null;
             }
             return await _context.Users
+                .Include(u => u.Photo)
                 .Where(u =>
                     (u.SoftwareCompany != null && u.SoftwareCompany.Name == name) ||
                     (u.BeneficiaryCompany != null && u.BeneficiaryCompany.Name == name)
@@ -68,10 +71,24 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 return null;
             }
             return await _context.Users
-                .Where(u => u.FirstName == name || u.UserName == name)
+                .Include(u => u.Photo)
+                .Where(u => u.FirstName == name || u.LastName == name)
                 .ToListAsync();
         }
 
+        public async Task<User?> GetByUserNameAsync(string username)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            // Use FirstOrDefaultAsync to get a single user
+            return await _context.Users
+                .Include(u => u.Photo)
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+        }
 
     }
 }

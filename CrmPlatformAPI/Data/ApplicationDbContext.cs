@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace CrmPlatformAPI.Data
 {
@@ -14,6 +15,8 @@ namespace CrmPlatformAPI.Data
         public DbSet<HomeImage> HomeImages { get; set; }
 
         public DbSet<Contract> Contracts { get; set; }
+
+        public DbSet<CompanyPhoto> CompanyPhotos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -66,8 +69,19 @@ namespace CrmPlatformAPI.Data
                 .WithMany(s => s.Contracts)
                 .HasForeignKey(c => c.SoftwareCompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<BeneficiaryCompany>()
+                .HasOne(b => b.CompanyPhoto)
+                .WithOne(p => p.BeneficiaryCompany)
+                .HasForeignKey<CompanyPhoto>(p => p.BeneficiaryCompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<SoftwareCompany>()
+                .HasOne(s => s.CompanyPhoto)
+                .WithOne(p => p.SoftwareCompany)
+                .HasForeignKey<CompanyPhoto>(p => p.SoftwareCompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
-
-
     }
 }

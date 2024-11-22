@@ -1,7 +1,7 @@
 [
   {
-    "BeneficiaryCompanyId": 1002,
-    "SoftwareCompanyId": 5,
+    "BeneficiaryCompanyId": 1,
+    "SoftwareCompanyId": 1,
     "ProjectName": "E-Commerce Platform Development",
     "StartDate": "2023-01-15",
     "Budget": 250000.00,
@@ -9,8 +9,8 @@
     "OffersSupport": true
   },
   {
-    "BeneficiaryCompanyId": 1003,
-    "SoftwareCompanyId": 6,
+    "BeneficiaryCompanyId": 2,
+    "SoftwareCompanyId": 2,
     "ProjectName": "Healthcare Data Management",
     "StartDate": "2022-06-01",
     "Budget": 300000.00,
@@ -18,8 +18,8 @@
     "OffersSupport": false
   },
   {
-    "BeneficiaryCompanyId": 1004,
-    "SoftwareCompanyId": 7,
+    "BeneficiaryCompanyId": 3,
+    "SoftwareCompanyId": 3,
     "ProjectName": "Financial Forecasting Tool",
     "StartDate": "2023-03-20",
     "Budget": 150000.00,
@@ -27,8 +27,8 @@
     "OffersSupport": true
   },
   {
-    "BeneficiaryCompanyId": 1005,
-    "SoftwareCompanyId": 8,
+    "BeneficiaryCompanyId": 4,
+    "SoftwareCompanyId": 4,
     "ProjectName": "Green Energy Analytics System",
     "StartDate": "2023-07-10",
     "Budget": 200000.00,
@@ -36,8 +36,8 @@
     "OffersSupport": true
   },
   {
-    "BeneficiaryCompanyId": 1006,
-    "SoftwareCompanyId": 9,
+    "BeneficiaryCompanyId": 5,
+    "SoftwareCompanyId": 5,
     "ProjectName": "Learning Management System",
     "StartDate": "2023-04-15",
     "Budget": 180000.00,

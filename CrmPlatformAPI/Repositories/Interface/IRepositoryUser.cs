@@ -14,5 +14,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<User>> GetByNameAsync(string Name);
 
+        Task<User?> GetByUserNameAsync(string username);
+
     }
 }

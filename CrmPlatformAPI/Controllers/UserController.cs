@@ -10,11 +10,13 @@ namespace CrmPlatformAPI.Controllers
     public class UserController : Controller
     {
         private readonly IRepositoryUser _repositoryUser;
+        private readonly IRepositoryCompanyPhoto _repositoryCompanyPhoto;
         private readonly IMapper _mapper;
 
-        public UserController(IRepositoryUser repositoryUser, IMapper mapper)
+        public UserController(IRepositoryUser repositoryUser, IRepositoryCompanyPhoto repositoryCompanyPhoto, IMapper mapper)
         {
             _repositoryUser = repositoryUser;
+            _repositoryCompanyPhoto = repositoryCompanyPhoto;
             _mapper = mapper;
         }
 
@@ -22,10 +24,17 @@ namespace CrmPlatformAPI.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repositoryUser.GetAllAsync();
+            var userDtos = new List<UserAppDTO>();
 
-            var response = _mapper.Map<IEnumerable<UserDTO>>(users);
+            foreach (var user in users)
+            {
+                var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(user.Id);
+                var userDto = _mapper.Map<UserAppDTO>(user);
+                userDto.CompanyPhotoUrl = companyPhotoUrl;
+                userDtos.Add(userDto);
+            }
 
-            return Ok(response);
+            return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
@@ -38,9 +47,50 @@ namespace CrmPlatformAPI.Controllers
                 return NotFound();
             }
 
-            var response = _mapper.Map<UserDTO>(user);
+            var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(id);
+            var userDto = _mapper.Map<UserAppDTO>(user);
+            userDto.CompanyPhotoUrl = companyPhotoUrl;
 
-            return Ok(response);
+            return Ok(userDto);
+        }
+
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetUserByName(string name)
+        {
+            var users = await _repositoryUser.GetByNameAsync(name);
+
+            if (users == null || !users.Any())
+            {
+                return NotFound();
+            }
+
+            var userDtos = new List<UserAppDTO>();
+
+            foreach (var user in users)
+            {
+                var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(user.Id);
+                var userDto = _mapper.Map<UserAppDTO>(user);
+                userDto.CompanyPhotoUrl = companyPhotoUrl;
+                userDtos.Add(userDto);
+            }
+
+            return Ok(userDtos);
+        }
+        [HttpGet("username/{username}")]
+        public async Task<IActionResult> GetUserByUsername(string username)
+        {
+            var user = await _repositoryUser.GetByUserNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(user.Id);
+            var userDto = _mapper.Map<UserAppDTO>(user);
+            userDto.CompanyPhotoUrl = companyPhotoUrl;
+
+            return Ok(userDto);
         }
 
         [HttpPut("{id}")]
@@ -49,21 +99,24 @@ namespace CrmPlatformAPI.Controllers
             var user = await _repositoryUser.GetByIdAsync(id);
             if (user == null)
             {
-                return NotFound(); // 404 Not Found
+                return NotFound();
             }
 
             _mapper.Map(updateUserDTO, user);
 
             bool success = await _repositoryUser.UpdateAsync(user);
-            if (success)
+            if (!success)
             {
-                return NoContent(); // 204 No Content
+                return StatusCode(500, "Update failed.");
             }
-            else
-            {
-                return StatusCode(500, "Update failed."); // 500 Internal Server Error
-            }
-        }
 
+            // Fetch updated user details and include CompanyPhotoUrl
+            var updatedUser = await _repositoryUser.GetByIdAsync(id);
+            var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(id);
+            var updatedUserDto = _mapper.Map<UserAppDTO>(updatedUser);
+           
+
+            return Ok(updatedUserDto);
+        }
     }
 }

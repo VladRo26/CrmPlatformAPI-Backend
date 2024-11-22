@@ -7,5 +7,7 @@
         public string? ActivityDomain { get; set; }
         public string? Address { get; set; }
         public DateOnly EstablishmentDate { get; set; }
+        public string PhotoUrl { get; set; }
+
     }
 }

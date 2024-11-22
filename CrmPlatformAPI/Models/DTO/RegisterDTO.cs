@@ -17,6 +17,8 @@ namespace CrmPlatformAPI.Models.DTO
         public string? PhoneNumber { get; set; }
         public UserType UserType { get; set; }
 
+        public DateOnly HireDate { get; set; }
+
         [Required]
         [StringLength(12, MinimumLength = 4)]
         public string Password { get; set; } = string.Empty;

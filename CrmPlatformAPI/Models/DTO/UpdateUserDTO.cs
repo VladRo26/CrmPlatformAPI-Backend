@@ -23,5 +23,7 @@ namespace CrmPlatformAPI.Models.DTO
         [StringLength(12, MinimumLength = 4)]
         public string PasswordConfirm { get; set; } = string.Empty;
 
+        public string? PhotoUrl { get; set; }
+
     }
 }

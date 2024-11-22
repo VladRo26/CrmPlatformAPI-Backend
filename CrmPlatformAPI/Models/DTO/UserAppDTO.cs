@@ -2,13 +2,14 @@
 
 namespace CrmPlatformAPI.Models.DTO
 {
-    public class UserDTO
+    public class UserAppDTO
     {
+        public int Id { get; set; }
         public string? UserName { get; set; }
 
         public string? FirstName { get; set; }
 
-        public string? LastName { get; set;}
+        public string? LastName { get; set; }
 
         public string? Email { get; set; }
 
@@ -21,6 +22,8 @@ namespace CrmPlatformAPI.Models.DTO
 
         public string? Token { get; set; }
 
-        public string? PhotoUrl { get; set;}
+        public string? PhotoUrl { get; set; }
+
+        public string? CompanyPhotoUrl { get; set; }
     }
 }

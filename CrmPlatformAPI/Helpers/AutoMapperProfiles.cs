@@ -11,12 +11,17 @@ namespace CrmPlatformAPI.Helpers
         public AutoMapperProfiles()
         {
             // BeneficiaryCompany mappings
-            CreateMap<BeneficiaryCompany, BeneficiaryCompanyDTO>();
-            CreateMap<CreateBeneficiaryCompanyDTO, BeneficiaryCompany>();
+            CreateMap<BeneficiaryCompany, BeneficiaryCompanyDTO>()
+            .ForMember(dto => dto.PhotoUrl, opt => opt.MapFrom(src => src.CompanyPhoto.Url));
+            CreateMap<CreateBeneficiaryCompanyDTO, BeneficiaryCompany>()
+            .ForMember(dest => dest.CompanyPhoto, opt => opt.Ignore());
+
 
             // SoftwareCompany mappings
-            CreateMap<SoftwareCompany, SoftwareCompanyDTO>();
-            CreateMap<CreateSoftwareCompanyDTO, SoftwareCompany>();
+            CreateMap<SoftwareCompany, SoftwareCompanyDTO>()
+                .ForMember(dto => dto.PhotoUrl, opt => opt.MapFrom(src => src.CompanyPhoto.Url));
+            CreateMap<CreateSoftwareCompanyDTO, SoftwareCompany>()
+                .ForMember(dest => dest.CompanyPhoto, opt => opt.Ignore());
 
             // User mappings for registration
             CreateMap<User, RegisterDTO>()
@@ -32,14 +37,33 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.UserType == UserType.SoftwareCompanyUser
                     ? src.SoftwareCompany.Name
                     : src.BeneficiaryCompany.Name))
-                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType));
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType))
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url));
 
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore())
-                .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore());
+                .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.Photo, opt => opt.Ignore());
+            // user mapping for UserAppDTO
+            CreateMap<User, UserAppDTO>()
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.UserType == UserType.SoftwareCompanyUser
+                                   ? src.SoftwareCompany.Name
+                                                      : src.BeneficiaryCompany.Name))
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType))
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url));
 
-            CreateMap<User, UpdateUserDTO>();
-            CreateMap<UpdateUserDTO, User>();
+            CreateMap<UserAppDTO, User>()
+                .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.Photo, opt => opt.Ignore());
+
+
+            CreateMap<User, UpdateUserDTO>()
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url));
+            CreateMap<UpdateUserDTO, User>()
+                .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.Photo, opt => opt.Ignore());
 
             // HomeImage mappings
             CreateMap<ImageDTO, HomeImage>();
@@ -53,6 +77,8 @@ namespace CrmPlatformAPI.Helpers
             CreateMap<CreateContractDTO, Contract>()
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
+
+
 
 
         }

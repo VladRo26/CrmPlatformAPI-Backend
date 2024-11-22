@@ -3,30 +3,35 @@
     "Name": "Software Solutions Inc.",
     "ShortDescription": "Custom software development",
     "EstablishmentDate": "2005-02-12",
-    "UserID": "2"
+    "UserID": "2",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto1.PNG"
   },
   {
     "Name": "AppDev Technologies",
     "ShortDescription": "Mobile app development",
     "EstablishmentDate": "2012-06-22",
-    "UserID": "2"
+    "UserID": "2",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto2.PNG"
   },
   {
     "Name": "CloudNet Corp.",
     "ShortDescription": "Cloud infrastructure services",
     "EstablishmentDate": "2008-11-05",
-    "UserID": "2"
+    "UserID": "2",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto3.PNG"
   },
   {
     "Name": "CyberSec Solutions",
     "ShortDescription": "Cybersecurity and risk management",
     "EstablishmentDate": "2013-09-25",
-    "UserID": "2"
+    "UserID": "2",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto5.PNG"
   },
   {
     "Name": "Data Science Hub",
     "ShortDescription": "AI and machine learning solutions",
     "EstablishmentDate": "2016-03-30",
-    "UserID": "2"
+    "UserID": "2",
+    "PhotoUrl": "https://localhost:7057/Images/CompanyPhoto4.PNG"
   }
 ]
