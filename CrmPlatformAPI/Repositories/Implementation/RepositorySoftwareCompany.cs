@@ -27,7 +27,9 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         public async Task<IEnumerable<SoftwareCompany>> GetSoftwareCompaniesAsync()
         {
-            return await _context.SoftwareCompanies.ToListAsync();
+            return await _context.SoftwareCompanies
+              .Include(sc => sc.CompanyPhoto) // Include the CompanyPhoto relationship
+              .ToListAsync();
         }
 
 
