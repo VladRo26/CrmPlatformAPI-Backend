@@ -33,7 +33,9 @@ namespace CrmPlatformAPI.Repositories.Implementation
             {
                 return null;
             }
-            return await _context.BeneficiaryCompanies.ToListAsync();
+            return await _context.BeneficiaryCompanies
+               .Include(bc => bc.CompanyPhoto) // Include the CompanyPhoto relationship
+               .ToListAsync();
         }
 
         Task<BeneficiaryCompany?> IRepositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(string name)

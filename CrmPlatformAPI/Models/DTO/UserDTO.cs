@@ -22,5 +22,7 @@ namespace CrmPlatformAPI.Models.DTO
         public string? Token { get; set; }
 
         public string? PhotoUrl { get; set;}
+
+        public float Rating { get; set; }
     }
 }

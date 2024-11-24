@@ -72,7 +72,9 @@ namespace CrmPlatformAPI.Helpers
             // Contract mappings
             CreateMap<Contract, ContractDTO>()
             .ForMember(dto => dto.BeneficiaryCompanyName, opt => opt.MapFrom(src => src.BeneficiaryCompany.Name))
-            .ForMember(dto => dto.SoftwareCompanyName, opt => opt.MapFrom(src => src.SoftwareCompany.Name));
+            .ForMember(dto => dto.SoftwareCompanyName, opt => opt.MapFrom(src => src.SoftwareCompany.Name))
+            .ForMember(dto => dto.BeneficiaryCompanyPhotoUrl, opt => opt.MapFrom(c => c.BeneficiaryCompany.CompanyPhoto.Url))
+            .ForMember(dto => dto.SoftwareCompanyPhotoUrl, opt => opt.MapFrom(c => c.SoftwareCompany.CompanyPhoto.Url));
 
             CreateMap<CreateContractDTO, Contract>()
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())

@@ -26,8 +26,10 @@ namespace CrmPlatformAPI.Repositories.Implementation
             }
 
             var query = _context.Contracts
-                .Include(c => c.SoftwareCompany)
                 .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)  // Include BeneficiaryCompany photo
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto) // Include SoftwareCompany photo
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(softComp))
@@ -45,6 +47,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
 
 
+
         public async Task<IEnumerable<Models.Domain.Contract>> GetContractsAsync()
         {
             if (_context == null)
@@ -52,9 +55,12 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 return null;
             }
 
+
             return await _context.Contracts
-                .Include(c => c.BeneficiaryCompany)  // Eagerly load BeneficiaryCompany
-                .Include(c => c.SoftwareCompany)     // Eagerly load SoftwareCompany
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)  // Include BeneficiaryCompany photo
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto) // Include SoftwareCompany photo
                 .ToListAsync();
         }
 

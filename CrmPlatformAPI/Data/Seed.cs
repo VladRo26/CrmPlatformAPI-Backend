@@ -85,6 +85,7 @@ namespace CrmPlatformAPI.Data
                     ActivityDomain = activityDomain,
                     Address = address,
                     EstablishmentDate = DateOnly.Parse(establishmentDate)
+
                 };
 
                 context.BeneficiaryCompanies.Add(beneficiaryCompany);
@@ -103,9 +104,6 @@ namespace CrmPlatformAPI.Data
 
             await context.SaveChangesAsync();
         }
-
-
-
 
 
         public static async Task SeedContract(ApplicationDbContext context)

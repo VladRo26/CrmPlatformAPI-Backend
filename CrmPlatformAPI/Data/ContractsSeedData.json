@@ -6,7 +6,9 @@
     "StartDate": "2023-01-15",
     "Budget": 250000.00,
     "EstimatedFinishDate": "2023-12-01",
-    "OffersSupport": true
+    "OffersSupport": true,
+    "Status": 75.0,
+    "Description": "Developing a platform for online retail with integrated payment gateways and user analytics."
   },
   {
     "BeneficiaryCompanyId": 2,
@@ -15,7 +17,9 @@
     "StartDate": "2022-06-01",
     "Budget": 300000.00,
     "EstimatedFinishDate": "2023-06-01",
-    "OffersSupport": false
+    "OffersSupport": false,
+    "Status": 100.0,
+    "Description": "A completed system for secure patient data handling and medical records."
   },
   {
     "BeneficiaryCompanyId": 3,
@@ -24,7 +28,9 @@
     "StartDate": "2023-03-20",
     "Budget": 150000.00,
     "EstimatedFinishDate": "2024-03-20",
-    "OffersSupport": true
+    "OffersSupport": true,
+    "Status": 40.0,
+    "Description": "Building a tool to predict market trends and provide investment insights."
   },
   {
     "BeneficiaryCompanyId": 4,
@@ -33,7 +39,9 @@
     "StartDate": "2023-07-10",
     "Budget": 200000.00,
     "EstimatedFinishDate": "2024-07-10",
-    "OffersSupport": true
+    "OffersSupport": true,
+    "Status": 25.0,
+    "Description": "Analyzing and optimizing renewable energy sources for efficiency."
   },
   {
     "BeneficiaryCompanyId": 5,
@@ -42,9 +50,8 @@
     "StartDate": "2023-04-15",
     "Budget": 180000.00,
     "EstimatedFinishDate": "2024-04-15",
-    "OffersSupport": false
+    "OffersSupport": false,
+    "Status": 50.0,
+    "Description": "Developing an LMS with customizable modules for educational institutions."
   }
-
 ]
-
-

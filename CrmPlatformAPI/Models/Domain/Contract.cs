@@ -20,5 +20,9 @@ namespace CrmPlatformAPI.Models.Domain
         public decimal Budget { get; set; }
         public DateOnly EstimatedFinishDate { get; set; }
         public bool OffersSupport { get; set; }
+
+        public float Status { get; set; }
+        
+        public string? Description { get; set; }
     }
 }
