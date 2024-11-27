@@ -18,6 +18,13 @@ namespace CrmPlatformAPI.Data
 
         public DbSet<CompanyPhoto> CompanyPhotos { get; set; }
 
+        public DbSet<Ticket> Tickets { get; set; }
+
+        public DbSet<TicketStatusHistory> TicketStatusHistories { get; set; }
+
+        public DbSet<Feedback> Feedbacks { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -81,6 +88,66 @@ namespace CrmPlatformAPI.Data
                 .WithOne(p => p.SoftwareCompany)
                 .HasForeignKey<CompanyPhoto>(p => p.SoftwareCompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Contract)
+                .WithMany(c => c.Tickets)
+                .HasForeignKey(t => t.ContractId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Creator)
+                .WithMany()
+                .HasForeignKey(t => t.CreatorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Handler)
+                .WithMany()
+                .HasForeignKey(t => t.HandlerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TicketStatusHistory>()
+                .HasOne(sh => sh.Ticket)
+                .WithMany(t => t.StatusHistory)
+                .HasForeignKey(sh => sh.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TicketStatusHistory>()
+                .HasOne(h => h.UpdatedByUser)
+                .WithMany()
+                .HasForeignKey(h => h.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Ticket>()
+                  .Property(t => t.Status)
+                  .HasConversion<string>();
+
+            builder.Entity<TicketStatusHistory>()
+                .Property(h => h.TicketUserRole)
+                .HasConversion<string>();
+
+            builder.Entity<TicketStatusHistory>()
+                .Property(h => h.Status)
+                .HasConversion<string>();
+
+            builder.Entity<Feedback>()
+                  .HasOne(f => f.FromUser)
+                  .WithMany() 
+                  .HasForeignKey(f => f.FromUserId)
+                  .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.Entity<Feedback>()
+                .HasOne(f => f.ToUser)
+                .WithMany() 
+                .HasForeignKey(f => f.ToUserId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.Entity<Feedback>()
+                .HasOne(f => f.Ticket)
+                .WithMany() 
+                .HasForeignKey(f => f.TicketId)
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
     }

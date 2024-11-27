@@ -1,0 +1,167 @@
+[
+  {
+    "Title": "Payment Gateway Bug",
+    "Description": "The payment gateway crashes during checkout.",
+    "Status": "Open",
+    "Priority": "High",
+    "Type": "Bug",
+    "ContractId": 17,
+    "CreatorId": 2018,
+    "HandlerId": 6,
+    "CreatedAt": "2023-11-01T10:00:00Z"
+  },
+  {
+    "Title": "User Analytics Report Delay",
+    "Description": "Analytics reports take too long to generate.",
+    "Status": "InProgress",
+    "Priority": "Medium",
+    "Type": "Task",
+    "ContractId": 17,
+    "CreatorId": 2018,
+    "HandlerId": 6,
+    "CreatedAt": "2023-11-01T11:00:00Z"
+  },
+  {
+    "Title": "Add Medical History Feature",
+    "Description": "Add a feature to upload patient medical history.",
+    "Status": "Resolved",
+    "Priority": "High",
+    "Type": "Feature",
+    "ContractId": 18,
+    "CreatorId": 2019,
+    "HandlerId": 2016,
+    "CreatedAt": "2023-11-01T12:00:00Z"
+  },
+  {
+    "Title": "System Security Audit",
+    "Description": "Perform a security audit for patient data.",
+    "Status": "Open",
+    "Priority": "Critical",
+    "Type": "Task",
+    "ContractId": 18,
+    "CreatorId": 2019,
+    "HandlerId": 2016,
+    "CreatedAt": "2023-11-01T13:00:00Z"
+  },
+  {
+    "Title": "Market Trends Prediction Issue",
+    "Description": "The market prediction model is returning errors.",
+    "Status": "InProgress",
+    "Priority": "High",
+    "Type": "Bug",
+    "ContractId": 19,
+    "CreatorId": 2020,
+    "HandlerId": 2017,
+    "CreatedAt": "2023-11-01T14:00:00Z"
+  },
+  {
+    "Title": "Investment Insights Dashboard",
+    "Description": "Build a dashboard for investment insights.",
+    "Status": "Resolved",
+    "Priority": "Medium",
+    "Type": "Feature",
+    "ContractId": 19,
+    "CreatorId": 2020,
+    "HandlerId": 2017,
+    "CreatedAt": "2023-11-01T15:00:00Z"
+  },
+  {
+    "Title": "Optimize Solar Panel Analytics",
+    "Description": "Optimize data collection for solar panels.",
+    "Status": "Open",
+    "Priority": "Low",
+    "Type": "Feature",
+    "ContractId": 20,
+    "CreatorId": 2022,
+    "HandlerId": null,
+    "CreatedAt": "2023-11-01T16:00:00Z"
+  },
+  {
+    "Title": "Energy Usage Reports",
+    "Description": "Create detailed energy usage reports.",
+    "Status": "InProgress",
+    "Priority": "Medium",
+    "Type": "Task",
+    "ContractId": 20,
+    "CreatorId": 2022,
+    "HandlerId": 1009,
+    "CreatedAt": "2023-11-01T17:00:00Z"
+  },
+  {
+    "Title": "Add Quiz Module",
+    "Description": "Add a quiz module for student assessment.",
+    "Status": "Open",
+    "Priority": "High",
+    "Type": "Feature",
+    "ContractId": 21,
+    "CreatorId": 2023,
+    "HandlerId": 1010,
+    "CreatedAt": "2023-11-01T18:00:00Z"
+  },
+  {
+    "Title": "Fix File Upload Issue",
+    "Description": "File uploads fail intermittently.",
+    "Status": "Open",
+    "Priority": "Medium",
+    "Type": "Bug",
+    "ContractId": 21,
+    "CreatorId": 2023,
+    "HandlerId": null,
+    "CreatedAt": "2023-11-01T19:00:00Z"
+  },
+  {
+    "Title": "Optimize Checkout Process",
+    "Description": "Streamline the checkout process for better UX.",
+    "Status": "Resolved",
+    "Priority": "High",
+    "Type": "Feature",
+    "ContractId": 17,
+    "CreatorId": 2018,
+    "HandlerId": 6,
+    "CreatedAt": "2023-11-01T20:00:00Z"
+  },
+  {
+    "Title": "Bug in Healthcare Records",
+    "Description": "Records are not syncing across systems.",
+    "Status": "InProgress",
+    "Priority": "Critical",
+    "Type": "Bug",
+    "ContractId": 18,
+    "CreatorId": 2019,
+    "HandlerId": 1012,
+    "CreatedAt": "2023-11-01T21:00:00Z"
+  },
+  {
+    "Title": "Add Performance Metrics",
+    "Description": "Add metrics tracking to the forecasting tool.",
+    "Status": "Open",
+    "Priority": "Low",
+    "Type": "Feature",
+    "ContractId": 19,
+    "CreatorId": 2012,
+    "HandlerId": null,
+    "CreatedAt": "2023-11-01T22:00:00Z"
+  },
+  {
+    "Title": "Green Energy Overview Report",
+    "Description": "Generate a comprehensive energy report.",
+    "Status": "InProgress",
+    "Priority": "High",
+    "Type": "Task",
+    "ContractId": 20,
+    "CreatorId": 2022,
+    "HandlerId": 1009,
+    "CreatedAt": "2023-11-01T23:00:00Z"
+  },
+  {
+    "Title": "Fix Quiz Timer Issue",
+    "Description": "Quiz timer resets unexpectedly.",
+    "Status": "Open",
+    "Priority": "Medium",
+    "Type": "Bug",
+    "ContractId": 21,
+    "CreatorId": 2023,
+    "HandlerId": null,
+    "CreatedAt": "2023-11-02T00:00:00Z"
+  }
+]

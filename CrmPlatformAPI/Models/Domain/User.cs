@@ -25,7 +25,7 @@ namespace CrmPlatformAPI.Models.Domain
 
         public DateOnly HireDate { get; set; }
 
-        public float rating { get; set; }
+        public int Rating { get; set; } = 3;
 
         public int GetAge()
         {

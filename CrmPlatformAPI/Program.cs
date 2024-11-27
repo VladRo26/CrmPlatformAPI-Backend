@@ -69,6 +69,10 @@ namespace CrmPlatformAPI
                 await Seed.SeedSoftwareComp(context);
                 await Seed.SeedBeneficiaryComp(context);
                 await Seed.SeedContract(context);
+                await Seed.SeedTickets(context);
+                await Seed.SeedTicketHistory(context);
+                await Seed.SeedFeedback(context);
+
 
             }
             catch (Exception ex)

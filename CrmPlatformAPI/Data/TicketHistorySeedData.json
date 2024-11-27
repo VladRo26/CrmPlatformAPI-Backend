@@ -1,0 +1,186 @@
+[
+  {
+    "TicketId": 1,
+    "Status": "InProgress",
+    "Message": "Assigned to handler.",
+    "UpdatedByUserId": 6,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-01T10:00:00Z"
+  },
+  {
+    "TicketId": 1,
+    "Status": "Resolved",
+    "Message": "Issue fixed and tested.",
+    "UpdatedByUserId": 6,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-05T14:30:00Z"
+  },
+  {
+    "TicketId": 2,
+    "Status": "InProgress",
+    "Message": "Analyzing the report issue.",
+    "UpdatedByUserId": 6,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-02T09:15:00Z"
+  },
+  {
+    "TicketId": 3,
+    "Status": "Resolved",
+    "Message": "Medical history feature implemented.",
+    "UpdatedByUserId": 2016,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-03T16:45:00Z"
+  },
+  {
+    "TicketId": 4,
+    "Status": "Open",
+    "Message": "Ticket created for security audit.",
+    "UpdatedByUserId": 2019,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-01T08:00:00Z"
+  },
+  {
+    "TicketId": 4,
+    "Status": "InProgress",
+    "Message": "Audit in progress.",
+    "UpdatedByUserId": 2016,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-04T13:20:00Z"
+  },
+  {
+    "TicketId": 5,
+    "Status": "InProgress",
+    "Message": "Analyzing prediction errors.",
+    "UpdatedByUserId": 2017,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-02T15:00:00Z"
+  },
+  {
+    "TicketId": 5,
+    "Status": "Resolved",
+    "Message": "Prediction model fixed.",
+    "UpdatedByUserId": 2017,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-06T12:45:00Z"
+  },
+  {
+    "TicketId": 6,
+    "Status": "InProgress",
+    "Message": "Building dashboard layout.",
+    "UpdatedByUserId": 2017,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-03T10:30:00Z"
+  },
+  {
+    "TicketId": 6,
+    "Status": "Resolved",
+    "Message": "Dashboard completed.",
+    "UpdatedByUserId": 2017,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-07T11:30:00Z"
+  },
+  {
+    "TicketId": 7,
+    "Status": "Open",
+    "Message": "Ticket created for solar panel optimization.",
+    "UpdatedByUserId": 2022,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-01T09:00:00Z"
+  },
+  {
+    "TicketId": 8,
+    "Status": "InProgress",
+    "Message": "Working on energy usage reports.",
+    "UpdatedByUserId": 1009,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-04T14:00:00Z"
+  },
+  {
+    "TicketId": 8,
+    "Status": "Resolved",
+    "Message": "Reports completed and verified.",
+    "UpdatedByUserId": 1009,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-08T17:15:00Z"
+  },
+  {
+    "TicketId": 9,
+    "Status": "Open",
+    "Message": "Ticket created for quiz module.",
+    "UpdatedByUserId": 2023,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-01T08:30:00Z"
+  },
+  {
+    "TicketId": 10,
+    "Status": "Open",
+    "Message": "File upload issue reported.",
+    "UpdatedByUserId": 2023,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-02T10:00:00Z"
+  },
+  {
+    "TicketId": 11,
+    "Status": "InProgress",
+    "Message": "Streamlining the checkout process.",
+    "UpdatedByUserId": 6,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-03T11:00:00Z"
+  },
+  {
+    "TicketId": 11,
+    "Status": "Resolved",
+    "Message": "Checkout process optimized.",
+    "UpdatedByUserId": 6,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-07T15:00:00Z"
+  },
+  {
+    "TicketId": 12,
+    "Status": "InProgress",
+    "Message": "Investigating record sync issues.",
+    "UpdatedByUserId": 1012,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-03T14:30:00Z"
+  },
+  {
+    "TicketId": 12,
+    "Status": "Resolved",
+    "Message": "Record sync fixed across systems.",
+    "UpdatedByUserId": 1012,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-07T12:45:00Z"
+  },
+  {
+    "TicketId": 13,
+    "Status": "Open",
+    "Message": "Ticket created for performance metrics.",
+    "UpdatedByUserId": 2012,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-01T07:45:00Z"
+  },
+  {
+    "TicketId": 14,
+    "Status": "InProgress",
+    "Message": "Generating energy overview report.",
+    "UpdatedByUserId": 1009,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-04T16:00:00Z"
+  },
+  {
+    "TicketId": 14,
+    "Status": "Resolved",
+    "Message": "Energy report completed.",
+    "UpdatedByUserId": 1009,
+    "TicketUserRole": "Handler",
+    "UpdatedAt": "2023-11-08T09:30:00Z"
+  },
+  {
+    "TicketId": 15,
+    "Status": "Open",
+    "Message": "Ticket created for quiz timer issue.",
+    "UpdatedByUserId": 2023,
+    "TicketUserRole": "Creator",
+    "UpdatedAt": "2023-11-10T10:00:00Z"
+  }
+]

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CrmPlatformAPI.Data
 {
@@ -120,6 +121,80 @@ namespace CrmPlatformAPI.Data
             }
 
             await context.SaveChangesAsync();
-        }   
+        }
+
+        public static async Task SeedTickets(ApplicationDbContext context)
+        {
+            if (await context.Tickets.AnyAsync()) return;
+
+            var ticketData = await System.IO.File.ReadAllTextAsync("Data/TicketSeedData.json");
+
+            // Deserialize with string-to-enum mapping
+            var tickets = JsonSerializer.Deserialize<List<Ticket>>(ticketData, new JsonSerializerOptions
+            {
+                Converters =
+            {
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+            });
+
+            if (tickets == null) return;
+
+            foreach (var ticket in tickets)
+            {
+                context.Tickets.Add(ticket);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedTicketHistory(ApplicationDbContext context)
+        {
+            if (await context.TicketStatusHistories.AnyAsync()) return;
+
+            var ticketHistoryData = await System.IO.File.ReadAllTextAsync("Data/TicketHistorySeedData.json");
+
+            // Deserialize JSON with string-to-enum mapping
+            var ticketHistories = JsonSerializer.Deserialize<List<TicketStatusHistory>>(ticketHistoryData, new JsonSerializerOptions
+            {
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            });
+
+            if (ticketHistories == null) return;
+
+            foreach (var history in ticketHistories)
+            {
+                context.TicketStatusHistories.Add(history);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedFeedback(ApplicationDbContext context)
+        {
+            // Check if there are existing records
+            if (await context.Feedbacks.AnyAsync()) return;
+
+            // Read the JSON file containing feedback data
+            var feedbackData = await System.IO.File.ReadAllTextAsync("Data/FeedbackData.json");
+
+            // Deserialize JSON data into Feedback objects
+            var feedbacks = JsonSerializer.Deserialize<List<Feedback>>(feedbackData);
+
+            if (feedbacks == null) return;
+
+            // Add each feedback entry to the database context
+            foreach (var feedback in feedbacks)
+            {
+                context.Feedbacks.Add(feedback);
+            }
+
+            // Save all changes to the database
+            await context.SaveChangesAsync();
+        }
+
     }
 }

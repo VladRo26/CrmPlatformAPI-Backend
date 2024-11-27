@@ -24,5 +24,8 @@ namespace CrmPlatformAPI.Models.Domain
         public float Status { get; set; }
         
         public string? Description { get; set; }
+
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
     }
 }
