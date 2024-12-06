@@ -13,5 +13,6 @@ namespace CrmPlatformAPI.Models.Domain
         public int UserId { get; set; }
 
         public User User { get; set; } = null!;
+
     }
 }

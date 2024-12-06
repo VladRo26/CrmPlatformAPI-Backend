@@ -26,7 +26,6 @@ namespace CrmPlatformAPI.Controllers
             User user = _mapper.Map<User>(registerDTO);
             user.UserName = registerDTO.UserName.ToLower();
 
-            // Determine the company type and set references accordingly
             if (registerDTO.UserType == UserType.SoftwareCompanyUser)
             {
                 var existingSoftwareCompany = await _repositorySoftwareCompany.GetSoftwareCompanyByNameAsync(registerDTO.CompanyName);
