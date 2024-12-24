@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CrmPlatformAPI.Controllers
 {
@@ -93,30 +95,33 @@ namespace CrmPlatformAPI.Controllers
             return Ok(userDto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, UpdateUserDTO updateUserDTO)
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(UpdateUserDTO updateUserDTO)
         {
-            var user = await _repositoryUser.GetByIdAsync(id);
-            if (user == null)
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (username == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _repositoryUser.GetByUserNameAsync(username);
+
+            if(user == null)
             {
                 return NotFound();
             }
 
             _mapper.Map(updateUserDTO, user);
 
+
             bool success = await _repositoryUser.UpdateAsync(user);
             if (!success)
             {
                 return StatusCode(500, "Update failed.");
+            }else
+            {
+                return Ok();
             }
-
-            // Fetch updated user details and include CompanyPhotoUrl
-            var updatedUser = await _repositoryUser.GetByIdAsync(id);
-            var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(id);
-            var updatedUserDto = _mapper.Map<UserAppDTO>(updatedUser);
-           
-
-            return Ok(updatedUserDto);
         }
     }
 }
