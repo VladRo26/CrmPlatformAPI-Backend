@@ -143,9 +143,6 @@ namespace CrmPlatformAPI.Controllers
             return Ok(new { url = photoUrl }); // Wrap the URL in an object
         }
 
-
-
-
         [HttpPost("upload-photo")]
         public async Task<ActionResult<ImageDTO>> UploadPhoto(IFormFile file)
         {
@@ -179,7 +176,39 @@ namespace CrmPlatformAPI.Controllers
 
             return BadRequest("Problem uploading photo");
 
-        }   
+        }
+
+        [HttpDelete("delete-photo")]
+        public async Task<ActionResult> DeletePhoto()
+        {
+            var user = await _repositoryUser.GetByUserNameAsync(User.GetUsername());
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            if (user.Photo == null)
+            {
+                return BadRequest("Photo not found");
+            }
+
+            var res = await _photoService.DeletePhotoAsync(user.Photo.PublicId);
+
+            if (res.Error != null)
+            {
+                return BadRequest(res.Error.Message);
+            }
+
+            user.Photo = null;
+
+            if (await _repositoryUser.SaveAllAsync())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Problem deleting photo");
+        }       
 
     }
 }

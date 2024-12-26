@@ -8,6 +8,8 @@ namespace CrmPlatformAPI.Models.DTO
 
         public required string Password { get; set; }
 
+        public string? PhotoUrl { get; set; }
+
 
     }
 }

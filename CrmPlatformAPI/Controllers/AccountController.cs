@@ -111,6 +111,7 @@ namespace CrmPlatformAPI.Controllers
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                PhotoUrl = user.Photo?.Url,
                 CompanyName = companyName,
                 UserType = user.UserType
             };
