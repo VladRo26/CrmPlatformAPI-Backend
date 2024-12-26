@@ -16,5 +16,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<User?> GetByUserNameAsync(string username);
 
+        Task<bool> SaveAllAsync();
+
     }
 }

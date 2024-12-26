@@ -24,9 +24,16 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> SaveAllAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+
+        }
 
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+
+
+            public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users
                .Include(u => u.SoftwareCompany)

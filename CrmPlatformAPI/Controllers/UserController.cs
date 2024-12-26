@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Extensions;
+using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -14,12 +16,14 @@ namespace CrmPlatformAPI.Controllers
         private readonly IRepositoryUser _repositoryUser;
         private readonly IRepositoryCompanyPhoto _repositoryCompanyPhoto;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public UserController(IRepositoryUser repositoryUser, IRepositoryCompanyPhoto repositoryCompanyPhoto, IMapper mapper)
+        public UserController(IRepositoryUser repositoryUser, IRepositoryCompanyPhoto repositoryCompanyPhoto, IMapper mapper, IPhotoService photoService)
         {
             _repositoryUser = repositoryUser;
             _repositoryCompanyPhoto = repositoryCompanyPhoto;
             _mapper = mapper;
+            _photoService = photoService;
         }
 
         [HttpGet]
@@ -98,13 +102,8 @@ namespace CrmPlatformAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO updateUserDTO)
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (username == null)
-            {
-                return NotFound();
-            }
 
-            var user = await _repositoryUser.GetByUserNameAsync(username);
+            var user = await _repositoryUser.GetByUserNameAsync(User.GetUsername());
 
             if(user == null)
             {
@@ -123,5 +122,64 @@ namespace CrmPlatformAPI.Controllers
                 return Ok();
             }
         }
+
+       [HttpGet("photo-url")]
+        public async Task<ActionResult<object>> GetPhotoUrl()
+        {
+            var user = await _repositoryUser.GetByUserNameAsync(User.GetUsername());
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var photoUrl = user.Photo?.Url;
+
+            if (string.IsNullOrEmpty(photoUrl))
+            {
+                return NotFound("Photo URL not available");
+            }
+
+            return Ok(new { url = photoUrl }); // Wrap the URL in an object
+        }
+
+
+
+
+        [HttpPost("upload-photo")]
+        public async Task<ActionResult<ImageDTO>> UploadPhoto(IFormFile file)
+        {
+
+            var user = await _repositoryUser.GetByUserNameAsync(User.GetUsername());
+
+            if (user == null)
+            {
+                return BadRequest("Cannot update user");
+            }
+
+            var res = await _photoService.AddPhotoAsync(file);
+
+            if (res.Error  != null)
+            {
+                return BadRequest(res.Error.Message);
+            }
+
+            var photo = new Photo
+            {
+                Url = res.SecureUrl.AbsoluteUri,
+                PublicId = res.PublicId
+            };
+
+            user.Photo = photo;
+
+            if(await _repositoryUser.SaveAllAsync())
+            {
+                return CreatedAtAction(nameof(GetUserByUsername), new { username = user.UserName }, _mapper.Map<ImageDTO>(photo));
+            }
+
+            return BadRequest("Problem uploading photo");
+
+        }   
+
     }
 }

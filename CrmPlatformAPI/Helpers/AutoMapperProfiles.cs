@@ -65,9 +65,14 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.Photo, opt => opt.Ignore());
 
+
+
             // HomeImage mappings
             CreateMap<ImageDTO, HomeImage>();
             CreateMap<HomeImage, ImageDTO>();
+
+            CreateMap<ImageDTO, Photo>();
+            CreateMap<Photo, ImageDTO>();
 
             // Contract mappings
             CreateMap<Contract, ContractDTO>()

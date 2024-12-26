@@ -26,7 +26,9 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRepositoryUser, RepositoryUser>();
             services.AddScoped<IRepositoryCompanyPhoto, RepositoryCompanyPhoto>();
+            services.AddScoped<IPhotoService,PhotoService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             return services;
 
         }   

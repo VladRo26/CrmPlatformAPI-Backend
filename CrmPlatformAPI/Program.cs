@@ -49,6 +49,7 @@ namespace CrmPlatformAPI
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseCors(builder => builder
             .AllowAnyMethod()
+            .AllowCredentials()
             .AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend
 
             app.UseAuthentication();
