@@ -10,7 +10,6 @@ namespace CrmPlatformAPI.Models.DTO
         [Required]
         public string? FirstName { get; set; }
         [Required]
-        public string? Address { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? CompanyName { get; set; } = string.Empty;
@@ -22,6 +21,9 @@ namespace CrmPlatformAPI.Models.DTO
         [Required]
         [StringLength(12, MinimumLength = 4)]
         public string Password { get; set; } = string.Empty;
+
+         public IFormFile? File { get; set; }
+
     }
 }
 

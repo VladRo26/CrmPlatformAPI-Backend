@@ -168,5 +168,24 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Ticket>> GetByHandlerUsernameAsync(string handlerUsername)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.Tickets
+                .Include(t => t.Contract)
+                    .ThenInclude(c => c.BeneficiaryCompany)
+                .Include(t => t.Contract)
+                    .ThenInclude(c => c.SoftwareCompany)
+                .Include(t => t.Creator)
+                .Include(t => t.Handler)
+                .Where(t => t.Handler != null && t.Handler.UserName == handlerUsername)
+                .ToListAsync();
+        }
+
+
     }
 }

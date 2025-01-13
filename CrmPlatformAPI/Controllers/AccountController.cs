@@ -13,14 +13,21 @@ namespace CrmPlatformAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(UserManager<User> userManager,IRepositorySoftwareCompany _repositorySoftwareCompany, IRepositoryBeneficiaryCompany _repositoryBeneficiaryCompany ,IMapper _mapper, ITokenService tokenService) : Controller
+    public class AccountController(UserManager<User> userManager,IRepositorySoftwareCompany _repositorySoftwareCompany, IRepositoryBeneficiaryCompany _repositoryBeneficiaryCompany ,IMapper _mapper, ITokenService tokenService, IPhotoService _photoService, IRepositoryUser _repositoryUser) : Controller
     {
         [HttpPost("register")]
-        public async Task<ActionResult<UserDTO>> RegisterAsync([FromBody] RegisterDTO registerDTO)
+
+        public async Task<ActionResult<UserDTO>> RegisterAsync([FromForm] RegisterDTO registerDTO)
         {
             if (await UserExists(registerDTO.UserName))
             {
                 return BadRequest("Username already exists");
+            }
+
+            // Trim the phone number
+            if (!string.IsNullOrEmpty(registerDTO.PhoneNumber))
+            {
+                registerDTO.PhoneNumber = registerDTO.PhoneNumber.Replace(" ", ""); // Remove all spaces
             }
 
             User user = _mapper.Map<User>(registerDTO);
@@ -55,6 +62,28 @@ namespace CrmPlatformAPI.Controllers
                 ? user.SoftwareCompany?.Name
                 : user.BeneficiaryCompany?.Name;
 
+            if(registerDTO.File != null)
+            {
+                var res = await _photoService.AddPhotoAsync(registerDTO.File);
+
+                if (res.Error != null)
+                {
+                    return BadRequest(res.Error.Message);
+                }
+
+                var photo = new Photo
+                {
+                    Url = res.SecureUrl.AbsoluteUri,
+                    PublicId = res.PublicId
+                };
+
+                user.Photo = photo;
+
+                await _repositoryUser.SaveAllAsync();
+
+            }
+
+
             return new UserDTO
             {
                 UserName = user.UserName,
@@ -64,13 +93,15 @@ namespace CrmPlatformAPI.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 CompanyName = companyName,
+                HireDate = user.HireDate,
+                PhotoUrl = user.Photo?.Url,
                 UserType = user.UserType
             };
         }
 
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> LoginAsync([FromBody] LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> LoginAsync([FromForm] LoginDTO loginDTO)
         {
             if (string.IsNullOrEmpty(loginDTO.UserName) || string.IsNullOrEmpty(loginDTO.Password))
             {
@@ -81,6 +112,7 @@ namespace CrmPlatformAPI.Controllers
             var user = await userManager.Users
                 .Include(u => u.SoftwareCompany)
                 .Include(u => u.BeneficiaryCompany)
+                .Include(u => u.Photo)
                 .FirstOrDefaultAsync(u => u.NormalizedUserName == loginDTO.UserName.ToUpper());
 
             if (user == null || user.UserName == null)
@@ -113,6 +145,7 @@ namespace CrmPlatformAPI.Controllers
                 PhoneNumber = user.PhoneNumber,
                 PhotoUrl = user.Photo?.Url,
                 CompanyName = companyName,
+                HireDate = user.HireDate,
                 UserType = user.UserType
             };
         }
