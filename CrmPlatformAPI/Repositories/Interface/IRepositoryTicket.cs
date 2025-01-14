@@ -21,6 +21,9 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<Ticket>> GetByPriorityAsync(string description);
 
         Task<IEnumerable<Ticket>> GetByHandlerUsernameAsync(string handlerUsername);
+        Task<string> GenerateSummaryForTicketAsync(int ticketId, string model, int maxTokens);
+
+
 
 
     }

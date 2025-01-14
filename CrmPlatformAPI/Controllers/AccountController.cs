@@ -101,7 +101,7 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> LoginAsync([FromForm] LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> LoginAsync([FromBody] LoginDTO loginDTO)
         {
             if (string.IsNullOrEmpty(loginDTO.UserName) || string.IsNullOrEmpty(loginDTO.Password))
             {

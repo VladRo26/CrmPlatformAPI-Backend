@@ -9,10 +9,14 @@ namespace CrmPlatformAPI.Repositories.Implementation
     public class RepositoryTicket : IRepositoryTicket
     {
         private readonly ApplicationDbContext _context;
+        private readonly IRepositoryLLM _llmRepository;
 
-        public RepositoryTicket(ApplicationDbContext context)
+
+        public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository)
         {
             _context = context;
+            _llmRepository = llmRepository;
+
         }
         public async Task<IEnumerable<Ticket>> GetAllAsync()
         {
@@ -184,6 +188,22 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Include(t => t.Handler)
                 .Where(t => t.Handler != null && t.Handler.UserName == handlerUsername)
                 .ToListAsync();
+        }
+
+        public async Task<string> GenerateSummaryForTicketAsync(int ticketId, string model,int maxTokens)
+        {
+            // Fetch the ticket
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+
+            if (ticket == null || string.IsNullOrWhiteSpace(ticket.Description))
+            {
+                throw new Exception($"Ticket with ID {ticketId} not found or has no description.");
+            }
+
+            // Generate a summary using LLM
+            var summary = await _llmRepository.GenerateResponseAsync($"Summarize this ticket description: {ticket.Description}");
+
+            return summary.Response ?? "No summary generated.";
         }
 
 

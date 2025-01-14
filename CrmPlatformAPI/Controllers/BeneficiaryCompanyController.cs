@@ -41,5 +41,34 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("ByUsername/{username}")]
+        public async Task<IActionResult> GetCompanyByUsername(string username)
+        {
+            var company = await _repositoryBeneficiaryCompany.GetCompanyByUsernameAsync(username);
+
+            if (company == null)
+            {
+                return NotFound(new { message = $"No company found for user '{username}'." });
+            }
+
+            var response = _mapper.Map<BeneficiaryCompanyDTO>(company);
+            return Ok(response);
+        }
+
+        [HttpGet("ByUserId/{userId}")]
+        public async Task<IActionResult> GetBeneficiaryCompanyByUserId(int userId)
+        {
+            var company = await _repositoryBeneficiaryCompany.GetBeneficiaryCompanyByUserIdAsync(userId);
+
+            if (company == null)
+            {
+                // Return an empty object or null instead of a 404 error
+                return Ok(null);
+            }
+
+            var response = _mapper.Map<BeneficiaryCompanyDTO>(company);
+            return Ok(response);
+        }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿using CrmPlatformAPI.Repositories.Interface;
+﻿using AutoMapper;
+using CrmPlatformAPI.Models.DTO;
+using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -6,20 +8,25 @@ namespace CrmPlatformAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class TicketContrroller : Controller
+    public class TicketController : Controller
     {
         private readonly IRepositoryTicket _repositoryTicket;
+        private readonly IMapper _mapper;
 
-        public TicketContrroller(IRepositoryTicket repositoryTicket)
+
+        public TicketController(IRepositoryTicket repositoryTicket, IMapper mapper)
         {
             _repositoryTicket = repositoryTicket;
+            _mapper = mapper;
+
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllTickets()
         {
             var tickets = await _repositoryTicket.GetAllAsync();
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
         }
 
         [HttpGet("{id:int}")]
@@ -31,35 +38,40 @@ namespace CrmPlatformAPI.Controllers
                 return NotFound(new { message = $"Ticket with ID {id} not found." });
             }
 
-            return Ok(ticket);
+            var ticketDto = _mapper.Map<TicketDTO>(ticket);
+            return Ok(ticketDto);
         }
 
         [HttpGet("ByUser/{userId:int}")]
         public async Task<IActionResult> GetTicketsByUserId(int userId)
         {
             var tickets = await _repositoryTicket.GetByUserIdAsync(userId);
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
         }
 
         [HttpGet("ByTitle/{title}")]
         public async Task<IActionResult> GetTicketsByTitle(string title)
         {
             var tickets = await _repositoryTicket.GetByTitleAsync(title);
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
         }
 
         [HttpGet("ByCompany/{name}")]
         public async Task<IActionResult> GetTicketsByCompany(string name)
         {
             var tickets = await _repositoryTicket.GetByCompanyAsync(name);
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
         }
 
         [HttpGet("ByUserName/{username}")]
         public async Task<IActionResult> GetTicketsByUserName(string username)
         {
             var tickets = await _repositoryTicket.GetByUserNameAsync(username);
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
         }
 
         [HttpGet("ByHandlerUsername/{username}")]
@@ -69,10 +81,25 @@ namespace CrmPlatformAPI.Controllers
 
             if (tickets == null || !tickets.Any())
             {
-                return NotFound(new { message = $"No tickets found for handler username '{username}'." });
+                return Ok(new List<TicketDTO>()); // Return empty list instead of 404
             }
 
-            return Ok(tickets);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
+        }
+
+        [HttpPost("GenerateSummary/{id}")]
+        public async Task<IActionResult> GenerateSummary(int id, [FromQuery] string model = "llama-3.3-70b-versatile", [FromQuery] int maxTokens = 100)
+        {
+            try
+            {
+                var summary = await _repositoryTicket.GenerateSummaryForTicketAsync(id, model, maxTokens);
+                return Ok(new { ticketId = id, summary });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to generate summary.", error = ex.Message });
+            }
         }
     }
 }

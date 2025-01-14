@@ -30,9 +30,6 @@ namespace CrmPlatformAPI
 
            builder.Services.AddIdentityServices(builder.Configuration);
 
-
-
-
             var app = builder.Build();
             //custom exceptions middleware
 
@@ -51,6 +48,7 @@ namespace CrmPlatformAPI
             .AllowAnyMethod()
             .AllowCredentials()
             .AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend
+
 
             app.UseAuthentication();
             app.UseAuthorization();

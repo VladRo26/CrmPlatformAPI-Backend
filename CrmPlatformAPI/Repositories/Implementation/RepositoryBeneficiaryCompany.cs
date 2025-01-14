@@ -42,5 +42,30 @@ namespace CrmPlatformAPI.Repositories.Implementation
         {
             return _context.BeneficiaryCompanies.FirstOrDefaultAsync(c => c.Name == name);
         }
+
+        public async Task<BeneficiaryCompany?> GetCompanyByUsernameAsync(string username)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.BeneficiaryCompanies
+                .Include(bc => bc.Users) // Include the Users relationship
+                .FirstOrDefaultAsync(bc => bc.Users.Any(user => user.UserName == username));
+        }
+
+        public async Task<BeneficiaryCompany?> GetBeneficiaryCompanyByUserIdAsync(int userId)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.BeneficiaryCompanies
+                .Include(bc => bc.Users) // Include related Users
+                .FirstOrDefaultAsync(bc => bc.Users.Any(user => user.Id == userId));
+        }
+
     }
 }

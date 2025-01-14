@@ -85,6 +85,10 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
 
+            CreateMap<Ticket, TicketDTO>()
+                .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority.ToString()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
 
 
 
