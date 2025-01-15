@@ -23,7 +23,7 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<Ticket>> GetByHandlerUsernameAsync(string handlerUsername);
 
 
-        Task<string> GenerateSummaryForTicketAsync(int ticketId, string model, int maxTokens);
+        Task<string> GenerateSummaryForTicketAsync(int ticketId);
 
 
     }

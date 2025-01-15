@@ -190,7 +190,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
-        public async Task<string> GenerateSummaryForTicketAsync(int ticketId, string model = "gemma2-9b-it", int maxTokens = 600)
+        public async Task<string> GenerateSummaryForTicketAsync(int ticketId)
         {
             // Fetch the ticket from the database
             var ticket = await GetByIdAsync(ticketId);

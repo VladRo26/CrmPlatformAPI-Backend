@@ -89,12 +89,12 @@ namespace CrmPlatformAPI.Controllers
             return Ok(ticketDtos);
         }
         [HttpPost("GenerateSummary/{id}")]
-        public async Task<IActionResult> GenerateSummary(int id, [FromQuery] string model = "llama-3.3-70b-versatile", [FromQuery] int maxTokens = 100)
+        public async Task<IActionResult> GenerateSummary(int id)
         {
             try
             {
                 // Generate the summary
-                var summary = await _repositoryTicket.GenerateSummaryForTicketAsync(id, model, maxTokens);
+                var summary = await _repositoryTicket.GenerateSummaryForTicketAsync(id);
 
                 // Fetch the ticket for additional details (optional)
                 var ticket = await _repositoryTicket.GetByIdAsync(id);
