@@ -14,7 +14,7 @@ namespace CrmPlatformAPI.Models.DTO
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
-        public TicketStatus Status { get; set; } 
+        public string Status { get; set; } 
 
         [Required(ErrorMessage = "Priority is required.")]
         [MaxLength(50, ErrorMessage = "Priority cannot exceed 50 characters.")]

@@ -190,21 +190,26 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
-        public async Task<string> GenerateSummaryForTicketAsync(int ticketId, string model,int maxTokens)
+        public async Task<string> GenerateSummaryForTicketAsync(int ticketId, string model = "gemma2-9b-it", int maxTokens = 600)
         {
-            // Fetch the ticket
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
-
+            // Fetch the ticket from the database
+            var ticket = await GetByIdAsync(ticketId);
             if (ticket == null || string.IsNullOrWhiteSpace(ticket.Description))
             {
                 throw new Exception($"Ticket with ID {ticketId} not found or has no description.");
             }
 
-            // Generate a summary using LLM
-            var summary = await _llmRepository.GenerateResponseAsync($"Summarize this ticket description: {ticket.Description}");
+            // Construct a detailed prompt using the ticket description
+            var prompt = $"Summarize this ticket description very very briefly: {ticket.Description}";
 
-            return summary.Response ?? "No summary generated.";
+            // Use the LLM repository to generate a summary
+            var summaryResponse = await _llmRepository.GenerateResponseAsync(prompt);
+
+            // Return the generated summary
+            return summaryResponse?.Response ?? "No summary generated.";
         }
+
+
 
 
     }

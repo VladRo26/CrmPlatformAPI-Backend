@@ -11,6 +11,7 @@ namespace CrmPlatformAPI.Controllers
     public class TicketController : Controller
     {
         private readonly IRepositoryTicket _repositoryTicket;
+        private readonly IRepositoryLLM _llmRepository;
         private readonly IMapper _mapper;
 
 
@@ -87,19 +88,29 @@ namespace CrmPlatformAPI.Controllers
             var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
             return Ok(ticketDtos);
         }
-
         [HttpPost("GenerateSummary/{id}")]
         public async Task<IActionResult> GenerateSummary(int id, [FromQuery] string model = "llama-3.3-70b-versatile", [FromQuery] int maxTokens = 100)
         {
             try
             {
+                // Generate the summary
                 var summary = await _repositoryTicket.GenerateSummaryForTicketAsync(id, model, maxTokens);
-                return Ok(new { ticketId = id, summary });
+
+                // Fetch the ticket for additional details (optional)
+                var ticket = await _repositoryTicket.GetByIdAsync(id);
+
+                return Ok(new
+                {
+                    ticketId = id,
+                    summary
+                });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to generate summary.", error = ex.Message });
             }
         }
+
     }
+
 }
