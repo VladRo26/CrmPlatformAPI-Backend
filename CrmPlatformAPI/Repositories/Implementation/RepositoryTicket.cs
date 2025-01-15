@@ -209,6 +209,24 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return summaryResponse?.Response ?? "No summary generated.";
         }
 
+        public async Task<string> TranslateDescriptionForTicketAsync(int ticketId, string sourceLanguage, string targetLanguage)
+        {
+            // Fetch the ticket from the database
+            var ticket = await GetByIdAsync(ticketId);
+            if (ticket == null || string.IsNullOrWhiteSpace(ticket.Description))
+            {
+                throw new Exception($"Ticket with ID {ticketId} not found or has no description.");
+            }
+
+            // Use the LLM repository to translate the description
+            var translatedText = await _llmRepository.TranslateTextAsync(ticket.Description, sourceLanguage, targetLanguage);
+
+            // Return the translated text
+            return translatedText ?? "No translation generated.";
+        }
+
+
+
 
 
 

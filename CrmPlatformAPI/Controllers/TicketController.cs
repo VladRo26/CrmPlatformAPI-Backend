@@ -111,6 +111,32 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpPost("TranslateDescription/{id}")]
+        public async Task<IActionResult> TranslateDescription(int id, [FromQuery] string sourceLanguage, [FromQuery] string targetLanguage)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(sourceLanguage) || string.IsNullOrWhiteSpace(targetLanguage))
+                {
+                    return BadRequest(new { message = "Source and target languages must be provided." });
+                }
+
+                var translation = await _repositoryTicket.TranslateDescriptionForTicketAsync(id, sourceLanguage, targetLanguage);
+
+                return Ok(new
+                {
+                    ticketId = id,
+                    sourceLanguage,
+                    targetLanguage,
+                    translation
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to translate description.", error = ex.Message });
+            }
+        }
+
     }
 
 }

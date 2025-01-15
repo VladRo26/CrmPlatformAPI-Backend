@@ -31,5 +31,24 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
         }
+
+        [HttpPost("translate")]
+        public async Task<IActionResult> TranslateText([FromQuery] string text, [FromQuery] string sourceLanguage, [FromQuery] string targetLanguage)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(sourceLanguage) || string.IsNullOrWhiteSpace(targetLanguage))
+                {
+                    return BadRequest(new { message = "Text, source language, and target language are required." });
+                }
+
+                var translation = await _llmRepository.TranslateTextAsync(text, sourceLanguage, targetLanguage);
+                return Ok(new { sourceLanguage, targetLanguage, text, translation });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        }
     }
 }

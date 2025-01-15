@@ -25,6 +25,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<string> GenerateSummaryForTicketAsync(int ticketId);
 
+        Task<string> TranslateDescriptionForTicketAsync(int ticketId, string sourceLanguage, string targetLanguage);
+
 
     }
 }

@@ -6,5 +6,7 @@ namespace CrmPlatformAPI.Repositories.Interface
     {
         Task<LLMResponseDTO> GenerateResponseAsync(string prompt);
 
+        Task<string> TranslateTextAsync(string text, string sourceLanguage, string targetLanguage);
+
     }
 }

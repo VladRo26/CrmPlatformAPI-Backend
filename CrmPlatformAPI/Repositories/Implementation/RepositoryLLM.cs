@@ -8,7 +8,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
         private readonly HttpClient _httpClient;
 
         private const string Model = "llama-3.3-70b-versatile";
-        private const int MaxTokens = 100;
+        private const int MaxTokens = 2000;
 
         public RepositoryLLM(IHttpClientFactory httpClientFactory)
         {
@@ -36,6 +36,19 @@ namespace CrmPlatformAPI.Repositories.Implementation
             // Handle error responses
             var errorMessage = await response.Content.ReadAsStringAsync();
             throw new Exception($"FastAPI error: {errorMessage}");
+        }
+
+
+        public async Task<string> TranslateTextAsync(string text, string sourceLanguage, string targetLanguage)
+        {
+            // Construct a translation-specific prompt
+            var prompt = $"Write only the translation Translate the following text from {sourceLanguage} to {targetLanguage}: \"{text}\"";
+
+            // Call the LLM to generate the translation
+            var response = await GenerateResponseAsync(prompt);
+
+            // Return the translation response
+            return response.Response ?? "No translation generated.";
         }
 
 
