@@ -13,10 +13,10 @@ namespace CrmPlatformAPI.Models.DTO
         [MaxLength(500, ErrorMessage = "Message cannot exceed 500 characters.")]
         public string? Message { get; set; }
 
-        [Required(ErrorMessage = "Updated by user is required.")]
-        public int? UpdatedByUserId { get; set; }
+        [Required(ErrorMessage = "Updated by username is required.")]
+        public string UpdatedByUsername { get; set; } // Changed from ID to username
 
         [Required(ErrorMessage = "Role of the updater is required.")]
-        public TicketUserRole TicketUserRole { get; set; } // Enum for Creator/Handler
+        public string TicketUserRole { get; set; } // Enum for Creator/Handler
     }
 }

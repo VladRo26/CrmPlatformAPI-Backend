@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CrmPlatformAPI.Models.DTO;
+using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,13 +13,15 @@ namespace CrmPlatformAPI.Controllers
     {
         private readonly IRepositoryTicket _repositoryTicket;
         private readonly IRepositoryLLM _llmRepository;
+        private readonly IRepositoryTicketStatusHistory _repositoryTicketStatusHistory;
         private readonly IMapper _mapper;
 
 
-        public TicketController(IRepositoryTicket repositoryTicket, IMapper mapper)
+        public TicketController(IRepositoryTicket repositoryTicket, IMapper mapper, IRepositoryTicketStatusHistory repositoryTicketStatusHistory)
         {
             _repositoryTicket = repositoryTicket;
             _mapper = mapper;
+            _repositoryTicketStatusHistory = repositoryTicketStatusHistory;
 
         }
 
@@ -136,6 +139,29 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "Failed to translate description.", error = ex.Message });
             }
         }
+
+        [HttpGet("GetHistoryByTicketId/{id}")]
+        public async Task<IActionResult> GetHistoryByTicketId(int id)
+        {
+            try
+            {
+                var history = await _repositoryTicketStatusHistory.GetHistoryByTicketIdAsync(id);
+                if (!history.Any())
+                {
+                    return NotFound(new { message = $"No history found for Ticket with ID {id}." });
+                }
+
+                var historyDtos = _mapper.Map<IEnumerable<TicketStatusHistoryDTO>>(history);
+                return Ok(historyDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to retrieve ticket history.", error = ex.Message });
+            }
+        }
+
+
+
 
     }
 

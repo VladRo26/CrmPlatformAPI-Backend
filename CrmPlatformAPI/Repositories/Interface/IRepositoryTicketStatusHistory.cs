@@ -4,7 +4,9 @@ namespace CrmPlatformAPI.Repositories.Interface
 {
     public interface IRepositoryTicketStatusHistory
     {
-        Task<IEnumerable<TicketStatusHistory>> GetTicketStatusHistoryAsync();
-        
+
+        Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId);
+
+
     }
 }

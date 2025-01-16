@@ -14,17 +14,20 @@ namespace CrmPlatformAPI.Repositories.Implementation
             _context = context;
         }
 
-        public async Task<IEnumerable<TicketStatusHistory>> GetTicketStatusHistoryAsync()
+        public async Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId)
         {
             if (_context == null)
             {
-                return null;
+                return Enumerable.Empty<TicketStatusHistory>();
             }
 
             return await _context.TicketStatusHistories
-                .Include(h => h.Ticket) 
-                .Include(h => h.UpdatedByUser) 
+                .Include(h => h.Ticket)
+                .Include(h => h.UpdatedByUser)
+                .Where(h => h.TicketId == ticketId)
+                .OrderBy(h => h.UpdatedAt) // Orders the results by UpdatedAt in ascending order
                 .ToListAsync();
         }
+
     }
 }

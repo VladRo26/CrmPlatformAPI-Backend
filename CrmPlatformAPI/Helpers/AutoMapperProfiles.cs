@@ -91,6 +91,21 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString())); // Convert enum to string
 
 
+            CreateMap<TicketStatusHistory, TicketStatusHistoryDTO>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))
+                .ForMember(dest => dest.UpdatedByUsername, opt => opt.MapFrom(src => src.UpdatedByUser.UserName)) // Map username
+                .ForMember(dest => dest.TicketUserRole, opt => opt.MapFrom(src => src.TicketUserRole.ToString()));
+
+         CreateMap<TicketStatusHistoryDTO, TicketStatusHistory>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))
+                .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore()) // Handle user separately
+                .ForMember(dest => dest.TicketUserRole, opt => opt.MapFrom(src => Enum.Parse<TicketUserRole>(src.TicketUserRole)));
+
+
+
+
 
 
 
