@@ -16,6 +16,9 @@ namespace CrmPlatformAPI.Models.DTO
         [Required(ErrorMessage = "Updated by username is required.")]
         public string UpdatedByUsername { get; set; } // Changed from ID to username
 
+        public DateTime UpdatedAt { get; set; } 
+
+
         [Required(ErrorMessage = "Role of the updater is required.")]
         public string TicketUserRole { get; set; } // Enum for Creator/Handler
     }
