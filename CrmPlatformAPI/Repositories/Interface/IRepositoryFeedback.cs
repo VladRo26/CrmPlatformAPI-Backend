@@ -8,5 +8,7 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<Feedback>> GetByToUserIdAsync(int toUserId);
         Task<IEnumerable<Feedback>> GetByTicketIdAsync(int ticketId);
 
+
+
     }
 }

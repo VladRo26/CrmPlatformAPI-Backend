@@ -2,7 +2,6 @@
 using CrmPlatformAPI.Data;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
-using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -92,6 +91,23 @@ namespace CrmPlatformAPI.Controllers
 
             var feedbackDto = _mapper.Map<FeedbackDTO>(feedback);
             return CreatedAtAction(nameof(GetFeedbackByToUserId), new { toUserId = feedback.ToUserId }, feedbackDto);
+        }
+
+        [HttpGet("sentiment/{feedbackId}")]
+        public async Task<ActionResult<FeedBackSentimentDTO>> GetSentimentByFeedbackId(int feedbackId)
+        {
+            // Retrieve sentiment from the repository
+            var sentiment = await _feedbackSentimentRepository.GetSentimentByFeedbackIdAsync(feedbackId);
+
+            // If not found, return 404
+            if (sentiment == null)
+            {
+                return NotFound($"No sentiment analysis found for Feedback ID {feedbackId}.");
+            }
+
+            // Map to DTO and return
+            var sentimentDto = _mapper.Map<FeedBackSentimentDTO>(sentiment);
+            return Ok(sentimentDto);
         }
 
     }

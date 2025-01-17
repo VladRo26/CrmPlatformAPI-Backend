@@ -133,11 +133,8 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.Ticket, opt => opt.Ignore());
 
 
-
-
-
-
-
+            CreateMap<FeedBackSentiment, FeedBackSentimentDTO>()
+               .ReverseMap(); // Enables reverse mapping if needed
 
         }
     }
