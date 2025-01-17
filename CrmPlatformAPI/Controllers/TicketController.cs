@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
@@ -160,6 +161,50 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpGet("TicketPerformance/{username}")]
+        public async Task<IActionResult> TicketPerformance(string username)
+        {
+            try
+            {
+                // Fetch tickets where the user is the handler
+                var tickets = await _repositoryTicket.GetByHandlerUsernameAsync(username);
+
+                if (tickets == null || !tickets.Any())
+                {
+                    return Ok(new
+                    {
+                        username,
+                        totalTickets = 0,
+                        resolvedTickets = 0,
+                        unresolvedTickets = 0,
+                        ticketsByPriority = new Dictionary<string, int>()
+                    });
+                }
+
+                // Calculate performance metrics
+                var totalTickets = tickets.Count();
+                var resolvedTickets = tickets.Count(t => t.Status == TicketStatus.Resolved);
+                var unresolvedTickets = tickets.Count(t => t.Status != TicketStatus.Resolved);
+
+                // Group tickets by priority
+                var ticketsByPriority = tickets
+                    .GroupBy(t => t.Priority.ToString())
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                return Ok(new
+                {
+                    username,
+                    totalTickets,
+                    resolvedTickets,
+                    unresolvedTickets,
+                    ticketsByPriority
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to calculate ticket performance.", error = ex.Message });
+            }
+        }
 
     }
 
