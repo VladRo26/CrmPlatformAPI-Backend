@@ -25,7 +25,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Include(h => h.Ticket)
                 .Include(h => h.UpdatedByUser)
                 .Where(h => h.TicketId == ticketId)
-                .OrderBy(h => h.UpdatedAt) // Orders the results by UpdatedAt in ascending order
+                .OrderByDescending(h => h.UpdatedAt) // Orders the results by UpdatedAt in ascending order
                 .ToListAsync();
         }
 

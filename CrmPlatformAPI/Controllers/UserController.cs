@@ -99,6 +99,29 @@ namespace CrmPlatformAPI.Controllers
             return Ok(userDto);
         }
 
+        [HttpGet("userappdto/username/{username}")]
+        public async Task<IActionResult> GetUserAppDtoByUsername(string username)
+        {
+            var user = await _repositoryUser.GetByUserNameAsync(username);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Fetch additional details like CompanyPhotoUrl
+            var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(user.Id);
+
+            // Use AutoMapper to map the user entity to UserAppDTO
+            var userAppDto = _mapper.Map<UserAppDTO>(user);
+
+            // Assign additional fields that are not directly mapped
+            userAppDto.CompanyPhotoUrl = companyPhotoUrl;
+
+            return Ok(userAppDto);
+        }
+
+
         [HttpPut]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO updateUserDTO)
         {
@@ -142,6 +165,17 @@ namespace CrmPlatformAPI.Controllers
 
             return Ok(new { url = photoUrl }); // Wrap the URL in an object
         }
+
+        [HttpGet("photo-url/{username}")]
+        public async Task<ActionResult<object>> GetPhotoUrlByUsername(string username)
+        {
+            var photoUrl = await _repositoryUser.GetPhotoUrlByUsernameAsync(username);
+
+            // Always return a JSON object, even if the photoUrl is null or empty
+            return Ok(new { url = photoUrl ?? string.Empty });
+        }
+
+
 
         [HttpPost("upload-photo")]
         public async Task<ActionResult<ImageDTO>> UploadPhoto(IFormFile file)

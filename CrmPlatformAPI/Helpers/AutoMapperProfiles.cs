@@ -50,12 +50,20 @@ namespace CrmPlatformAPI.Helpers
                                    ? src.SoftwareCompany.Name
                                                       : src.BeneficiaryCompany.Name))
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType))
-                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url));
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url))
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType.ToString())); // Convert enum to string
+
+
 
             CreateMap<UserAppDTO, User>()
                 .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
-                .ForMember(dest => dest.Photo, opt => opt.Ignore());
+                .ForMember(dest => dest.Photo, opt => opt.Ignore())
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => Enum.Parse<UserType>(src.UserType))); // Convert string back to enum
+
+
+
+
 
 
             CreateMap<User, UpdateUserDTO>()
@@ -102,6 +110,28 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))
                 .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore()) // Handle user separately
                 .ForMember(dest => dest.TicketUserRole, opt => opt.MapFrom(src => Enum.Parse<TicketUserRole>(src.TicketUserRole)));
+
+
+            CreateMap<Feedback, FeedbackDTO>()
+                .ForMember(dto => dto.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dto => dto.FromUserId, opt => opt.MapFrom(src => src.FromUserId))
+                .ForMember(dto => dto.ToUserId, opt => opt.MapFrom(src => src.ToUserId))
+                .ForMember(dto => dto.TicketId, opt => opt.MapFrom(src => src.TicketId))
+                .ForMember(dto => dto.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dto => dto.Rating, opt => opt.MapFrom(src => src.Rating));
+
+
+            CreateMap<FeedbackDTO, Feedback>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.FromUserId, opt => opt.MapFrom(src => src.FromUserId))
+                .ForMember(dest => dest.ToUserId, opt => opt.MapFrom(src => src.ToUserId))
+                .ForMember(dest => dest.TicketId, opt => opt.MapFrom(src => src.TicketId))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+                .ForMember(dest => dest.FromUser, opt => opt.Ignore()) // Ignore navigation properties for manual handling
+                .ForMember(dest => dest.ToUser, opt => opt.Ignore())
+                .ForMember(dest => dest.Ticket, opt => opt.Ignore());
+
 
 
 

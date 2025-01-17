@@ -97,5 +97,20 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         }
 
+        public async Task<string?> GetPhotoUrlByUsernameAsync(string username)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            var user = await _context.Users
+                .Include(u => u.Photo)
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            return user?.Photo?.Url;
+        }
+
+
     }
 }

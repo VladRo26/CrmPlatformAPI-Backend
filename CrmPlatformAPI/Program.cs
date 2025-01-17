@@ -30,6 +30,13 @@ namespace CrmPlatformAPI
 
            builder.Services.AddIdentityServices(builder.Configuration);
 
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                });
+
+
             var app = builder.Build();
             //custom exceptions middleware
 

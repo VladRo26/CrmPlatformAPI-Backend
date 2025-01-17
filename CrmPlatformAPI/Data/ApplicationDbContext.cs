@@ -24,6 +24,9 @@ namespace CrmPlatformAPI.Data
 
         public DbSet<Feedback> Feedbacks { get; set; }
 
+        public DbSet<FeedBackSentiment> FeedbackSentiments { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

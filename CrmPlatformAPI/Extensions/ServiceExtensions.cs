@@ -32,6 +32,10 @@ namespace CrmPlatformAPI.Extensions
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
+            services.AddHttpClient("SentimentClient", client =>
+            {
+                client.BaseAddress = new Uri("http://127.0.0.1:8000"); // Replace with your FastAPI base URL
+            });
 
             services.AddCors();
             services.AddScoped<IRepositoryBeneficiaryCompany, RepositoryBeneficiaryCompany>();
@@ -45,6 +49,10 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<IRepositoryTicketStatusHistory, RepositoryTicketStatusHistory>();
             services.AddScoped<IRepositoryTicket, RepositoryTicket>();
             services.AddScoped<IRepositoryLLM, RepositoryLLM>();
+            services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
+            services.AddScoped<IRepositoryFeedbackSentiment, RepositoryFeedbackSentiment>();
+            services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
+
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
  

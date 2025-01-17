@@ -16,9 +16,9 @@ namespace CrmPlatformAPI.Models.DTO
         public string? PhoneNumber { get; set; }
 
         public string? CompanyName { get; set; }
-        public UserType UserType { get; set; }
+        public string UserType { get; set; }
 
-        public DateOnly HireDate { get; set; }
+        public string HireDate { get; set; }
 
         public string? Token { get; set; }
 

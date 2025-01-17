@@ -18,5 +18,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<bool> SaveAllAsync();
 
+        Task<string?> GetPhotoUrlByUsernameAsync(string username);
+
+
     }
 }
