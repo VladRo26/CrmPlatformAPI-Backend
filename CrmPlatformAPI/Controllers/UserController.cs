@@ -10,6 +10,7 @@ using System.Security.Claims;
 
 namespace CrmPlatformAPI.Controllers
 {
+    [ServiceFilter(typeof(ActivityLog))]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
@@ -28,9 +29,10 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery] PaginationParams paginationParams)
+        public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await _repositoryUser.GetAllAsync(paginationParams);
+            userParams.CurrentUserName = User.GetUsername();
+            var users = await _repositoryUser.GetAllAsync(userParams);
             Response.AddPagination(users);
 
             var userDtos = new List<UserAppDTO>();

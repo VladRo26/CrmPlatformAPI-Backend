@@ -2,7 +2,7 @@
 {
     public enum UserType
     {
-        SoftwareCompanyUser,
-        BeneficiaryCompanyUser
+        BeneficiaryCompanyUser,
+        SoftwareCompanyUser
     }
 }

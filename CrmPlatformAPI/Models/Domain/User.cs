@@ -25,6 +25,8 @@ namespace CrmPlatformAPI.Models.Domain
 
         public DateOnly HireDate { get; set; }
 
+        public DateTime LastActive { get; set; } = DateTime.UtcNow;
+
         public int Rating { get; set; } = 3;
 
         public int GetAge()

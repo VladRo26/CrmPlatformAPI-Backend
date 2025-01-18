@@ -52,7 +52,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
             services.AddScoped<IRepositoryFeedbackSentiment, RepositoryFeedbackSentiment>();
             services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
-
+            services.AddScoped<ActivityLog>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
  

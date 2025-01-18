@@ -1,5 +1,6 @@
 ﻿using CrmPlatformAPI.Data;
 using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -31,17 +32,54 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         }
 
-
-
-
-        public async Task<PagedList<User>> GetAllAsync(PaginationParams paginationParams)
+        public async Task<PagedList<User>> GetAllAsync(UserParams userParams)
         {
             var query = _context.Users
                .Include(u => u.SoftwareCompany)
                .Include(u => u.BeneficiaryCompany)
-               .Include(u => u.Photo);
+               .Include(u => u.Photo)
+               .AsQueryable();
 
-            return await PagedList<User>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
+            query = query.Where(u => u.UserName != userParams.CurrentUserName);
+
+
+            if (!string.IsNullOrEmpty(userParams.CompanyName))
+            {
+                query = query.Where(u =>
+                    (u.SoftwareCompany != null && EF.Functions.Like(u.SoftwareCompany.Name, $"%{userParams.CompanyName}%")) ||
+                    (u.BeneficiaryCompany != null && EF.Functions.Like(u.BeneficiaryCompany.Name, $"%{userParams.CompanyName}%"))
+                );
+            }
+
+            if (!string.IsNullOrEmpty(userParams.UserType) &&
+                Enum.TryParse(userParams.UserType, true, out UserType userTypeEnum))
+            {
+                query = query.Where(u => u.UserType == userTypeEnum);
+            }
+
+            if (userParams.Rating > 0)
+            {
+                query = query.Where(u => u.Rating >= userParams.Rating);
+            }
+
+            // Search by FirstName or LastName (case-insensitive)
+            if (!string.IsNullOrEmpty(userParams.Name))
+            {
+                query = query.Where(u =>
+                   u.FirstName == userParams.Name || // Match exact first name
+                   u.LastName == userParams.Name ||  // Match exact last name
+                   (u.FirstName + " " + u.LastName) == userParams.Name); // Match full name
+            }
+
+            query = userParams.OrderBy switch
+            {
+                "rating" => query.OrderByDescending(u => u.Rating),
+                "firstname" => query.OrderBy(u => u.FirstName),
+                "hiredate" => query.OrderByDescending(u => u.HireDate),
+                _ => query.OrderBy(u => u.LastName)
+            };
+
+            return await PagedList<User>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()

@@ -7,12 +7,10 @@ namespace CrmPlatformAPI.Repositories.Interface
     {
         Task<bool> UpdateAsync(User user);
 
-        Task<PagedList<User>> GetAllAsync(PaginationParams paginationParams);
+        Task<PagedList<User>> GetAllAsync(UserParams userParams);
 
 
         //Task<IEnumerable<User>> GetAllAsync();
-
-
 
 
 

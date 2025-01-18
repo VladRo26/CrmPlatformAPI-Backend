@@ -19,6 +19,8 @@ namespace CrmPlatformAPI.Models.DTO
 
         public DateOnly HireDate { get; set; }
 
+        public DateTime LastActive { get; set; }
+
         public string? Token { get; set; }
 
         public string? PhotoUrl { get; set;}
