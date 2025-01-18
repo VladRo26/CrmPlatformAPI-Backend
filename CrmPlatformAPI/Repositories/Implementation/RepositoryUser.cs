@@ -1,4 +1,5 @@
 ﻿using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,17 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
 
 
-            public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<PagedList<User>> GetAllAsync(PaginationParams paginationParams)
+        {
+            var query = _context.Users
+               .Include(u => u.SoftwareCompany)
+               .Include(u => u.BeneficiaryCompany)
+               .Include(u => u.Photo);
+
+            return await PagedList<User>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users
                .Include(u => u.SoftwareCompany)

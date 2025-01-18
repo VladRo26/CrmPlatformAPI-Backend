@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CrmPlatformAPI.Extensions;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
@@ -27,9 +28,11 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery] PaginationParams paginationParams)
         {
-            var users = await _repositoryUser.GetAllAsync();
+            var users = await _repositoryUser.GetAllAsync(paginationParams);
+            Response.AddPagination(users);
+
             var userDtos = new List<UserAppDTO>();
 
             foreach (var user in users)
@@ -40,8 +43,26 @@ namespace CrmPlatformAPI.Controllers
                 userDtos.Add(userDto);
             }
 
+
             return Ok(userDtos);
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetUsers()
+        //{
+        //    var users = await _repositoryUser.GetAllAsync();
+        //    var userDtos = new List<UserAppDTO>();
+
+        //    foreach (var user in users)
+        //    {
+        //        var companyPhotoUrl = await _repositoryCompanyPhoto.GetComapanyPhotoUrlAsync(user.Id);
+        //        var userDto = _mapper.Map<UserAppDTO>(user);
+        //        userDto.CompanyPhotoUrl = companyPhotoUrl;
+        //        userDtos.Add(userDto);
+        //    }
+
+        //    return Ok(userDtos);
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)

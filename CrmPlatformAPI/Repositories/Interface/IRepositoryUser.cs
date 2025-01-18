@@ -1,4 +1,5 @@
-﻿using CrmPlatformAPI.Models.Domain;
+﻿using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Models.Domain;
 
 namespace CrmPlatformAPI.Repositories.Interface
 {
@@ -6,7 +7,14 @@ namespace CrmPlatformAPI.Repositories.Interface
     {
         Task<bool> UpdateAsync(User user);
 
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<PagedList<User>> GetAllAsync(PaginationParams paginationParams);
+
+
+        //Task<IEnumerable<User>> GetAllAsync();
+
+
+
+
 
         Task<User> GetByIdAsync(int id);
 
