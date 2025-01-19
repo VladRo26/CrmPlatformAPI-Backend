@@ -35,8 +35,8 @@ namespace CrmPlatformAPI.Helpers
             // User mappings for UserDTO
             CreateMap<User, UserDTO>()
                 .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.UserType == UserType.SoftwareCompanyUser
-                    ? src.BeneficiaryCompany.Name
-                    : src.SoftwareCompany.Name))
+                    ? src.SoftwareCompany.Name
+                    : src.BeneficiaryCompany.Name))
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType))
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url));
 
@@ -47,8 +47,8 @@ namespace CrmPlatformAPI.Helpers
             // user mapping for UserAppDTO
             CreateMap<User, UserAppDTO>()
                 .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.UserType == UserType.SoftwareCompanyUser
-                                   ? src.BeneficiaryCompany.Name
-                                : src.SoftwareCompany.Name))
+                                   ? src.SoftwareCompany.Name
+                                : src.BeneficiaryCompany.Name))
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType))
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.Photo.Url))
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType.ToString())); // Convert enum to string
@@ -60,9 +60,6 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
                 .ForMember(dest => dest.Photo, opt => opt.Ignore())
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => Enum.Parse<UserType>(src.UserType))); // Convert string back to enum
-
-
-
 
 
 
