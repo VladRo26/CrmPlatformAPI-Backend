@@ -64,6 +64,25 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("by-beneficiary")]
+        public async Task<IActionResult> GetContractsByBeneficiaryCompanyName([FromQuery] string beneficiaryCompanyName)
+        {
+            if (string.IsNullOrEmpty(beneficiaryCompanyName))
+            {
+                return BadRequest(new { message = "Beneficiary company name must be provided." });
+            }
+
+            var contracts = await _repositoryContract.GetContractsByBeneficiaryCompanyNameAsync(beneficiaryCompanyName);
+
+            if (contracts == null || !contracts.Any())
+            {
+                return NotFound(new { message = $"No contracts found for beneficiary company '{beneficiaryCompanyName}'." });
+            }
+
+            var response = _mapper.Map<IEnumerable<ContractDTO>>(contracts);
+
+            return Ok(response);
+        }
 
     }
 }

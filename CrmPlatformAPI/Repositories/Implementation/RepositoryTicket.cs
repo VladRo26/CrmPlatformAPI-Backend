@@ -225,11 +225,39 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return translatedText ?? "No translation generated.";
         }
 
+        public async Task AddAsync(Ticket ticket)
+        {
+            if (_context == null)
+            {
+                throw new Exception("Database context is not initialized.");
+            }
 
+            try
+            {
+                await _context.Tickets.AddAsync(ticket);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                throw new Exception("An error occurred while adding the ticket.", ex);
+            }
+        }
 
+        public async Task<IEnumerable<Models.Domain.Contract>> GetContractsByBeneficiaryCompanyNameAsync(string beneficiaryCompanyName)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
 
-
-
-
+            return await _context.Contracts
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)  // Include BeneficiaryCompany photo
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto) // Include SoftwareCompany photo
+                .Where(c => c.BeneficiaryCompany.Name == beneficiaryCompanyName)
+                .ToListAsync();
+        }
     }
 }

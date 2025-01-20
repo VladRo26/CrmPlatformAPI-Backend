@@ -129,6 +129,16 @@ namespace CrmPlatformAPI.Helpers
                 .ForMember(dest => dest.ToUser, opt => opt.Ignore())
                 .ForMember(dest => dest.Ticket, opt => opt.Ignore());
 
+            CreateMap<CreateTicketDTO, Ticket>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<TicketStatus>(src.Status, true)))
+                .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => Enum.Parse<TicketPriority>(src.Priority, true)))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enum.Parse<TicketType>(src.Type, true)));
+
+            CreateMap<Ticket, TicketDTO>()
+             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+             .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority.ToString()))
+             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
+
 
             CreateMap<FeedBackSentiment, FeedBackSentimentDTO>()
                .ReverseMap(); // Enables reverse mapping if needed

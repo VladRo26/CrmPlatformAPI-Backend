@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CrmPlatformAPI.Helpers.Enums;
+using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
@@ -46,6 +47,39 @@ namespace CrmPlatformAPI.Controllers
             var ticketDto = _mapper.Map<TicketDTO>(ticket);
             return Ok(ticketDto);
         }
+
+        [HttpPost("CreateTicket")]
+        public async Task<IActionResult> CreateTicket([FromBody] CreateTicketDTO createTicketDto)
+        {
+            try
+            {
+                if (createTicketDto == null)
+                {
+                    return BadRequest(new { message = "Ticket data must be provided." });
+                }
+
+                // Map the DTO to the domain model
+                var ticket = _mapper.Map<Ticket>(createTicketDto);
+
+                // Ensure HandlerId is null
+                ticket.HandlerId = null;
+
+                // Set additional fields if needed (e.g., timestamps)
+                ticket.CreatedAt = DateTime.Now;
+
+                // Add the ticket to the repository
+                await _repositoryTicket.AddAsync(ticket);
+
+                // Return the created ticket
+                var ticketDto = _mapper.Map<TicketDTO>(ticket);
+                return CreatedAtAction(nameof(GetTicketById), new { id = ticketDto.Id }, ticketDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to create ticket.", error = ex.Message });
+            }
+        }
+
 
         [HttpGet("ByUser/{userId:int}")]
         public async Task<IActionResult> GetTicketsByUserId(int userId)

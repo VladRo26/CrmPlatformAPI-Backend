@@ -47,7 +47,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
 
 
-
         public async Task<IEnumerable<Models.Domain.Contract>> GetContractsAsync()
         {
             if (_context == null)
@@ -93,6 +92,21 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return contract;
         }
 
+        public async Task<IEnumerable<Models.Domain.Contract>> GetContractsByBeneficiaryCompanyNameAsync(string beneficiaryCompanyName)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.Contracts
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)  // Include BeneficiaryCompany photo
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto) // Include SoftwareCompany photo
+                .Where(c => c.BeneficiaryCompany.Name == beneficiaryCompanyName)
+                .ToListAsync();
+        }
 
     }
 }
