@@ -28,8 +28,9 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<string> TranslateDescriptionForTicketAsync(int ticketId, string sourceLanguage, string targetLanguage);
 
         Task AddAsync(Ticket ticket);
+        Task<bool> TakeOverTicketAsync(int ticketId, int handlerId);
 
-
+        Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId);
 
     }
 }

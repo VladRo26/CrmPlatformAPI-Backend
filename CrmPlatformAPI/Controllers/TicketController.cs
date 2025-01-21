@@ -240,6 +240,46 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpPut("TakeOver/{ticketId}")]
+        public async Task<IActionResult> TakeOverTicket(int ticketId, [FromQuery] int handlerId)
+        {
+            try
+            {
+                var result = await _repositoryTicket.TakeOverTicketAsync(ticketId, handlerId);
+                if (result)
+                {
+                    return Ok(new { message = $"Ticket {ticketId} successfully taken over by handler {handlerId}." });
+                }
+
+                return BadRequest(new { message = "Failed to take over the ticket." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while taking over the ticket.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("ByContract/{contractId:int}")]
+        public async Task<IActionResult> GetTicketsByContractId(int contractId)
+        {
+            try
+            {
+                var tickets = await _repositoryTicket.GetByContractIdAsync(contractId);
+
+                // Return an empty list if no tickets are found
+                if (tickets == null || !tickets.Any())
+                {
+                    return Ok(new List<TicketDTO>()); // Return an empty list
+                }
+
+                var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+                return Ok(ticketDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching tickets.", error = ex.Message });
+            }
+        }
     }
 
 }

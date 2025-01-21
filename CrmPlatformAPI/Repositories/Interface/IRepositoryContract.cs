@@ -13,6 +13,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<Models.Domain.Contract>> GetContractsByBeneficiaryCompanyNameAsync(string beneficiaryCompanyName);
 
+        Task<IEnumerable<Models.Domain.Contract>> GetContractsBySoftwareCompanyNameAsync(string softwareCompanyName);
+
 
     }
 }

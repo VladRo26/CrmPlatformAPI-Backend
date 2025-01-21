@@ -108,5 +108,21 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Models.Domain.Contract>> GetContractsBySoftwareCompanyNameAsync(string softwareCompanyName)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.Contracts
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)  // Include BeneficiaryCompany photo
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto) // Include SoftwareCompany photo
+                .Where(c => c.SoftwareCompany.Name == softwareCompanyName)
+                .ToListAsync();
+        }
+
     }
 }

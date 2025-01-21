@@ -74,10 +74,20 @@ namespace CrmPlatformAPI.Controllers
 
             var contracts = await _repositoryContract.GetContractsByBeneficiaryCompanyNameAsync(beneficiaryCompanyName);
 
-            if (contracts == null || !contracts.Any())
+            var response = _mapper.Map<IEnumerable<ContractDTO>>(contracts);
+
+            return Ok(response);
+        }
+
+        [HttpGet("by-software")]
+        public async Task<IActionResult> GetContractsBySoftwareCompanyName([FromQuery] string softwareCompanyName)
+        {
+            if (string.IsNullOrEmpty(softwareCompanyName))
             {
-                return NotFound(new { message = $"No contracts found for beneficiary company '{beneficiaryCompanyName}'." });
+                return BadRequest(new { message = "Software company name must be provided." });
             }
+
+            var contracts = await _repositoryContract.GetContractsBySoftwareCompanyNameAsync(softwareCompanyName);
 
             var response = _mapper.Map<IEnumerable<ContractDTO>>(contracts);
 

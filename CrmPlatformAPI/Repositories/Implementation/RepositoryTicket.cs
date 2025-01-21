@@ -259,5 +259,53 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Where(c => c.BeneficiaryCompany.Name == beneficiaryCompanyName)
                 .ToListAsync();
         }
+
+        public async Task<bool> TakeOverTicketAsync(int ticketId, int handlerId)
+        {
+            if (_context == null)
+            {
+                throw new Exception("Database context is not initialized.");
+            }
+
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            if (ticket == null)
+            {
+                throw new Exception($"Ticket with ID {ticketId} not found.");
+            }
+
+            ticket.HandlerId = handlerId;
+
+            try
+            {
+                _context.Tickets.Update(ticket);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                throw new Exception("An error occurred while taking over the ticket.", ex);
+            }
+        }
+
+        public async Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.Tickets
+                .Include(t => t.Contract)
+                    .ThenInclude(c => c.BeneficiaryCompany)
+                .Include(t => t.Contract)
+                    .ThenInclude(c => c.SoftwareCompany)
+                .Include(t => t.Creator)
+                .Include(t => t.Handler)
+                .Where(t => t.ContractId == contractId)
+                .ToListAsync();
+        }
+
+
     }
 }
