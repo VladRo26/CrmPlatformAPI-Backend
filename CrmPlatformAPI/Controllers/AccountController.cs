@@ -58,6 +58,13 @@ namespace CrmPlatformAPI.Controllers
                 return BadRequest(result.Errors);
             }
 
+            var roleResult = await userManager.AddToRoleAsync(user, "Default");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest("Failed to assign the Default role to the user");
+            }
+
+
             string? companyName = user.UserType == UserType.SoftwareCompanyUser
                 ? user.SoftwareCompany?.Name
                 : user.BeneficiaryCompany?.Name;
@@ -87,7 +94,7 @@ namespace CrmPlatformAPI.Controllers
             return new UserDTO
             {
                 UserName = user.UserName,
-                Token = tokenService.CreateToken(user),
+                Token = await tokenService.CreateToken(user),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
@@ -127,6 +134,7 @@ namespace CrmPlatformAPI.Controllers
                 return Unauthorized("Invalid username or password");
             }
 
+         
             // Determine the company name based on UserType
             string? companyName = user.UserType switch
             {
@@ -138,7 +146,7 @@ namespace CrmPlatformAPI.Controllers
             return new UserDTO
             {
                 UserName = user.UserName,
-                Token = tokenService.CreateToken(user),
+                Token = await tokenService.CreateToken(user),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,

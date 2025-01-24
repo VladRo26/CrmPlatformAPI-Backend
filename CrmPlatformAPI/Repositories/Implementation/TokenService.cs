@@ -1,5 +1,6 @@
 ﻿using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,9 +8,9 @@ using System.Text;
 
 namespace CrmPlatformAPI.Repositories.Implementation
 {
-    public class TokenService(IConfiguration config) : ITokenService
+    public class TokenService(IConfiguration config,UserManager<User> userManager) : ITokenService
     {
-        public string CreateToken(User user)
+        public async Task<string> CreateToken(User user)
         {
            var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot find token key in appsettings.json");
            if(tokenKey.Length< 64) throw new Exception("Token key is too short");
@@ -19,6 +20,11 @@ namespace CrmPlatformAPI.Repositories.Implementation
             {
                   new Claim(ClaimTypes.NameIdentifier, user.UserName),
             };
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

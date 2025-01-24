@@ -4,6 +4,6 @@ namespace CrmPlatformAPI.Repositories.Interface
 {
     public interface ITokenService
     {
-        string CreateToken(User user);
+        Task<string> CreateToken(User user);
     }
 }

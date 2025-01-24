@@ -6,6 +6,7 @@ using CrmPlatformAPI.Middleware;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using CrmPlatformAPI.SingalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,9 +53,10 @@ namespace CrmPlatformAPI
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseCors(builder => builder
+            .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend
+            .WithOrigins("http://localhost:4200", "https://localhost:4200")); // am adaugat cors pentru a putea face requesturi din frontend
 
 
             app.UseAuthentication();
@@ -63,6 +65,7 @@ namespace CrmPlatformAPI
             app.UseStaticFiles();
 
             app.MapControllers();
+            app.MapHub<PresenceHub>("hubs/presence");
 
             using var scope = app.Services.CreateScope();
 
@@ -71,6 +74,8 @@ namespace CrmPlatformAPI
             try
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
+                var userManager = services.GetRequiredService<UserManager<User>>();
+                var roleManager = services.GetRequiredService<RoleManager<Role>>();
                 await context.Database.MigrateAsync();
                 await Seed.SeedSoftwareComp(context);
                 await Seed.SeedBeneficiaryComp(context);

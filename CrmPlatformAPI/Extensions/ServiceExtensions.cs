@@ -55,7 +55,8 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<ActivityLog>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
- 
+            services.AddSignalR();
+
             return services;
 
         }   
