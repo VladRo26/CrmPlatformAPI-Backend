@@ -2,6 +2,7 @@
 using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using CrmPlatformAPI.SingalR;
 using CrmPlatformAPI.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -56,6 +57,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.AddSignalR();
+            services.AddSingleton<PresenceTracker>();
 
             return services;
 

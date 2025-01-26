@@ -29,5 +29,11 @@ namespace CrmPlatformAPI.Models.DTO
         public int CreatorId { get; set; }
 
         public int? HandlerId { get; set; }
+
+        public string Language { get; set; }
+
+        public string CountryCode { get; set; }
+
+        public string LanguageCode { get; set; }
     }
 }

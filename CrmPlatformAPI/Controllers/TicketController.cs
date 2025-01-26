@@ -280,6 +280,27 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching tickets.", error = ex.Message });
             }
         }
+
+        [HttpPost("AddStatusHistory")]
+        public async Task<IActionResult> AddTicketStatusHistory(int ticketId, [FromBody] TicketStatusHistoryDTO dto)
+        {
+            try
+            {
+                if (dto == null)
+                {
+                    return BadRequest(new { message = "Invalid request data." });
+                }
+
+                await _repositoryTicketStatusHistory.AddHistoryAsync(ticketId, dto);
+
+                return Ok(new { message = "Ticket status history added successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to add ticket status history.", error = ex.Message });
+            }
+        }
+
     }
 
 }

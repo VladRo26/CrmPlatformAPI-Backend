@@ -52,6 +52,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             return await _context.BeneficiaryCompanies
                 .Include(bc => bc.Users) // Include the Users relationship
+            .Include(bc => bc.CompanyPhoto) // Include the CompanyPhoto relationship
                 .FirstOrDefaultAsync(bc => bc.Users.Any(user => user.UserName == username));
         }
 
@@ -64,6 +65,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             return await _context.BeneficiaryCompanies
                 .Include(bc => bc.Users) // Include related Users
+                .Include(bc => bc.CompanyPhoto) // Include the CompanyPhoto relationship
                 .FirstOrDefaultAsync(bc => bc.Users.Any(user => user.Id == userId));
         }
 

@@ -234,15 +234,38 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             try
             {
+                // Start a transaction to ensure both the ticket and its status history are saved atomically
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                // Add the ticket to the database
                 await _context.Tickets.AddAsync(ticket);
                 await _context.SaveChangesAsync();
+
+                // Create a new TicketStatusHistory entry for the ticket
+                var statusHistory = new TicketStatusHistory
+                {
+                    TicketId = ticket.Id,
+                    Status = TicketStatus.Open,
+                    Message = ticket.Title,
+                    UpdatedAt = DateTime.UtcNow,
+                    UpdatedByUserId = ticket.CreatorId, 
+                    TicketUserRole = TicketUserRole.Creator
+                };
+
+                // Add the status history entry to the database
+                await _context.TicketStatusHistories.AddAsync(statusHistory);
+                await _context.SaveChangesAsync();
+
+                // Commit the transaction
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
-                throw new Exception("An error occurred while adding the ticket.", ex);
+                throw new Exception("An error occurred while adding the ticket and its status history.", ex);
             }
         }
+
 
         public async Task<IEnumerable<Models.Domain.Contract>> GetContractsByBeneficiaryCompanyNameAsync(string beneficiaryCompanyName)
         {
