@@ -7,8 +7,8 @@ namespace CrmPlatformAPI.Repositories.Implementation
     {
         private readonly HttpClient _httpClient;
 
-        private const string Model = "llama-3.3-70b-versatile";
-        private const int MaxTokens = 2000;
+        private const string Model = "gemma2-9b-it";
+        private const int MaxTokens = 3000;
 
         public RepositoryLLM(IHttpClientFactory httpClientFactory)
         {

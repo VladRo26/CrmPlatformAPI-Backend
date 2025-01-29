@@ -25,12 +25,21 @@ namespace CrmPlatformAPI.Models.Domain
 
         public DateTime CreatedAt { get; set; }
 
-        public string Language { get; set; }
+        public string? Language { get; set; }
 
-        public string LanguageCode { get; set; }
+        public string? LanguageCode { get; set; }
 
 
-        public string CountryCode { get; set; }
+        public string? CountryCode { get; set; }
+
+        public string? TLanguage { get; set; }
+
+        public string? TLanguageCode { get; set; }
+
+
+        public string? TCountryCode { get; set; }
+
+        public string? TDescription { get; set; }
 
 
         public ICollection<TicketStatusHistory> StatusHistory { get; set; } = new List<TicketStatusHistory>();

@@ -200,14 +200,28 @@ namespace CrmPlatformAPI.Repositories.Implementation
             }
 
             // Construct a detailed prompt using the ticket description
-            var prompt = $"Summarize this ticket description very very briefly: {ticket.Description}";
+            var prompt = $"Summarize this ticket description very very briefly: {ticket.Description}. Just write the summary";
 
             // Use the LLM repository to generate a summary
             var summaryResponse = await _llmRepository.GenerateResponseAsync(prompt);
+            var summary = summaryResponse?.Response ?? "No summary generated.";
 
-            // Return the generated summary
-            return summaryResponse?.Response ?? "No summary generated.";
+            // Check if the ticket's language is specified and translate if necessary
+            if (!string.IsNullOrWhiteSpace(ticket.Language))
+            {
+                // Assuming the source language is English (or the language of the summary)
+               string sourceLanguage = ticket.Language;
+
+                // Use the TranslateTextAsync function to translate the summary
+                summary = await _llmRepository.TranslateTextAsync(summary, sourceLanguage, ticket.TLanguage)
+                          ?? "Translation failed.";
+            }
+
+            // Return the generated summary (translated, if applicable)
+            return summary;
         }
+
+
 
         public async Task<string> TranslateDescriptionForTicketAsync(int ticketId, string sourceLanguage, string targetLanguage)
         {
@@ -328,6 +342,45 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Where(t => t.ContractId == contractId)
                 .ToListAsync();
         }
+
+        public async Task<bool> UpdateAsync(Ticket ticket)
+        {
+            if (_context == null)
+            {
+                throw new Exception("Database context is not initialized.");
+            }
+
+            try
+            {
+                var existingTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticket.Id);
+                if (existingTicket == null)
+                {
+                    throw new Exception($"Ticket with ID {ticket.Id} not found.");
+                }
+
+                // Update the properties of the existing ticket
+                existingTicket.Title = ticket.Title;
+                existingTicket.Description = ticket.Description;
+                existingTicket.Status = ticket.Status;
+                existingTicket.Priority = ticket.Priority;
+                existingTicket.Type = ticket.Type;
+                existingTicket.TLanguage = ticket.TLanguage;
+                existingTicket.TLanguageCode = ticket.TLanguageCode;
+                existingTicket.TCountryCode = ticket.TCountryCode;
+
+                // Save changes to the database
+                _context.Tickets.Update(existingTicket);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                throw new Exception("An error occurred while updating the ticket.", ex);
+            }
+        }
+
 
 
     }

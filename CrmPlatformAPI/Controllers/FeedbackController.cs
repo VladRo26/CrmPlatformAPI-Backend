@@ -2,8 +2,10 @@
 using CrmPlatformAPI.Data;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
+using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrmPlatformAPI.Controllers
@@ -15,16 +17,23 @@ namespace CrmPlatformAPI.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IRepositorySentimentAnalysis _sentimentAnalysisRepository;
         private readonly IRepositoryFeedbackSentiment _feedbackSentimentRepository;
+        private readonly IRepositoryLLM _repositoryLLM;
+        private readonly IRepositoryUser _userRepository;
+        private readonly IRepositoryTicket _ticketRepository;
         private readonly IMapper _mapper;
 
 
-        public FeedbackController(ApplicationDbContext context,IMapper mapper,
-            IRepositorySentimentAnalysis repositorySentimentAnalysis, IRepositoryFeedbackSentiment repositoryFeedbackSentiment)
+        public FeedbackController(ApplicationDbContext context, IMapper mapper,
+            IRepositorySentimentAnalysis repositorySentimentAnalysis,
+            IRepositoryFeedbackSentiment repositoryFeedbackSentiment, IRepositoryLLM repositoryLLM,IRepositoryTicket repositoryTicket, IRepositoryUser repositoryUser)
         {
             _context = context;
             _mapper = mapper;
             _sentimentAnalysisRepository = repositorySentimentAnalysis;
             _feedbackSentimentRepository = repositoryFeedbackSentiment;
+            _repositoryLLM = repositoryLLM;
+            _userRepository = repositoryUser;
+            _ticketRepository = repositoryTicket;
 
         }
 
@@ -110,5 +119,61 @@ namespace CrmPlatformAPI.Controllers
             return Ok(sentimentDto);
         }
 
+        [HttpPost("generate-feedback")]
+        public async Task<ActionResult<string>> GenerateFeedbackForUser(
+        string username, int ticketId, int rating, [FromBody] string userExperience)
+        {
+            // Validate the rating (must be between 1 and 5)
+            if (rating < 1 || rating > 5)
+            {
+                return BadRequest("Rating must be between 1 and 5.");
+            }
+
+            // Retrieve the user from the repository
+            var user = await _userRepository.GetByUserNameAsync(username);
+            if (user == null) return BadRequest("Invalid username.");
+
+            // Retrieve the ticket from the repository
+            var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+            if (ticket == null) return BadRequest("Invalid ticket ID.");
+
+            // Ensure the ticket has a description
+            if (string.IsNullOrWhiteSpace(ticket.Description))
+            {
+                return BadRequest("Ticket description is required to generate feedback.");
+            }
+
+            // Construct the LLM prompt
+            var prompt = $@"
+        Generate professional and concise feedback based on the following details:
+        - **User Experience:** {userExperience}
+        - **Ticket Description:** {ticket.Description}
+        - **Rating (1-5):** {rating}
+        - **Username:** {user.UserName}
+
+        Ensure:
+        - **Positive and appreciative feedback** for high ratings (4-5).
+        - **Constructive feedback with suggestions** for a neutral rating (3).
+        - **Polite but critical feedback** for low ratings (1-2).
+        - **Clear and concise wording**, avoiding unnecessary details.
+
+        **Return only the generated feedback as text. No formatting needed.**
+    ";
+
+            try
+            {
+                // Call the LLM service and get the response
+                var llmResponse = await _repositoryLLM.GenerateResponseAsync(prompt);
+
+                // Extract the generated feedback text
+                string generatedFeedback = llmResponse.Response ?? "No feedback generated.";
+
+                return Ok(generatedFeedback);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error generating feedback: {ex.Message}");
+            }
+        }
     }
 }

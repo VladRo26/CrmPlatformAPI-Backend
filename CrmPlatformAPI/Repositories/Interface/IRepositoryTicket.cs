@@ -30,6 +30,8 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task AddAsync(Ticket ticket);
         Task<bool> TakeOverTicketAsync(int ticketId, int handlerId);
 
+        Task<bool> UpdateAsync(Ticket ticket);
+
         Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId);
 
     }

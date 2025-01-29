@@ -126,6 +126,7 @@ namespace CrmPlatformAPI.Controllers
             var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
             return Ok(ticketDtos);
         }
+
         [HttpPost("GenerateSummary/{id}")]
         public async Task<IActionResult> GenerateSummary(int id)
         {
@@ -148,6 +149,36 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "Failed to generate summary.", error = ex.Message });
             }
         }
+
+        [HttpPut("UpdateTicketTranslation/{id}")]
+        public async Task<IActionResult> UpdateTicketTranslation(int id, [FromBody] UpdateTranslationDTO updateTranslationDto)
+        {
+            try
+            {
+                var ticket = await _repositoryTicket.GetByIdAsync(id);
+
+                if (ticket == null)
+                {
+                    return NotFound(new { message = $"Ticket with ID {id} not found." });
+                }
+
+                ticket.TLanguage = updateTranslationDto.Language;
+                ticket.TLanguageCode = updateTranslationDto.LanguageCode;
+                ticket.TCountryCode = updateTranslationDto.CountryCode;
+
+                await _repositoryTicket.UpdateAsync(ticket);
+
+                return Ok(new { message = "Ticket translation details updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to update ticket translation.", error = ex.Message });
+            }
+        }
+
+
+
+
 
         [HttpPost("TranslateDescription/{id}")]
         public async Task<IActionResult> TranslateDescription(int id, [FromQuery] string sourceLanguage, [FromQuery] string targetLanguage)
@@ -301,6 +332,39 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpPut("UpdateTDescription")]
+        public async Task<IActionResult> UpdateTDescription([FromBody] UpdateTicketDescriptionDTO updateDto)
+        {
+            try
+            {
+                // Validate the incoming DTO
+                if (updateDto == null || updateDto.Id <= 0 || string.IsNullOrWhiteSpace(updateDto.TDescription))
+                {
+                    return BadRequest(new { message = "Invalid data. Ensure ID and description are provided." });
+                }
+
+                // Retrieve the ticket from the database
+                var ticket = await _repositoryTicket.GetByIdAsync(updateDto.Id);
+
+                if (ticket == null)
+                {
+                    return NotFound(new { message = $"Ticket with ID {updateDto.Id} not found." });
+                }
+
+                // Update the ticket description
+                ticket.TDescription = updateDto.TDescription;
+
+                // Save changes to the database
+                await _repositoryTicket.UpdateAsync(ticket);
+
+                return Ok(new { message = "Ticket description updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Handle errors and return a 500 response if needed
+                return StatusCode(500, new { message = "Failed to update ticket description.", error = ex.Message });
+            }
+        }
     }
 
 }
