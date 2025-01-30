@@ -25,7 +25,7 @@ namespace CrmPlatformAPI.Controllers
 
         public FeedbackController(ApplicationDbContext context, IMapper mapper,
             IRepositorySentimentAnalysis repositorySentimentAnalysis,
-            IRepositoryFeedbackSentiment repositoryFeedbackSentiment, IRepositoryLLM repositoryLLM,IRepositoryTicket repositoryTicket, IRepositoryUser repositoryUser)
+            IRepositoryFeedbackSentiment repositoryFeedbackSentiment, IRepositoryLLM repositoryLLM, IRepositoryTicket repositoryTicket, IRepositoryUser repositoryUser)
         {
             _context = context;
             _mapper = mapper;
@@ -120,54 +120,58 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("generate-feedback")]
-        public async Task<ActionResult<string>> GenerateFeedbackForUser(
-        string username, int ticketId, int rating, [FromBody] string userExperience)
+        public async Task<IActionResult> GenerateFeedbackForUser([FromBody] GenerateFeedbackRequestDTO request)
         {
-            // Validate the rating (must be between 1 and 5)
-            if (rating < 1 || rating > 5)
+            if (request == null || string.IsNullOrWhiteSpace(request.UserExperience))
+            {
+                return BadRequest("The userExperience field is required.");
+            }
+
+            Console.WriteLine($"Received userExperience: {request.UserExperience}");
+
+            if (request.Rating < 1 || request.Rating > 5)
             {
                 return BadRequest("Rating must be between 1 and 5.");
             }
 
-            // Retrieve the user from the repository
-            var user = await _userRepository.GetByUserNameAsync(username);
+            var user = await _userRepository.GetByUserNameAsync(request.Username);
             if (user == null) return BadRequest("Invalid username.");
 
-            // Retrieve the ticket from the repository
-            var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+            var ticket = await _ticketRepository.GetByIdAsync(request.TicketId);
             if (ticket == null) return BadRequest("Invalid ticket ID.");
 
-            // Ensure the ticket has a description
             if (string.IsNullOrWhiteSpace(ticket.Description))
             {
                 return BadRequest("Ticket description is required to generate feedback.");
             }
 
-            // Construct the LLM prompt
-            var prompt = $@"
+
+
+
+   var prompt = $@"
         Generate professional and concise feedback based on the following details:
-        - **User Experience:** {userExperience}
-        - **Ticket Description:** {ticket.Description}
-        - **Rating (1-5):** {rating}
+        - **User Experience:**  {request.UserExperience}
+        - **Ticket solved this problem:** {ticket.Description}
+        - **Rating (1-5):** {request.Rating}
         - **Username:** {user.UserName}
 
         Ensure:
+        - **The feedback is to user with username:** {user.UserName}.
+        - **I AM THE PERSON WHO CREATED THE TICKET AND WHO IS THE BENFICIARY. say a little about the problem that was fiexed.**
+        - **The rating is the rating that i have given to the user for fixing me the ticket with the description provided.**
         - **Positive and appreciative feedback** for high ratings (4-5).
         - **Constructive feedback with suggestions** for a neutral rating (3).
         - **Polite but critical feedback** for low ratings (1-2).
         - **Clear and concise wording**, avoiding unnecessary details.
 
+        **Write the feedback as the person who is given the feedback. I give the feedback to the user with the username provided.**
         **Return only the generated feedback as text. No formatting needed.**
     ";
 
             try
             {
-                // Call the LLM service and get the response
                 var llmResponse = await _repositoryLLM.GenerateResponseAsync(prompt);
-
-                // Extract the generated feedback text
                 string generatedFeedback = llmResponse.Response ?? "No feedback generated.";
-
                 return Ok(generatedFeedback);
             }
             catch (Exception ex)
@@ -176,4 +180,6 @@ namespace CrmPlatformAPI.Controllers
             }
         }
     }
-}
+
+
+    }
