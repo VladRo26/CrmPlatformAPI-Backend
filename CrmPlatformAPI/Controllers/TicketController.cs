@@ -113,6 +113,15 @@ namespace CrmPlatformAPI.Controllers
             return Ok(ticketDtos);
         }
 
+        [HttpGet("FeedbackByUserName/{username}")]
+        public async Task<IActionResult> GetFeedbackTicketByUserName(string username)
+        {
+            var tickets = await _repositoryTicket.GetFeedbackTicketByUserNameAsync(username);
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return Ok(ticketDtos);
+        }
+
+
         [HttpGet("ByHandlerUsername/{username}")]
         public async Task<IActionResult> GetTicketsByHandlerUsername(string username)
         {

@@ -64,11 +64,17 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception("Invalid role for TicketUserRole.");
             }
 
+            // Validate and parse status
+            if (!Enum.TryParse<TicketStatus>(dto.Status, true, out var parsedStatus))
+            {
+                throw new Exception("Invalid status.");
+            }
+
             // Create the TicketStatusHistory record
             var history = new TicketStatusHistory
             {
                 TicketId = ticketId,
-                Status = Enum.TryParse<TicketStatus>(dto.Status, true, out var parsedStatus) ? parsedStatus : throw new Exception("Invalid status."),
+                Status = parsedStatus,
                 Message = dto.Message,
                 UpdatedAt = dto.UpdatedAt != default ? dto.UpdatedAt : DateTime.UtcNow,
                 UpdatedByUserId = user.Id,
@@ -77,14 +83,23 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             try
             {
+                // Add the status history entry
                 await _context.TicketStatusHistories.AddAsync(history);
+
+                // Update the ticket status to match the latest history status
+                ticket.Status = parsedStatus;
+                _context.Tickets.Update(ticket);
+
+                // Save changes
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the ticket status history.", ex);
+                throw new Exception("An error occurred while adding the ticket status history and updating the ticket status.", ex);
             }
         }
+
+
 
     }
 }

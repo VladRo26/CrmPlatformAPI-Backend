@@ -34,5 +34,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId);
 
+        Task<IEnumerable<Ticket>> GetFeedbackTicketByUserNameAsync(string username);
+
     }
 }

@@ -59,10 +59,11 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<FeedbackDTO>> CreateFeedback(string username, int ticketId, string content, int rating)
+        public async Task<ActionResult<FeedbackDTO>> CreateFeedback(
+      string username, int ticketId, string content, int rating)
         {
             // Get the FromUserId based on the username
-            var fromUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var fromUser = await _userRepository.GetByUserNameAsync(username);
             if (fromUser == null) return BadRequest("Invalid username.");
 
             // Get the ticket and ToUserId (HandlerId)
@@ -86,6 +87,21 @@ namespace CrmPlatformAPI.Controllers
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync();
 
+            // Calculate new average rating for the handler
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.ToUserId == toUserId)
+                .ToListAsync();
+
+            var newAverageRating = (int)Math.Round(feedbacks.Average(f => f.Rating));
+
+            // Update the handler's rating using RepositoryUser
+            var handler = await _userRepository.GetByIdAsync(toUserId);
+            if (handler != null)
+            {
+                handler.Rating = newAverageRating;
+                await _userRepository.UpdateAsync(handler);
+            }
+
             // Call sentiment analysis and save the results
             var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(content);
             var sentiment = new FeedBackSentiment
@@ -101,6 +117,7 @@ namespace CrmPlatformAPI.Controllers
             var feedbackDto = _mapper.Map<FeedbackDTO>(feedback);
             return CreatedAtAction(nameof(GetFeedbackByToUserId), new { toUserId = feedback.ToUserId }, feedbackDto);
         }
+
 
         [HttpGet("sentiment/{feedbackId}")]
         public async Task<ActionResult<FeedBackSentimentDTO>> GetSentimentByFeedbackId(int feedbackId)
