@@ -1,4 +1,5 @@
-﻿using CrmPlatformAPI.Models.Domain;
+﻿using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Models.Domain;
 
 namespace CrmPlatformAPI.Repositories.Interface
 {
@@ -14,7 +15,6 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<Ticket>> GetByCompanyAsync(string name);
 
-        Task<IEnumerable<Ticket>> GetByUserNameAsync(string username);
 
         Task<IEnumerable<Ticket>> GetByTitleAsync(string name);
 
@@ -35,6 +35,7 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId);
 
         Task<IEnumerable<Ticket>> GetFeedbackTicketByUserNameAsync(string username);
+        Task<PagedList<Ticket>> GetByUserNameAsync(TicketParams ticketParams);
 
     }
 }

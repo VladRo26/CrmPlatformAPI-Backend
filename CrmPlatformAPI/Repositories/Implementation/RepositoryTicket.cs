@@ -1,4 +1,5 @@
 ﻿using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Interface;
@@ -129,25 +130,90 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
-
-        public async Task<IEnumerable<Ticket>> GetByUserNameAsync(string username)
+        public async Task<PagedList<Ticket>> GetByUserNameAsync(TicketParams ticketParams)
         {
-            if (_context == null)
+            var query = _context.Tickets
+                 .Include(t => t.Contract)
+                     .ThenInclude(c => c.BeneficiaryCompany)
+                 .Include(t => t.Contract)
+                     .ThenInclude(c => c.SoftwareCompany)
+                 .Include(t => t.Creator)
+                 .Include(t => t.Handler)
+                 .AsQueryable();
+
+            // Filter by Username, Status, Priority, Title
+            if (!string.IsNullOrEmpty(ticketParams.Username))
             {
-                return null;
+                query = query.Where(t => t.Creator.UserName == ticketParams.Username ||
+                                         t.Handler.UserName == ticketParams.Username);
             }
 
-            return await _context.Tickets
-                .Include(t => t.Contract)
-                    .ThenInclude(c => c.BeneficiaryCompany)
-                .Include(t => t.Contract)
-                    .ThenInclude(c => c.SoftwareCompany)
-                .Include(t => t.Creator)
-                .Include(t => t.Handler)
-                .Where(t => t.Creator.UserName == username || t.Handler.UserName == username)
-                .ToListAsync();
+            if (!string.IsNullOrEmpty(ticketParams.Status))
+            {
+                if (ticketParams.Status.Equals("notClosed", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(t => t.Status != TicketStatus.Closed);
+                }
+                else if (ticketParams.Status.Equals("all", StringComparison.OrdinalIgnoreCase))
+                {
+                    // No status filtering
+                }
+                else if (Enum.TryParse<TicketStatus>(ticketParams.Status, true, out var statusEnum))
+                {
+                    query = query.Where(t => t.Status == statusEnum);
+                }
+            }
+            else
+            {
+                query = query.Where(t => t.Status != TicketStatus.Closed);
+            }
 
+            if (!string.IsNullOrEmpty(ticketParams.Priority))
+            {
+                if (Enum.TryParse<TicketPriority>(ticketParams.Priority, true, out var priorityEnum))
+                {
+                    query = query.Where(t => t.Priority == priorityEnum);
+                }
+            }
+            if (!string.IsNullOrEmpty(ticketParams.Title))
+            {
+                query = query.Where(t => t.Title.Contains(ticketParams.Title));
+            }
+
+            // NEW: Sorting logic with sort direction
+            if (!string.IsNullOrEmpty(ticketParams.OrderBy))
+            {
+                // Determine the sort order: ascending or descending.
+                bool ascending = ticketParams.SortDirection.Equals("asc", StringComparison.OrdinalIgnoreCase);
+
+                if (ticketParams.OrderBy.Equals("date", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = ascending
+                        ? query.OrderBy(t => t.CreatedAt)
+                        : query.OrderByDescending(t => t.CreatedAt);
+                }
+                else if (ticketParams.OrderBy.Equals("priority", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = ascending
+                        ? query.OrderBy(t => t.Priority)
+                        : query.OrderByDescending(t => t.Priority);
+                }
+                else
+                {
+                    // Default sorting by date
+                    query = ascending
+                        ? query.OrderBy(t => t.CreatedAt)
+                        : query.OrderByDescending(t => t.CreatedAt);
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(t => t.CreatedAt);
+            }
+
+            return await PagedList<Ticket>.CreateAsync(query, ticketParams.PageNumber, ticketParams.PageSize);
         }
+
 
         public async Task<IEnumerable<Ticket>> GetByPriorityAsync(string priority)
         {

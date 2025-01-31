@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Extensions;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
@@ -104,14 +106,18 @@ namespace CrmPlatformAPI.Controllers
             var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
             return Ok(ticketDtos);
         }
+        //paginare
 
-        [HttpGet("ByUserName/{username}")]
-        public async Task<IActionResult> GetTicketsByUserName(string username)
+        [HttpGet("ByUserName")]
+        public async Task<IActionResult> GetTicketsByUserName([FromQuery] TicketParams _ticketParams)
         {
-            var tickets = await _repositoryTicket.GetByUserNameAsync(username);
+            var tickets = await _repositoryTicket.GetByUserNameAsync(_ticketParams);
+            Response.AddPagination(tickets);
+
             var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
             return Ok(ticketDtos);
         }
+
 
         [HttpGet("FeedbackByUserName/{username}")]
         public async Task<IActionResult> GetFeedbackTicketByUserName(string username)
