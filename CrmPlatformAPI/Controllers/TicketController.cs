@@ -380,6 +380,34 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "Failed to update ticket description.", error = ex.Message });
             }
         }
+
+        [HttpGet("GroupedTicketsBySoftwareCompany/{username}")]
+        public async Task<IActionResult> GetGroupedTicketsBySoftwareCompany(string username)
+        {
+            var ticketsData = await _repositoryTicket.GetTicketsGroupedBySoftwareCompanyAsync(username);
+
+            if (!ticketsData.Any())
+            {
+                return NotFound($"No tickets found for user {username}.");
+            }
+
+            return Ok(ticketsData);
+        }
+
+        [HttpGet("GroupedTicketsByBeneficiaryCompany/{username}")]
+        public async Task<IActionResult> GetTicketsGroupedByBeneficiaryCompany(string username)
+        {
+            var groupedTickets = await _repositoryTicket.GetTicketsGroupedByBeneficiaryCompanyAsync(username);
+
+            if (groupedTickets == null || !groupedTickets.Any())
+            {
+                return NotFound($"No tickets found for user {username}.");
+            }
+
+            return Ok(groupedTickets);
+        }
+
+
     }
 
 }

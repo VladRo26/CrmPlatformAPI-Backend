@@ -196,7 +196,24 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, $"Error generating feedback: {ex.Message}");
             }
         }
-    }
+
+        [HttpGet("sentiment/average/{username}")]
+        public async Task<ActionResult<AverageFeedbackSentimentDTO>> GetAverageSentimentByUsername(string username)
+        {
+            var averageSentiment = await _feedbackSentimentRepository.GetAverageSentimentByUsernameAsync(username);
+
+            if (averageSentiment == null)
+            {
+                return NotFound($"No sentiment analysis found for user {username}.");
+            }
+
+            return Ok(averageSentiment);
+        }
+
+
 
 
     }
+
+
+}

@@ -467,6 +467,63 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<object>> GetTicketsGroupedBySoftwareCompanyAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return new List<object>(); // Return empty if user not found
+            }
+
+            return await _context.Tickets
+                .Where(t => t.HandlerId == user.Id) // Filter by Handler (Assigned User)
+                .Include(t => t.Contract)
+                .ThenInclude(c => c.SoftwareCompany)
+                .GroupBy(t => new { t.Contract.SoftwareCompanyId, t.Contract.SoftwareCompany.Name }) 
+                .Select(group => new
+                {
+                    SoftwareCompanyId = group.Key.SoftwareCompanyId,
+                    SoftwareCompanyName = group.Key.Name,
+                    TotalTickets = group.Count(),
+                    TicketsByStatus = group.GroupBy(t => t.Status)
+                                           .Select(statusGroup => new
+                                           {
+                                               Status = statusGroup.Key.ToString(),
+                                               Count = statusGroup.Count()
+                                           })
+                                           .ToList()
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<object>> GetTicketsGroupedByBeneficiaryCompanyAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return new List<object>(); // Return empty if user not found
+            }
+
+            return await _context.Tickets
+                .Where(t => t.HandlerId == user.Id) // Filter by Handler (Assigned User)
+                .Include(t => t.Contract)
+                .ThenInclude(c => c.BeneficiaryCompany)
+                .GroupBy(t => new { t.Contract.BeneficiaryCompanyId, t.Contract.BeneficiaryCompany.Name })
+                .Select(group => new
+                {
+                    BeneficiaryCompanyId = group.Key.BeneficiaryCompanyId,
+                    BeneficiaryCompanyName = group.Key.Name,
+                    TotalTickets = group.Count(),
+                    TicketsByStatus = group.GroupBy(t => t.Status)
+                                           .Select(statusGroup => new
+                                           {
+                                               Status = statusGroup.Key.ToString(),
+                                               Count = statusGroup.Count()
+                                           })
+                                           .ToList()
+                })
+                .ToListAsync();
+        }
 
 
 

@@ -1,4 +1,5 @@
 ﻿using CrmPlatformAPI.Models.Domain;
+using CrmPlatformAPI.Models.DTO;
 
 namespace CrmPlatformAPI.Repositories.Interface
 {
@@ -7,6 +8,8 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task AddSentimentAsync(FeedBackSentiment sentiment);
 
         Task<FeedBackSentiment> GetSentimentByFeedbackIdAsync(int feedbackId);
+
+        Task<AverageFeedbackSentimentDTO?> GetAverageSentimentByUsernameAsync(string username);
 
 
     }
