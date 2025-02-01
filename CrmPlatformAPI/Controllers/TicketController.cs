@@ -388,10 +388,10 @@ namespace CrmPlatformAPI.Controllers
 
             if (!ticketsData.Any())
             {
-                return NotFound($"No tickets found for user {username}.");
+                return Ok(new { message = $"No tickets found for user {username}.", data = new List<object>() });
             }
 
-            return Ok(ticketsData);
+            return Ok(new { message = "Tickets retrieved successfully.", data = ticketsData });
         }
 
         [HttpGet("GroupedTicketsByBeneficiaryCompany/{username}")]
@@ -401,11 +401,40 @@ namespace CrmPlatformAPI.Controllers
 
             if (groupedTickets == null || !groupedTickets.Any())
             {
-                return NotFound($"No tickets found for user {username}.");
+                return Ok(new { message = $"No tickets found for user {username}.", data = new List<object>() });
+            }
+
+            return Ok(new { message = "Tickets retrieved successfully.", data = groupedTickets });
+        }
+
+        [HttpGet("GroupedTicketsByContract/{username}")]
+        public async Task<IActionResult> GetTicketsGroupedByContract(string username)
+        {
+            var groupedTickets = await _repositoryTicket.GetTicketsGroupedByContractAsync(username);
+
+            if (groupedTickets == null || !groupedTickets.Any())
+            {
+                return Ok(new List<object>()); // Return an empty list instead of 404
             }
 
             return Ok(groupedTickets);
         }
+
+
+
+        [HttpGet("GroupedTicketsByUserStatus/{username}")]
+        public async Task<IActionResult> GetGroupedTicketsByUserStatus(string username)
+        {
+            var ticketsData = await _repositoryTicket.GetTicketsGroupedByUserStatusAsync(username);
+
+            if (ticketsData == null || !ticketsData.Any())
+            {
+                return Ok(new List<object>()); // Return an empty list instead of a wrapped object
+            }
+
+            return Ok(ticketsData);
+        }
+
 
 
     }

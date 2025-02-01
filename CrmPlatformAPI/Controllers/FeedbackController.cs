@@ -118,6 +118,75 @@ namespace CrmPlatformAPI.Controllers
             return CreatedAtAction(nameof(GetFeedbackByToUserId), new { toUserId = feedback.ToUserId }, feedbackDto);
         }
 
+        [HttpPost("software-to-beneficiary")]
+        public async Task<ActionResult<FeedbackDTO>> CreateFeedbackForBeneficiary(
+    string username, int ticketId, string content, int rating)
+        {
+            // Get the Software User (Handler) by username
+            var softwareUser = await _userRepository.GetByUserNameAsync(username);
+            if (softwareUser == null) return BadRequest("Invalid username.");
+
+            // Get the ticket by ID
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            if (ticket == null) return BadRequest("Invalid ticket ID.");
+
+            // Ensure the logged-in software user is the handler of this ticket
+            if (ticket.HandlerId != softwareUser.Id)
+                return BadRequest("You are not the handler of this ticket.");
+
+            // Get the Beneficiary User (Creator)
+            var beneficiaryUser = await _userRepository.GetByIdAsync(ticket.CreatorId);
+            if (beneficiaryUser == null) return BadRequest("Invalid ticket creator.");
+
+            // ✅ Check if feedback already exists for this ticket and user
+            bool feedbackExists = await _context.Feedbacks
+                .AnyAsync(f => f.FromUserId == softwareUser.Id && f.TicketId == ticketId);
+
+            if (feedbackExists)
+                return BadRequest("You have already provided feedback for this ticket.");
+
+            // Create the feedback
+            var feedback = new Feedback
+            {
+                FromUserId = softwareUser.Id,  // Software user is the sender
+                ToUserId = beneficiaryUser.Id, // Beneficiary user (creator) is the receiver
+                TicketId = ticketId,
+                Content = content,
+                Rating = rating,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Feedbacks.Add(feedback);
+            await _context.SaveChangesAsync();
+
+            // Calculate new average rating for the Beneficiary User
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.ToUserId == beneficiaryUser.Id)
+                .ToListAsync();
+
+            var newAverageRating = (int)Math.Round(feedbacks.Average(f => f.Rating));
+
+            // Update the Beneficiary User's rating
+            beneficiaryUser.Rating = newAverageRating;
+            await _userRepository.UpdateAsync(beneficiaryUser);
+
+            // Perform sentiment analysis
+            var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(content);
+            var sentiment = new FeedBackSentiment
+            {
+                FeedbackId = feedback.Id,
+                Positive = sentimentResponse.Scores[0],
+                Neutral = sentimentResponse.Scores[1],
+                Negative = sentimentResponse.Scores[2]
+            };
+
+            await _feedbackSentimentRepository.AddSentimentAsync(sentiment);
+
+            var feedbackDto = _mapper.Map<FeedbackDTO>(feedback);
+            return CreatedAtAction(nameof(GetFeedbackByToUserId), new { toUserId = feedback.ToUserId }, feedbackDto);
+        }
+
+
 
         [HttpGet("sentiment/{feedbackId}")]
         public async Task<ActionResult<FeedBackSentimentDTO>> GetSentimentByFeedbackId(int feedbackId)
@@ -200,17 +269,37 @@ namespace CrmPlatformAPI.Controllers
         [HttpGet("sentiment/average/{username}")]
         public async Task<ActionResult<AverageFeedbackSentimentDTO>> GetAverageSentimentByUsername(string username)
         {
-            var averageSentiment = await _feedbackSentimentRepository.GetAverageSentimentByUsernameAsync(username);
-
-            if (averageSentiment == null)
-            {
-                return NotFound($"No sentiment analysis found for user {username}.");
-            }
-
-            return Ok(averageSentiment);
+            var sentimentData = await _feedbackSentimentRepository.GetAverageSentimentByUsernameAsync(username);
+            return Ok(sentimentData); 
         }
 
 
+
+        [HttpGet("check-eligibility/{username}/{ticketId}")]
+        public async Task<ActionResult<bool>> CheckFeedbackEligibility(string username, int ticketId)
+        {
+            // Get the user by username
+            var user = await _userRepository.GetByUserNameAsync(username);
+            if (user == null) return BadRequest("Invalid username.");
+
+            // Get the ticket by ID
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            if (ticket == null) return BadRequest("Invalid ticket ID.");
+
+            // Check if the user is eligible to give feedback
+            bool isEligible = false;
+
+            if (user.Id == ticket.CreatorId)
+            {
+                isEligible = !await _context.Feedbacks.AnyAsync(f => f.FromUserId == user.Id && f.TicketId == ticketId);
+            }
+            else if (user.Id == ticket.HandlerId)
+            {
+                isEligible = !await _context.Feedbacks.AnyAsync(f => f.FromUserId == user.Id && f.TicketId == ticketId);
+            }
+
+            return Ok(isEligible);
+        }
 
 
     }

@@ -525,6 +525,56 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<object>> GetTicketsGroupedByContractAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return new List<object>(); // Return empty if user not found
+            }
+
+            return await _context.Tickets
+                .Where(t => t.CreatorId == user.Id) // Filter tickets created by user
+                .Include(t => t.Contract)
+                .GroupBy(t => new { t.Contract.Id, t.Contract.ProjectName })
+                .Select(group => new
+                {
+                    ContractId = group.Key.Id,
+                    ProjectName = group.Key.ProjectName,
+                    TotalTickets = group.Count(),
+                    TicketsByStatus = group.GroupBy(t => t.Status)
+                                           .Select(statusGroup => new
+                                           {
+                                               Status = statusGroup.Key.ToString(),
+                                               Count = statusGroup.Count()
+                                           })
+                                           .ToList()
+                })
+                .ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<object>> GetTicketsGroupedByUserStatusAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return new List<object>(); // Return empty if user not found
+            }
+
+            return await _context.Tickets
+                .Where(t => t.CreatorId == user.Id)
+                .GroupBy(t => t.Status)
+                .Select(group => new
+                {
+                    Status = group.Key.ToString(),
+                    TotalTickets = group.Count()
+                })
+                .ToListAsync();
+        }
+
+
+
 
 
     }

@@ -33,13 +33,18 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .FirstOrDefaultAsync(s => s.FeedbackId == feedbackId);
         }
 
-        public async Task<AverageFeedbackSentimentDTO?> GetAverageSentimentByUsernameAsync(string username)
+        public async Task<AverageFeedbackSentimentDTO> GetAverageSentimentByUsernameAsync(string username)
         {
             // Fetch the user by username to get their ID
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user == null)
             {
-                return null; // User not found
+                return new AverageFeedbackSentimentDTO // ✅ Ensure default response if user not found
+                {
+                    Positive = 0.0f,
+                    Neutral = 0.0f,
+                    Negative = 0.0f
+                };
             }
 
             // Get all feedback sentiments for the given user (ToUserId)
@@ -49,7 +54,12 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             if (!feedbackSentiments.Any())
             {
-                return null; // No sentiment data available
+                return new AverageFeedbackSentimentDTO // ✅ Ensure default response if no feedback data
+                {
+                    Positive = 0.0f,
+                    Neutral = 0.0f,
+                    Negative = 0.0f
+                };
             }
 
             // Calculate the average sentiment scores
@@ -57,7 +67,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
             var averageNeutral = feedbackSentiments.Average(s => s.Neutral);
             var averageNegative = feedbackSentiments.Average(s => s.Negative);
 
-            // Return the new DTO without FeedbackId
             return new AverageFeedbackSentimentDTO
             {
                 Positive = averagePositive,
@@ -65,8 +74,5 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 Negative = averageNegative
             };
         }
-
-
-
     }
 }

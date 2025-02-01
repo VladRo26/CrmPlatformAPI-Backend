@@ -1,5 +1,6 @@
 ﻿using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
+using System.Threading.Tasks;
 
 namespace CrmPlatformAPI.Repositories.Interface
 {
@@ -40,6 +41,10 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<object>> GetTicketsGroupedBySoftwareCompanyAsync(string username);
 
         Task<IEnumerable<object>> GetTicketsGroupedByBeneficiaryCompanyAsync(string username);
+
+        Task<IEnumerable<object>> GetTicketsGroupedByContractAsync(string username);
+
+        Task<IEnumerable<object>> GetTicketsGroupedByUserStatusAsync(string username);
 
     }
 }
