@@ -401,11 +401,13 @@ namespace CrmPlatformAPI.Controllers
 
             if (groupedTickets == null || !groupedTickets.Any())
             {
-                return Ok(new { message = $"No tickets found for user {username}.", data = new List<object>() });
+                return Ok(new List<object>()); // ✅ Returns an empty list instead of a message
             }
 
-            return Ok(new { message = "Tickets retrieved successfully.", data = groupedTickets });
+            return Ok(groupedTickets); // ✅ Returns only the ticket data
         }
+
+
 
         [HttpGet("GroupedTicketsByContract/{username}")]
         public async Task<IActionResult> GetTicketsGroupedByContract(string username)

@@ -124,5 +124,25 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<Models.Domain.Contract?> GetContractByTicketIdAsync(int ticketId)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            // For example, if your Ticket has a ContractId property and Contract.Id matches that value:
+            return await _context.Contracts
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto)
+                .FirstOrDefaultAsync(c => c.Id ==
+                    (from t in _context.Tickets
+                     where t.Id == ticketId
+                     select t.ContractId).FirstOrDefault());
+        }
+
+
     }
 }

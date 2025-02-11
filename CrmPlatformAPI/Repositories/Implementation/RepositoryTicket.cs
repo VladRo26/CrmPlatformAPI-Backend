@@ -2,6 +2,7 @@
 using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
+using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -141,7 +142,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
                  .Include(t => t.Handler)
                  .AsQueryable();
 
-            // Filter by Username, Status, Priority, Title
             if (!string.IsNullOrEmpty(ticketParams.Username))
             {
                 query = query.Where(t => t.Creator.UserName == ticketParams.Username ||
@@ -273,10 +273,10 @@ namespace CrmPlatformAPI.Repositories.Implementation
             var summary = summaryResponse?.Response ?? "No summary generated.";
 
             // Check if the ticket's language is specified and translate if necessary
-            if (!string.IsNullOrWhiteSpace(ticket.Language))
+            if (!string.IsNullOrWhiteSpace(ticket.TLanguage))
             {
                 // Assuming the source language is English (or the language of the summary)
-               string sourceLanguage = ticket.Language;
+               string sourceLanguage = ticket.TLanguage;
 
                 // Use the TranslateTextAsync function to translate the summary
                 summary = await _llmRepository.TranslateTextAsync(summary, sourceLanguage, ticket.TLanguage)
@@ -463,9 +463,14 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Include(t => t.Handler)
                 .Where(t => (t.Creator.UserName == username || t.Handler.UserName == username) &&
                             t.Status == TicketStatus.Closed &&
-                            !_context.Feedbacks.Any(f => f.TicketId == t.Id)) // Exclude tickets that have feedback
+                            !_context.Feedbacks.Any(f => f.TicketId == t.Id &&
+                                                         f.FromUserId == _context.Users
+                                                             .Where(u => u.UserName == username)
+                                                             .Select(u => u.Id)
+                                                             .FirstOrDefault())) 
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<object>> GetTicketsGroupedBySoftwareCompanyAsync(string username)
         {
@@ -496,26 +501,26 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<object>> GetTicketsGroupedByBeneficiaryCompanyAsync(string username)
+        public async Task<IEnumerable<TicketGroupedByCompanyDTO>> GetTicketsGroupedByBeneficiaryCompanyAsync(string username)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user == null)
             {
-                return new List<object>(); // Return empty if user not found
+                return new List<TicketGroupedByCompanyDTO>(); // ✅ Return empty list if user not found
             }
 
             return await _context.Tickets
-                .Where(t => t.HandlerId == user.Id) // Filter by Handler (Assigned User)
+                .Where(t => t.HandlerId == user.Id) // ✅ Filter by Handler (Assigned User)
                 .Include(t => t.Contract)
                 .ThenInclude(c => c.BeneficiaryCompany)
                 .GroupBy(t => new { t.Contract.BeneficiaryCompanyId, t.Contract.BeneficiaryCompany.Name })
-                .Select(group => new
+                .Select(group => new TicketGroupedByCompanyDTO
                 {
                     BeneficiaryCompanyId = group.Key.BeneficiaryCompanyId,
                     BeneficiaryCompanyName = group.Key.Name,
                     TotalTickets = group.Count(),
                     TicketsByStatus = group.GroupBy(t => t.Status)
-                                           .Select(statusGroup => new
+                                           .Select(statusGroup => new TicketStatusDTO
                                            {
                                                Status = statusGroup.Key.ToString(),
                                                Count = statusGroup.Count()
@@ -524,6 +529,8 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 })
                 .ToListAsync();
         }
+
+     
 
         public async Task<IEnumerable<object>> GetTicketsGroupedByContractAsync(string username)
         {

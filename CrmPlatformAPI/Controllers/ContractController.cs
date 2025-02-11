@@ -94,5 +94,18 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("by-ticket/{ticketId}")]
+        public async Task<IActionResult> GetContractByTicketId(int ticketId)
+        {
+            var contract = await _repositoryContract.GetContractByTicketIdAsync(ticketId);
+            if (contract == null)
+            {
+                return NotFound(new { message = "No contract found for the given ticket id." });
+            }
+            var response = _mapper.Map<ContractDTO>(contract);
+            return Ok(response);
+        }
+
+
     }
 }

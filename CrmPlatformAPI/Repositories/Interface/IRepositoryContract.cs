@@ -15,6 +15,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<Models.Domain.Contract>> GetContractsBySoftwareCompanyNameAsync(string softwareCompanyName);
 
+        Task<Models.Domain.Contract?> GetContractByTicketIdAsync(int ticketId);
+
 
     }
 }
