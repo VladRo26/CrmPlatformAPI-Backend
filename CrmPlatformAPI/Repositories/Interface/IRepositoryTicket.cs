@@ -34,7 +34,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<bool> UpdateAsync(Ticket ticket);
 
-        Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId);
+        Task<PagedList<Ticket>> GetByContractIdAsync(int contractId, TicketContractsParams ticketContractsParams);
 
         Task<IEnumerable<Ticket>> GetFeedbackTicketByUserNameAsync(string username);
         Task<PagedList<Ticket>> GetByUserNameAsync(TicketParams ticketParams);

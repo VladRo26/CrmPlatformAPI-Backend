@@ -391,23 +391,76 @@ namespace CrmPlatformAPI.Repositories.Implementation
             }
         }
 
-        public async Task<IEnumerable<Ticket>> GetByContractIdAsync(int contractId)
+        public async Task<PagedList<Ticket>> GetByContractIdAsync(int contractId, TicketContractsParams ticketContractsParams)
         {
             if (_context == null)
             {
-                return null;
+                throw new Exception("Database context is not initialized.");
             }
 
-            return await _context.Tickets
-                .Include(t => t.Contract)
-                    .ThenInclude(c => c.BeneficiaryCompany)
-                .Include(t => t.Contract)
-                    .ThenInclude(c => c.SoftwareCompany)
-                .Include(t => t.Creator)
-                .Include(t => t.Handler)
-                .Where(t => t.ContractId == contractId)
-                .ToListAsync();
+            var query = _context.Tickets
+                        .Include(t => t.Contract)
+                            .ThenInclude(c => c.BeneficiaryCompany)
+                        .Include(t => t.Contract)
+                            .ThenInclude(c => c.SoftwareCompany)
+                        .Include(t => t.Creator)
+                        .Include(t => t.Handler)
+                        .Where(t => t.ContractId == contractId)
+                        .AsQueryable();
+
+            // Filter by handler username if provided
+            if (!string.IsNullOrEmpty(ticketContractsParams.HandlerUsername))
+            {
+                query = query.Where(t => t.Handler != null && t.Handler.UserName.Contains(ticketContractsParams.HandlerUsername));
+            }
+
+            // Apply sorting based on the provided SortBy and SortDirection
+            if (!string.IsNullOrEmpty(ticketContractsParams.SortBy))
+            {
+                bool ascending = ticketContractsParams.SortDirection.Equals("asc", StringComparison.OrdinalIgnoreCase);
+                switch (ticketContractsParams.SortBy.ToLower())
+                {
+                    case "assigned":
+                        // Sort tickets so that assigned ones appear first (or vice versa)
+                        // Here we sort by whether HandlerId is null (0 if assigned, 1 if not)
+                        query = ascending
+                            ? query.OrderBy(t => t.HandlerId == null ? 1 : 0)
+                            : query.OrderByDescending(t => t.HandlerId == null ? 1 : 0);
+                        break;
+                    case "unassigned":
+                        // Reverse of "assigned": unassigned ones first
+                        query = ascending
+                            ? query.OrderBy(t => t.HandlerId != null ? 1 : 0)
+                            : query.OrderByDescending(t => t.HandlerId != null ? 1 : 0);
+                        break;
+                    case "priority":
+                        query = ascending
+                            ? query.OrderBy(t => t.Priority)
+                            : query.OrderByDescending(t => t.Priority);
+                        break;
+                    case "status":
+                        query = ascending
+                            ? query.OrderBy(t => t.Status)
+                            : query.OrderByDescending(t => t.Status);
+                        break;
+                    default:
+                        // Default sorting by creation date
+                        query = ascending
+                            ? query.OrderBy(t => t.CreatedAt)
+                            : query.OrderByDescending(t => t.CreatedAt);
+                        break;
+                }
+            }
+            else
+            {
+                // Default sort by creation date descending
+                query = query.OrderByDescending(t => t.CreatedAt);
+            }
+
+            return await PagedList<Ticket>.CreateAsync(query, ticketContractsParams.PageNumber, ticketContractsParams.PageSize);
         }
+
+
 
         public async Task<bool> UpdateAsync(Ticket ticket)
         {
@@ -579,10 +632,5 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 })
                 .ToListAsync();
         }
-
-
-
-
-
     }
 }

@@ -306,17 +306,14 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("ByContract/{contractId:int}")]
-        public async Task<IActionResult> GetTicketsByContractId(int contractId)
+        public async Task<IActionResult> GetTicketsByContractId(int contractId, [FromQuery] TicketContractsParams ticketContractsParams)
         {
             try
             {
-                var tickets = await _repositoryTicket.GetByContractIdAsync(contractId);
+                var tickets = await _repositoryTicket.GetByContractIdAsync(contractId, ticketContractsParams);
 
-                // Return an empty list if no tickets are found
-                if (tickets == null || !tickets.Any())
-                {
-                    return Ok(new List<TicketDTO>()); // Return an empty list
-                }
+                // Adds pagination headers to the response (assuming you have an extension method for that)
+                Response.AddPagination(tickets);
 
                 var ticketDtos = _mapper.Map<IEnumerable<TicketDTO>>(tickets);
                 return Ok(ticketDtos);
@@ -326,6 +323,8 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching tickets.", error = ex.Message });
             }
         }
+
+
 
         [HttpPost("AddStatusHistory")]
         public async Task<IActionResult> AddTicketStatusHistory(int ticketId, [FromBody] TicketStatusHistoryDTO dto)
