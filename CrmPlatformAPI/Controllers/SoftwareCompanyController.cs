@@ -44,6 +44,22 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("ByUserId/{userId}")]
+        public async Task<IActionResult> GetSoftwareCompanyByUserId(int userId)
+        {
+            var company = await _repositorySoftwareCompany.GetSoftwareCompanyByUserIdAsync(userId);
+
+            if (company == null)
+            {
+                // Return an empty object or null instead of a 404 error
+                return Ok(null);
+            }
+
+            var response = _mapper.Map<SoftwareCompanyDTO>(company);
+            return Ok(response);
+        }
+
+
 
 
     }

@@ -44,5 +44,19 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             return _context.SoftwareCompanies.FirstOrDefaultAsync(c => c.Name == name);
         }
+
+        public async Task<SoftwareCompany?> GetSoftwareCompanyByUserIdAsync(int userId)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.SoftwareCompanies
+                .Include(sc => sc.Users) // Include related Users
+                .Include(sc => sc.CompanyPhoto) // Include the CompanyPhoto relationship
+                .FirstOrDefaultAsync(sc => sc.Users.Any(user => user.Id == userId));
+        }
+
     }
 }

@@ -10,6 +10,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<SoftwareCompany?> GetSoftwareCompanyByNameAsync(string name);
 
+        Task<SoftwareCompany?> GetSoftwareCompanyByUserIdAsync(int userId);
+
         Task<bool> ExistsAsync(string name);
     }
 
