@@ -131,7 +131,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 return null;
             }
 
-            // For example, if your Ticket has a ContractId property and Contract.Id matches that value:
             return await _context.Contracts
                 .Include(c => c.BeneficiaryCompany)
                     .ThenInclude(bc => bc.CompanyPhoto)
@@ -142,6 +141,18 @@ namespace CrmPlatformAPI.Repositories.Implementation
                      where t.Id == ticketId
                      select t.ContractId).FirstOrDefault());
         }
+
+        public async Task<int> CountContractsAsync()
+        {
+            if (_context == null)
+            {
+                throw new Exception("Database context is not initialized.");
+            }
+
+            // Count all contracts in the Contracts DbSet.
+            return await _context.Contracts.CountAsync();
+        }
+
 
 
     }

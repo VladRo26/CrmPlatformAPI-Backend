@@ -17,6 +17,8 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<Models.Domain.Contract?> GetContractByTicketIdAsync(int ticketId);
 
+        Task<int> CountContractsAsync();
+
 
     }
 }

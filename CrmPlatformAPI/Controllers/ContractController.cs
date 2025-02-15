@@ -106,6 +106,21 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("count")]
+        public async Task<IActionResult> GetContractCount()
+        {
+            try
+            {
+                int count = await _repositoryContract.CountContractsAsync();
+                return Ok(new { count });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to count contracts.", error = ex.Message });
+            }
+        }
+
+
 
     }
 }
