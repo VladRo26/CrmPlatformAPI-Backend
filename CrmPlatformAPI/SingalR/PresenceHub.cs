@@ -1,32 +1,37 @@
-﻿using CrmPlatformAPI.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
+﻿    using CrmPlatformAPI.Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.SignalR;
 
-namespace CrmPlatformAPI.SingalR
-{
+    namespace CrmPlatformAPI.SingalR
+    {
     [Authorize]
-    public class PresenceHub(PresenceTracker presenceTracker) : Hub
+    public class PresenceHub(PresenceTracker tracker) : Hub
     {
         public override async Task OnConnectedAsync()
         {
-            await presenceTracker.Connected(Context.User?.GetUsername(), Context.ConnectionId);
-            await Clients.Others.SendAsync("UserIsOnline", Context.User?.GetUsername());
+            // Add the user to the tracker
+            await tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
 
-            var currentUsers = await presenceTracker.GetOnlineUsers();
+            // Get the full list of online users
+            var currentUsers = await tracker.GetOnlineUsers();
+            // Broadcast the full list to all clients
             await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
+
+            await base.OnConnectedAsync();
         }
+
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await presenceTracker.Disconnected(Context.User?.GetUsername(), Context.ConnectionId);
-            await Clients.Others.SendAsync("UserIsOffline", Context.User?.GetUsername());
+            // Remove the user from the tracker
+            await tracker.UserDisconnected(Context.User.GetUsername(), Context.ConnectionId);
 
-            var currentUsers = await presenceTracker.GetOnlineUsers();
+            // Get the full list of online users
+            var currentUsers = await tracker.GetOnlineUsers();
+            // Broadcast the updated list to all clients
             await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
 
             await base.OnDisconnectedAsync(exception);
-
-
         }
     }
 }
