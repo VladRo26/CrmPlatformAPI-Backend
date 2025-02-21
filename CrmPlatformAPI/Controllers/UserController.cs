@@ -265,7 +265,25 @@ namespace CrmPlatformAPI.Controllers
             }
 
             return BadRequest("Problem deleting photo");
-        }       
+        }
+
+        [HttpDelete("username/{username}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string username)
+        {
+            var user = await _repositoryUser.GetByUserNameAsync(username);
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Use the user's id to delete them
+            bool success = await _repositoryUser.DeleteUserAsync(user.Id);
+            if (!success)
+                return StatusCode(500, "Error deleting user.");
+
+            return Ok(new { message = "User deleted successfully" });
+        }
+
+
 
     }
 }

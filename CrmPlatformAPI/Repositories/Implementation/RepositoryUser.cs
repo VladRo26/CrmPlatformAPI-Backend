@@ -160,6 +160,16 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return user?.Photo?.Url;
         }
 
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return false;
+
+            _context.Users.Remove(user);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+
 
     }
 }

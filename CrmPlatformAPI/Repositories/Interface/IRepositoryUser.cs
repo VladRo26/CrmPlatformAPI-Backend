@@ -26,6 +26,9 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<string?> GetPhotoUrlByUsernameAsync(string username);
 
+        Task<bool> DeleteUserAsync(int id);
+
+
 
     }
 }

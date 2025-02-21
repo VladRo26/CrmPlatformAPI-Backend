@@ -38,7 +38,9 @@ namespace CrmPlatformAPI.Data
             builder.Entity<User>()
                 .HasMany(ur => ur.UserRoles)
                 .WithOne(u => u.User)
-                .HasForeignKey(ur => ur.UserId);
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Keeps roles even if user is deleted
+
 
             builder.Entity<SoftwareCompany>()
                    .HasMany(sc => sc.Users)
@@ -57,7 +59,8 @@ namespace CrmPlatformAPI.Data
                 .HasMany(ur => ur.UserRoles)
                 .WithOne(r => r.Role)
                 .HasForeignKey(ur => ur.RoleId)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.Entity<User>()
                 .HasOne(u => u.Photo)
@@ -102,13 +105,15 @@ namespace CrmPlatformAPI.Data
                 .HasOne(t => t.Creator)
                 .WithMany()
                 .HasForeignKey(t => t.CreatorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull); 
+
 
             builder.Entity<Ticket>()
                 .HasOne(t => t.Handler)
                 .WithMany()
                 .HasForeignKey(t => t.HandlerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull); 
+
 
             builder.Entity<TicketStatusHistory>()
                 .HasOne(sh => sh.Ticket)
@@ -120,7 +125,8 @@ namespace CrmPlatformAPI.Data
                 .HasOne(h => h.UpdatedByUser)
                 .WithMany()
                 .HasForeignKey(h => h.UpdatedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
+
 
             builder.Entity<Ticket>()
                   .Property(t => t.Status)
@@ -138,19 +144,22 @@ namespace CrmPlatformAPI.Data
                   .HasOne(f => f.FromUser)
                   .WithMany() 
                   .HasForeignKey(f => f.FromUserId)
-                  .OnDelete(DeleteBehavior.Restrict); 
+                  .OnDelete(DeleteBehavior.SetNull); 
+
 
             builder.Entity<Feedback>()
                 .HasOne(f => f.ToUser)
                 .WithMany() 
                 .HasForeignKey(f => f.ToUserId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.SetNull); 
+
 
             builder.Entity<Feedback>()
                 .HasOne(f => f.Ticket)
                 .WithMany() 
                 .HasForeignKey(f => f.TicketId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull); 
+
 
         }
     }
