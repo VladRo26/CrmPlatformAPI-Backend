@@ -143,6 +143,10 @@ namespace CrmPlatformAPI.Helpers
             CreateMap<FeedBackSentiment, FeedBackSentimentDTO>()
                .ReverseMap(); // Enables reverse mapping if needed
 
+            CreateMap<CreateBeneficiaryCompanyWithPhotoDTO, BeneficiaryCompany>();
+
+
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
+using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,16 @@ namespace CrmPlatformAPI.Controllers
     {
         private readonly IRepositoryBeneficiaryCompany _repositoryBeneficiaryCompany;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public BeneficiaryCompanyController(IRepositoryBeneficiaryCompany repositoryBeneficiaryCompanies, IMapper mapper)
+
+
+        public BeneficiaryCompanyController(IRepositoryBeneficiaryCompany repositoryBeneficiaryCompanies, IMapper mapper, IPhotoService photoService)
         {
             _repositoryBeneficiaryCompany = repositoryBeneficiaryCompanies;
             _mapper= mapper;
+            _photoService = photoService;
+
         }
 
         [HttpPost]
@@ -69,6 +75,38 @@ namespace CrmPlatformAPI.Controllers
             var response = _mapper.Map<BeneficiaryCompanyDTO>(company);
             return Ok(response);
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterBeneficiaryCompany([FromForm] CreateBeneficiaryCompanyWithPhotoDTO dto)
+        {
+            // Map DTO to domain model
+            var beneficiaryCompany = _mapper.Map<BeneficiaryCompany>(dto);
+
+            if (dto.File != null)
+            {
+                var uploadResult = await _photoService.AddPhotoAsync(dto.File);
+                if (uploadResult.Error != null)
+                {
+                    return BadRequest(uploadResult.Error.Message);
+                }
+
+                beneficiaryCompany.CompanyPhoto = new CompanyPhoto
+                {
+                    Url = uploadResult.SecureUrl.AbsoluteUri,
+                    PublicId = uploadResult.PublicId
+                };
+            }
+
+            var createdCompany = await _repositoryBeneficiaryCompany.CreateAsync(beneficiaryCompany);
+            if (createdCompany == null)
+            {
+                return BadRequest("Failed to create company.");
+            }
+
+            var response = _mapper.Map<BeneficiaryCompanyDTO>(createdCompany);
+            return Ok(response);
+        }
+
 
     }
 }
