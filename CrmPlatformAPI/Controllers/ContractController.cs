@@ -120,6 +120,29 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpPost("create-contract")]
+        public async Task<IActionResult> CreateContractByName([FromForm] CreateContractByNameDTO dto)
+        {
+            var contract = _mapper.Map<Contract>(dto);
+
+            try
+            {
+                // This method in your repository will look up company IDs by name.
+                var savedContract = await _repositoryContract.CreateAsync(
+                    contract,
+                    dto.BeneficiaryCompanyName,
+                    dto.SoftwareCompanyName);
+
+                var response = _mapper.Map<ContractDTO>(savedContract);
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
 
     }

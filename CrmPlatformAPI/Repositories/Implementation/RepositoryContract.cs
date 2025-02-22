@@ -81,16 +81,15 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new ArgumentException($"Software company '{softwareCompanyName}' not found.");
             }
 
-   
             contract.BeneficiaryCompanyId = beneficiaryCompany.Id;
             contract.SoftwareCompanyId = softwareCompany.Id;
-
 
             await _context.Contracts.AddAsync(contract);
             await _context.SaveChangesAsync();
 
             return contract;
         }
+
 
         public async Task<IEnumerable<Models.Domain.Contract>> GetContractsByBeneficiaryCompanyNameAsync(string beneficiaryCompanyName)
         {

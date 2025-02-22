@@ -35,6 +35,27 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         }
 
+        public async Task<ImageUploadResult> AddCompanyPhotoAsync(IFormFile file)
+        {
+            var uploadRes = new ImageUploadResult();
+
+            if (file.Length > 0)
+            {
+                using var stream = file.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(file.FileName, stream),
+                    Transformation = new Transformation().Height(770).Width(770).Crop("fill"),
+                    Folder = "CRMPlatform"
+                };
+
+                uploadRes = await _cloudinary.UploadAsync(uploadParams);
+
+            }
+            return uploadRes;
+
+        }
+
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);

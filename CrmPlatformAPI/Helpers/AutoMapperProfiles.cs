@@ -144,7 +144,8 @@ namespace CrmPlatformAPI.Helpers
                .ReverseMap(); // Enables reverse mapping if needed
 
             CreateMap<CreateBeneficiaryCompanyWithPhotoDTO, BeneficiaryCompany>();
-
+            CreateMap<CreateSoftwareCompanyWithPhotoDTO, SoftwareCompany>();
+            CreateMap<CreateContractByNameDTO, Contract>();
 
 
         }

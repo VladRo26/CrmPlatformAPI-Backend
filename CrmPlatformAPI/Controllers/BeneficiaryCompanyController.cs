@@ -84,7 +84,7 @@ namespace CrmPlatformAPI.Controllers
 
             if (dto.File != null)
             {
-                var uploadResult = await _photoService.AddPhotoAsync(dto.File);
+                var uploadResult = await _photoService.AddCompanyPhotoAsync(dto.File);
                 if (uploadResult.Error != null)
                 {
                     return BadRequest(uploadResult.Error.Message);

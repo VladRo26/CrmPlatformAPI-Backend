@@ -6,6 +6,8 @@ namespace CrmPlatformAPI.Repositories.Interface
     {
         Task<ImageUploadResult> AddPhotoAsync(IFormFile file);
 
+        Task<ImageUploadResult> AddCompanyPhotoAsync(IFormFile file);
+
         Task<DeletionResult> DeletePhotoAsync(string publicId);
     }
 }
