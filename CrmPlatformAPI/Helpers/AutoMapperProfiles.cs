@@ -154,6 +154,13 @@ namespace CrmPlatformAPI.Helpers
             .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
             .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
 
+            CreateMap<UpdateBeneficiaryCompanyDTO, BeneficiaryCompany>()
+                .ForMember(dest => dest.CompanyPhoto, opt => opt.Ignore());
+
+            CreateMap<UpdateSoftwareCompanyDTO, SoftwareCompany>()
+                .ForMember(dest => dest.CompanyPhoto, opt => opt.Ignore());
+
+
 
 
 

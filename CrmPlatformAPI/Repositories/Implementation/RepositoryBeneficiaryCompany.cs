@@ -42,10 +42,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
                .ToListAsync();
         }
 
-        Task<BeneficiaryCompany?> IRepositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(string name)
-        {
-            return _context.BeneficiaryCompanies.FirstOrDefaultAsync(c => c.Name == name);
-        }
 
         public async Task<BeneficiaryCompany?> GetCompanyByUsernameAsync(string username)
         {
@@ -94,6 +90,57 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             return await PagedList<BeneficiaryCompany>.CreateAsync(query, companyParams.PageNumber, companyParams.PageSize);
         }
+
+        public async Task<BeneficiaryCompany?> GetByIdAsync(int id)
+        {
+            if (_context == null)
+                return null;
+
+            return await _context.BeneficiaryCompanies
+                .Include(bc => bc.CompanyPhoto)
+                .FirstOrDefaultAsync(bc => bc.Id == id);
+        }
+
+        public async Task<BeneficiaryCompany?> UpdateAsync(BeneficiaryCompany updatedCompany)
+        {
+            if (_context == null)
+                return null;
+
+            // Retrieve the existing company record including the CompanyPhoto
+            var existingCompany = await _context.BeneficiaryCompanies
+                .Include(bc => bc.CompanyPhoto)
+                .FirstOrDefaultAsync(bc => bc.Id == updatedCompany.Id);
+
+            if (existingCompany == null)
+                return null;
+
+            // Manually update only the properties you want to change.
+            existingCompany.Name = updatedCompany.Name;
+            existingCompany.ShortDescription = updatedCompany.ShortDescription;
+            existingCompany.ActivityDomain = updatedCompany.ActivityDomain;
+            existingCompany.Address = updatedCompany.Address;
+            existingCompany.EstablishmentDate = updatedCompany.EstablishmentDate;
+
+            // Update the CompanyPhoto reference. This will update if a new photo is provided,
+            // or leave it unchanged if no new photo is provided.
+            existingCompany.CompanyPhoto = updatedCompany.CompanyPhoto;
+
+            await _context.SaveChangesAsync();
+            return existingCompany;
+        }
+
+        public async Task<BeneficiaryCompany?> GetBeneficiaryCompanyByNameAsync(string companyName)
+        {
+            if (_context == null)
+                return null;
+
+            return await _context.BeneficiaryCompanies
+                .Include(bc => bc.CompanyPhoto) // Include photo if needed
+                .FirstOrDefaultAsync(bc => bc.Name == companyName);
+        }
+
+
+
 
 
     }

@@ -15,6 +15,10 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<PagedList<SoftwareCompany>> GetCompaniesAsync(CompanyParams companyParams);
 
+        Task<SoftwareCompany?> GetByIdAsync(int id);
+        Task<SoftwareCompany?> UpdateAsync(SoftwareCompany updatedCompany);
+
+
         Task<bool> ExistsAsync(string name);
     }
 

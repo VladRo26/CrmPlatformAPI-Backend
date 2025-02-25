@@ -118,9 +118,68 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+  [HttpPut("ByName/{companyName}")]
+        public async Task<IActionResult> UpdateBeneficiaryCompanyByName(string companyName, [FromForm] UpdateBeneficiaryCompanyDTO dto)
+        {
+            // Retrieve the existing company by name.
+            var existingCompany = await _repositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(companyName);
+            if (existingCompany == null)
+            {
+                return NotFound(new { message = "Company not found." });
+            }
 
+            // Map the update DTO to a domain model.
+            // Ensure your AutoMapper profile for UpdateBeneficiaryCompanyDTO → BeneficiaryCompany ignores the CompanyPhoto.
+            var updatedCompany = _mapper.Map<BeneficiaryCompany>(dto);
+            updatedCompany.Id = existingCompany.Id; // Preserve the existing company's Id
 
+            // If a new photo file is provided, upload it.
+            if (dto.File != null)
+            {
+                var uploadResult = await _photoService.AddCompanyPhotoAsync(dto.File);
+                if (uploadResult.Error != null)
+                {
+                    return BadRequest(uploadResult.Error.Message);
+                }
 
+                updatedCompany.CompanyPhoto = new CompanyPhoto
+                {
+                    Url = uploadResult.SecureUrl.AbsoluteUri,
+                    PublicId = uploadResult.PublicId
+                };
+            }
+            else
+            {
+                // If no new file is provided, keep the existing photo.
+                updatedCompany.CompanyPhoto = existingCompany.CompanyPhoto;
+            }
+
+            // Update the company.
+            var result = await _repositoryBeneficiaryCompany.UpdateAsync(updatedCompany);
+            if (result == null)
+            {
+                return BadRequest("Failed to update company.");
+            }
+
+            var response = _mapper.Map<BeneficiaryCompanyDTO>(result);
+            return Ok(response);
+        }
+
+        [HttpGet("ByName/{companyName}")]
+        public async Task<IActionResult> GetBeneficiaryCompanyByName(string companyName)
+        {
+            var company = await _repositoryBeneficiaryCompany.GetBeneficiaryCompanyByNameAsync(companyName);
+
+            if (company == null)
+            {
+                return NotFound(new { message = $"No company found with name '{companyName}'." });
+            }
+
+            var response = _mapper.Map<BeneficiaryCompanyDTO>(company);
+            return Ok(response);
+        }
 
     }
+
+
 }

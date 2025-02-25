@@ -107,6 +107,53 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateSoftwareCompany(int id, [FromForm] UpdateSoftwareCompanyDTO dto)
+        {
+            // Retrieve the existing company using a new repository method
+            var existingCompany = await _repositorySoftwareCompany.GetByIdAsync(id);
+            if (existingCompany == null)
+            {
+                return NotFound(new { message = "Software company not found." });
+            }
+
+            // Map DTO to domain model (AutoMapper profile should ignore CompanyPhoto)
+            var updatedCompany = _mapper.Map<SoftwareCompany>(dto);
+            updatedCompany.Id = id; // Ensure we update the correct entity
+
+            // If a new photo file is provided, upload it using the photo service.
+            if (dto.File != null)
+            {
+                var uploadResult = await _photoService.AddCompanyPhotoAsync(dto.File);
+                if (uploadResult.Error != null)
+                {
+                    return BadRequest(uploadResult.Error.Message);
+                }
+                updatedCompany.CompanyPhoto = new CompanyPhoto
+                {
+                    Url = uploadResult.SecureUrl.AbsoluteUri,
+                    PublicId = uploadResult.PublicId
+                };
+            }
+            else
+            {
+                // Retain the existing photo if no new file is provided.
+                updatedCompany.CompanyPhoto = existingCompany.CompanyPhoto;
+            }
+
+            // Call the repository update method.
+            var result = await _repositorySoftwareCompany.UpdateAsync(updatedCompany);
+            if (result == null)
+            {
+                return BadRequest("Failed to update software company.");
+            }
+
+            var response = _mapper.Map<SoftwareCompanyDTO>(result);
+            return Ok(response);
+        }
+
+
 
 
 
