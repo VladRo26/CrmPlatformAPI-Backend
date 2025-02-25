@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Extensions;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
@@ -106,6 +108,18 @@ namespace CrmPlatformAPI.Controllers
             var response = _mapper.Map<BeneficiaryCompanyDTO>(createdCompany);
             return Ok(response);
         }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetBeneficiaryCompaniesPaged([FromQuery] CompanyParams companyParams)
+        {
+            var companies = await _repositoryBeneficiaryCompany.GetCompaniesAsync(companyParams);
+            Response.AddPagination(companies);
+            var response = _mapper.Map<IEnumerable<BeneficiaryCompanyDTO>>(companies);
+            return Ok(response);
+        }
+
+
+
 
 
     }

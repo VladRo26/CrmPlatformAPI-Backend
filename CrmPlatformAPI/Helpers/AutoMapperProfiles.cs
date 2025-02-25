@@ -147,6 +147,17 @@ namespace CrmPlatformAPI.Helpers
             CreateMap<CreateSoftwareCompanyWithPhotoDTO, SoftwareCompany>();
             CreateMap<CreateContractByNameDTO, Contract>();
 
+            CreateMap<CreateContractDTO, Contract>();
+                CreateMap<UpdateContractDTO, Contract>()
+            .ForMember(dest => dest.BeneficiaryCompanyId, opt => opt.Ignore())
+            .ForMember(dest => dest.SoftwareCompanyId, opt => opt.Ignore())
+            .ForMember(dest => dest.BeneficiaryCompany, opt => opt.Ignore())
+            .ForMember(dest => dest.SoftwareCompany, opt => opt.Ignore());
+
+
+
+
+
 
         }
     }

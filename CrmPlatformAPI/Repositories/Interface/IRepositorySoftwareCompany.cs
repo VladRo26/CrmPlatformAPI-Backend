@@ -1,4 +1,5 @@
-﻿using CrmPlatformAPI.Models.Domain;
+﻿using CrmPlatformAPI.Helpers;
+using CrmPlatformAPI.Models.Domain;
 
 namespace CrmPlatformAPI.Repositories.Interface
 {
@@ -11,6 +12,8 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<SoftwareCompany?> GetSoftwareCompanyByNameAsync(string name);
 
         Task<SoftwareCompany?> GetSoftwareCompanyByUserIdAsync(int userId);
+
+        Task<PagedList<SoftwareCompany>> GetCompaniesAsync(CompanyParams companyParams);
 
         Task<bool> ExistsAsync(string name);
     }

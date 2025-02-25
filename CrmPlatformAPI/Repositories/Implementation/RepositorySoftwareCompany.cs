@@ -1,4 +1,5 @@
 ﻿using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,31 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Include(sc => sc.CompanyPhoto) // Include the CompanyPhoto relationship
                 .FirstOrDefaultAsync(sc => sc.Users.Any(user => user.Id == userId));
         }
+
+        public async Task<PagedList<SoftwareCompany>> GetCompaniesAsync(CompanyParams companyParams)
+        {
+            if (_context == null)
+                return null;
+
+            var query = _context.SoftwareCompanies
+                                .Include(sc => sc.CompanyPhoto)
+                                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(companyParams.CompanyName))
+            {
+                query = query.Where(c => c.Name.Contains(companyParams.CompanyName));
+            }
+
+            if (!string.IsNullOrEmpty(companyParams.OrderBy))
+            {
+                query = query.OrderBy(c => c.Name);
+            }
+
+            return await PagedList<SoftwareCompany>.CreateAsync(query, companyParams.PageNumber, companyParams.PageSize);
+        }
+
+
+
 
     }
 }

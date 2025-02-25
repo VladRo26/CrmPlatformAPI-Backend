@@ -20,5 +20,13 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<int> CountContractsAsync();
 
 
+        Task<Contract?> UpdateContractStatusAsync(int contractId, float newStatus);
+        Task<Contract?> UpdateContractAsync(Contract updatedContract);
+
+        Task<Models.Domain.Contract?> GetContractByIdAsync(int id);
+
+
+
+
     }
 }

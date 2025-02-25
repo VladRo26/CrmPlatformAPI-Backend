@@ -1,6 +1,10 @@
-﻿using CrmPlatformAPI.Data;
+﻿using Azure;
+using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
+using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrmPlatformAPI.Repositories.Implementation
@@ -68,6 +72,29 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .Include(bc => bc.CompanyPhoto) // Include the CompanyPhoto relationship
                 .FirstOrDefaultAsync(bc => bc.Users.Any(user => user.Id == userId));
         }
+
+        public async Task<PagedList<BeneficiaryCompany>> GetCompaniesAsync(CompanyParams companyParams)
+        {
+            if (_context == null)
+                return null;
+
+            var query = _context.BeneficiaryCompanies
+                                .Include(bc => bc.CompanyPhoto)
+                                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(companyParams.CompanyName))
+            {
+                query = query.Where(c => c.Name.Contains(companyParams.CompanyName));
+            }
+
+            if (!string.IsNullOrEmpty(companyParams.OrderBy))
+            {
+                query = query.OrderBy(c => c.Name);
+            }
+
+            return await PagedList<BeneficiaryCompany>.CreateAsync(query, companyParams.PageNumber, companyParams.PageSize);
+        }
+
 
     }
 }

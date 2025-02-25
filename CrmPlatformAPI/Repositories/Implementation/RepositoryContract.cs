@@ -152,7 +152,71 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return await _context.Contracts.CountAsync();
         }
 
+        public async Task<Models.Domain.Contract?> UpdateContractStatusAsync(int contractId, float newStatus)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
 
+            // Find the contract by its id
+            var contract = await _context.Contracts.FindAsync(contractId);
+            if (contract == null)
+            {
+                return null;
+            }
+
+            // Update only the status property (as float)
+            contract.Status = newStatus;
+            await _context.SaveChangesAsync();
+
+            return contract;
+        }
+
+        public async Task<Models.Domain.Contract?> UpdateContractAsync(Models.Domain.Contract updatedContract)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            // Retrieve the existing contract record
+            var existingContract = await _context.Contracts.FindAsync(updatedContract.Id);
+            if (existingContract == null)
+            {
+                return null;
+            }
+
+            // Preserve the foreign key values
+            updatedContract.BeneficiaryCompanyId = existingContract.BeneficiaryCompanyId;
+            updatedContract.SoftwareCompanyId = existingContract.SoftwareCompanyId;
+
+            // Optionally preserve navigation properties if needed:
+            // updatedContract.BeneficiaryCompany = existingContract.BeneficiaryCompany;
+            // updatedContract.SoftwareCompany = existingContract.SoftwareCompany;
+
+            // Update all values
+            _context.Entry(existingContract).CurrentValues.SetValues(updatedContract);
+            await _context.SaveChangesAsync();
+
+            return existingContract;
+        }
+
+
+        public async Task<Models.Domain.Contract?> GetContractByIdAsync(int id)
+        {
+            if (_context == null)
+            {
+                return null;
+            }
+
+            return await _context.Contracts
+                .Include(c => c.BeneficiaryCompany)
+                    .ThenInclude(bc => bc.CompanyPhoto)
+                .Include(c => c.SoftwareCompany)
+                    .ThenInclude(sc => sc.CompanyPhoto)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
 
     }
 }

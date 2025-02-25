@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CrmPlatformAPI.Models;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
@@ -142,7 +143,48 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateContractStatus(int id, [FromBody] UpdateContractStatusDTO dto)
+        {
+            var updatedContract = await _repositoryContract.UpdateContractStatusAsync(id, dto.Status);
+            if (updatedContract == null)
+            {
+                return NotFound(new { message = "Contract not found." });
+            }
+            var response = _mapper.Map<ContractDTO>(updatedContract);
+            return Ok(response);
+        }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateContract(int id, [FromForm] UpdateContractDTO dto)
+        {
+            // Map the update DTO to your domain model
+            var contractToUpdate = _mapper.Map<Contract>(dto);
+            // Ensure the correct contract is updated by setting the Id
+            contractToUpdate.Id = id;
+
+            var updatedContract = await _repositoryContract.UpdateContractAsync(contractToUpdate);
+            if (updatedContract == null)
+            {
+                return NotFound(new { message = "Contract not found." });
+            }
+            var response = _mapper.Map<ContractDTO>(updatedContract);
+            return Ok(response);
+        }
+
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetContractById(int id)
+        {
+            var contract = await _repositoryContract.GetContractByIdAsync(id);
+            if (contract == null)
+            {
+                return NotFound(new { message = "Contract not found." });
+            }
+            var response = _mapper.Map<ContractDTO>(contract);
+            return Ok(response);
+        }
 
 
     }
