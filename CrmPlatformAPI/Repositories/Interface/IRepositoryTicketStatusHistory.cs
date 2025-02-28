@@ -11,5 +11,9 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task AddHistoryAsync(int ticketId, TicketStatusHistoryDTO dto);
 
+        Task<IEnumerable<TicketStatusHistory>> GetLastTicketStatusHistoryByUserAsync(string username, int count);
+
+        Task MarkStatusAsSeenAsync(string message, DateTime updatedAt, string updatedByUsername);
+
     }
 }

@@ -430,14 +430,27 @@ namespace CrmPlatformAPI.Controllers
 
             if (ticketsData == null || !ticketsData.Any())
             {
-                return Ok(new List<object>()); // Return an empty list instead of a wrapped object
+                return Ok(new List<object>());
             }
 
             return Ok(ticketsData);
         }
 
+        [HttpGet("LastStatusHistoryByUser")]
+        public async Task<IActionResult> GetLastTicketStatusHistoryByUser([FromQuery] string username, [FromQuery] int count)
+        {
+            var history = await _repositoryTicketStatusHistory.GetLastTicketStatusHistoryByUserAsync(username, count);
+            var historyDtos = _mapper.Map<IEnumerable<TicketStatusHistoryDTO>>(history);
+            return Ok(historyDtos);
+        }
+
+        [HttpPut("MarkAsSeen")]
+        public async Task<IActionResult> MarkStatusAsSeen([FromBody] MarkSeenDTO markSeenDto)
+        {
+            await _repositoryTicketStatusHistory.MarkStatusAsSeenAsync(markSeenDto.Message, markSeenDto.UpdatedAt, markSeenDto.UpdatedByUsername);
+            return Ok(new { message = "Status marked as seen." });
+        }
 
 
     }
-
 }

@@ -107,22 +107,23 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("ByName/{companyName}")]
         [Authorize]
-        public async Task<IActionResult> UpdateSoftwareCompany(int id, [FromForm] UpdateSoftwareCompanyDTO dto)
+        public async Task<IActionResult> UpdateSoftwareCompanyByName(string companyName, [FromForm] UpdateSoftwareCompanyDTO dto)
         {
-            // Retrieve the existing company using a new repository method
-            var existingCompany = await _repositorySoftwareCompany.GetByIdAsync(id);
+            // Retrieve the existing software company by name.
+            var existingCompany = await _repositorySoftwareCompany.GetSoftwareCompanyByNameAsync(companyName);
             if (existingCompany == null)
             {
                 return NotFound(new { message = "Software company not found." });
             }
 
-            // Map DTO to domain model (AutoMapper profile should ignore CompanyPhoto)
+            // Map the update DTO to a domain model.
+            // Make sure your AutoMapper profile for UpdateSoftwareCompanyDTO → SoftwareCompany ignores the CompanyPhoto.
             var updatedCompany = _mapper.Map<SoftwareCompany>(dto);
-            updatedCompany.Id = id; // Ensure we update the correct entity
+            updatedCompany.Id = existingCompany.Id; // Preserve the existing company's Id
 
-            // If a new photo file is provided, upload it using the photo service.
+            // If a new photo file is provided, upload it.
             if (dto.File != null)
             {
                 var uploadResult = await _photoService.AddCompanyPhotoAsync(dto.File);
@@ -142,7 +143,7 @@ namespace CrmPlatformAPI.Controllers
                 updatedCompany.CompanyPhoto = existingCompany.CompanyPhoto;
             }
 
-            // Call the repository update method.
+            // Update the company using the repository.
             var result = await _repositorySoftwareCompany.UpdateAsync(updatedCompany);
             if (result == null)
             {
@@ -153,10 +154,17 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
-
-
-
-
+        [HttpGet("ByName/{companyName}")]
+        public async Task<IActionResult> GetSoftwareCompanyByName(string companyName)
+        {
+            var company = await _repositorySoftwareCompany.GetSoftwareCompanyByNameAsync(companyName);
+            if (company == null)
+            {
+                return NotFound(new { message = $"Software company with name '{companyName}' not found." });
+            }
+            var response = _mapper.Map<SoftwareCompanyDTO>(company);
+            return Ok(response);
+        }
 
     }
 }

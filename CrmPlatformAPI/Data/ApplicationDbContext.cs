@@ -105,14 +105,14 @@ namespace CrmPlatformAPI.Data
                 .HasOne(t => t.Creator)
                 .WithMany()
                 .HasForeignKey(t => t.CreatorId)
-                .OnDelete(DeleteBehavior.SetNull); 
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade issues
 
 
             builder.Entity<Ticket>()
-                .HasOne(t => t.Handler)
-                .WithMany()
-                .HasForeignKey(t => t.HandlerId)
-                .OnDelete(DeleteBehavior.SetNull); 
+               .HasOne(t => t.Handler)
+               .WithMany()
+               .HasForeignKey(t => t.HandlerId)
+               .OnDelete(DeleteBehavior.SetNull); // This can remain as SetNull
 
 
             builder.Entity<TicketStatusHistory>()
@@ -125,7 +125,7 @@ namespace CrmPlatformAPI.Data
                 .HasOne(h => h.UpdatedByUser)
                 .WithMany()
                 .HasForeignKey(h => h.UpdatedByUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             builder.Entity<Ticket>()
@@ -141,17 +141,17 @@ namespace CrmPlatformAPI.Data
                 .HasConversion<string>();
 
             builder.Entity<Feedback>()
-                  .HasOne(f => f.FromUser)
-                  .WithMany() 
-                  .HasForeignKey(f => f.FromUserId)
-                  .OnDelete(DeleteBehavior.SetNull); 
-
+                 .HasOne(f => f.FromUser)
+                 .WithMany()
+                 .HasForeignKey(f => f.FromUserId)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Feedback>()
                 .HasOne(f => f.ToUser)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(f => f.ToUserId)
-                .OnDelete(DeleteBehavior.SetNull); 
+                .OnDelete(DeleteBehavior.Restrict);
+
 
 
             builder.Entity<Feedback>()

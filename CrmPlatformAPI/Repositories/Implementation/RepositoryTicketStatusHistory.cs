@@ -70,6 +70,9 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception("Invalid status.");
             }
 
+            // Determine the unseen user
+            int unseenUserId = (int)(ticket.CreatorId == user.Id ? ticket.HandlerId ?? 0 : ticket.CreatorId);
+
             // Create the TicketStatusHistory record
             var history = new TicketStatusHistory
             {
@@ -78,7 +81,8 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 Message = dto.Message,
                 UpdatedAt = dto.UpdatedAt != default ? dto.UpdatedAt : DateTime.UtcNow,
                 UpdatedByUserId = user.Id,
-                TicketUserRole = ticketUserRole
+                TicketUserRole = ticketUserRole,
+                Seen = false // The other user hasn't seen this update yet
             };
 
             try
@@ -96,6 +100,41 @@ namespace CrmPlatformAPI.Repositories.Implementation
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while adding the ticket status history and updating the ticket status.", ex);
+            }
+        }
+
+
+        public async Task<IEnumerable<TicketStatusHistory>> GetLastTicketStatusHistoryByUserAsync(string username, int count)
+        {
+            if (_context == null)
+            {
+                return Enumerable.Empty<TicketStatusHistory>();
+            }
+
+            // Include Ticket with its Creator and Handler for filtering
+            return await _context.TicketStatusHistories
+                .Include(h => h.Ticket)
+                    .ThenInclude(t => t.Creator)
+                .Include(h => h.Ticket)
+                    .ThenInclude(t => t.Handler)
+                .Where(h => h.Ticket.Creator.UserName == username
+                         || (h.Ticket.Handler != null && h.Ticket.Handler.UserName == username))
+                .OrderByDescending(h => h.UpdatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task MarkStatusAsSeenAsync(string message, DateTime updatedAt, string updatedByUsername)
+        {
+            var history = await _context.TicketStatusHistories
+                .FirstOrDefaultAsync(h => h.Message == message
+                    && h.UpdatedAt == updatedAt
+                    && h.UpdatedByUser.UserName == updatedByUsername);
+
+            if (history != null)
+            {
+                history.Seen = true;
+                await _context.SaveChangesAsync();
             }
         }
 

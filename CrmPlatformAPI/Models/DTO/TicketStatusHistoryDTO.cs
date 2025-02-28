@@ -21,5 +21,7 @@ namespace CrmPlatformAPI.Models.DTO
 
         [Required(ErrorMessage = "Role of the updater is required.")]
         public string TicketUserRole { get; set; } // Enum for Creator/Handler
+
+        public bool Seen { get; set; } = false;
     }
 }

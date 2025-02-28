@@ -19,6 +19,11 @@ namespace CrmPlatformAPI.Models.Domain
         public User UpdatedByUser { get; set; }
 
         public TicketUserRole TicketUserRole { get; set; } // Use enum for Creator/Handler
+
+        public bool Seen { get; set; } = false;
+
+
+
     }
 
 

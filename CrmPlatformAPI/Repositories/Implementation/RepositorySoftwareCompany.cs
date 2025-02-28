@@ -40,11 +40,16 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return _context.SoftwareCompanies.AnyAsync(c => c.Name == name);
         }
 
-        Task<SoftwareCompany?> IRepositorySoftwareCompany.GetSoftwareCompanyByNameAsync(string name)
+        public async Task<SoftwareCompany?> GetSoftwareCompanyByNameAsync(string name)
         {
+            if (_context == null)
+                return null;
 
-            return _context.SoftwareCompanies.FirstOrDefaultAsync(c => c.Name == name);
+            return await _context.SoftwareCompanies
+                .Include(sc => sc.CompanyPhoto) // include related CompanyPhoto, if needed
+                .FirstOrDefaultAsync(c => c.Name == name);
         }
+
 
         public async Task<SoftwareCompany?> GetSoftwareCompanyByUserIdAsync(int userId)
         {

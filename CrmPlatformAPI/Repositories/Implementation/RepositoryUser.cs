@@ -91,7 +91,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                .ToListAsync();
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int? id)
         {
             if (_context == null)
             {

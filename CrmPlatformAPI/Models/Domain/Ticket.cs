@@ -16,8 +16,8 @@ namespace CrmPlatformAPI.Models.Domain
         public Contract? Contract { get; set; }
 
         [ForeignKey("Creator")]
-        public int CreatorId { get; set; }
-        public User Creator { get; set; }
+        public int? CreatorId { get; set; }
+        public User? Creator { get; set; }
 
         [ForeignKey("Handler")]
         public int? HandlerId { get; set; } 

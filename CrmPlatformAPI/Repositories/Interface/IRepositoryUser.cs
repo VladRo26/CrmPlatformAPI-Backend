@@ -14,7 +14,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
 
 
-        Task<User> GetByIdAsync(int id);
+        Task<User> GetByIdAsync(int? id);
 
         Task<IEnumerable<User>> GetByCompanyAsync(string name);
 
@@ -27,8 +27,5 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<string?> GetPhotoUrlByUsernameAsync(string username);
 
         Task<bool> DeleteUserAsync(int id);
-
-
-
     }
 }
