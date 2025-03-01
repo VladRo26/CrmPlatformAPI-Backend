@@ -53,6 +53,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
             services.AddScoped<IRepositoryFeedbackSentiment, RepositoryFeedbackSentiment>();
             services.AddScoped<IRepositorySentimentAnalysis, RepositorySentimentAnalysis>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<ActivityLog>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);

@@ -22,8 +22,6 @@ namespace CrmPlatformAPI.Models.Domain
 
         public bool Seen { get; set; } = false;
 
-
-
     }
 
 

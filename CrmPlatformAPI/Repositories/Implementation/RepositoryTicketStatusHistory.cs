@@ -11,9 +11,12 @@ namespace CrmPlatformAPI.Repositories.Implementation
     {
         private readonly ApplicationDbContext _context;
 
-        public RepositoryTicketStatusHistory(ApplicationDbContext context)
+        private readonly IEmailService _emailService;
+
+        public RepositoryTicketStatusHistory(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId)
@@ -49,38 +52,44 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception($"Ticket with ID {ticketId} not found.");
             }
 
-            var user = ticket.Creator?.UserName == dto.UpdatedByUsername ? ticket.Creator
-                       : ticket.Handler?.UserName == dto.UpdatedByUsername ? ticket.Handler
-                       : null;
+            // Find the user who updated the ticket
+            var updatedByUser = (ticket.Creator?.UserName == dto.UpdatedByUsername) ? ticket.Creator
+                               : (ticket.Handler?.UserName == dto.UpdatedByUsername) ? ticket.Handler
+                               : null;
 
-            if (user == null)
+            if (updatedByUser == null)
             {
                 throw new Exception($"User '{dto.UpdatedByUsername}' is not associated with the ticket as Creator or Handler.");
             }
 
-            // Validate and map the role
+            // Validate and convert TicketUserRole
             if (!Enum.TryParse<TicketUserRole>(dto.TicketUserRole, true, out var ticketUserRole))
             {
                 throw new Exception("Invalid role for TicketUserRole.");
             }
 
-            // Validate and parse status
+            // Validate and convert Status
             if (!Enum.TryParse<TicketStatus>(dto.Status, true, out var parsedStatus))
             {
                 throw new Exception("Invalid status.");
             }
 
-            // Determine the unseen user
-            int unseenUserId = (int)(ticket.CreatorId == user.Id ? ticket.HandlerId ?? 0 : ticket.CreatorId);
+            // Determine the other user (recipient of the email)
+            var recipient = (updatedByUser.Id == ticket.CreatorId) ? ticket.Handler : ticket.Creator;
 
-            // Create the TicketStatusHistory record
+            if (recipient == null)
+            {
+                throw new Exception("No other user found on the ticket to notify.");
+            }
+
+            // Create TicketStatusHistory record
             var history = new TicketStatusHistory
             {
                 TicketId = ticketId,
                 Status = parsedStatus,
                 Message = dto.Message,
                 UpdatedAt = dto.UpdatedAt != default ? dto.UpdatedAt : DateTime.UtcNow,
-                UpdatedByUserId = user.Id,
+                UpdatedByUserId = updatedByUser.Id,
                 TicketUserRole = ticketUserRole,
                 Seen = false // The other user hasn't seen this update yet
             };
@@ -96,12 +105,30 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
                 // Save changes
                 await _context.SaveChangesAsync();
+
+                // 📧 Send Email Notification to the Other User
+                string subject = $"[Ticket #{ticketId}] Status Updated to {parsedStatus}";
+                string message = $@"
+            Hello {recipient.FirstName},<br><br>
+            The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
+            <b>New Status:</b> {parsedStatus} <br>
+            <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
+            <b>Message:</b> {dto.Message} <br><br>
+            Please check the ticket for more details.<br><br>
+            Regards,<br>
+            CRM Support Team
+        ";
+
+                await _emailService.SendEmailAsync(recipient.Email, subject, message);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the ticket status history and updating the ticket status.", ex);
+                throw new Exception("An error occurred while updating the ticket status and sending the notification email.", ex);
             }
         }
+
+
+
 
 
         public async Task<IEnumerable<TicketStatusHistory>> GetLastTicketStatusHistoryByUserAsync(string username, int count)

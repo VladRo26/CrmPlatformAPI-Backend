@@ -324,8 +324,6 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
-
-
         [HttpPost("AddStatusHistory")]
         public async Task<IActionResult> AddTicketStatusHistory(int ticketId, [FromBody] TicketStatusHistoryDTO dto)
         {
@@ -338,13 +336,15 @@ namespace CrmPlatformAPI.Controllers
 
                 await _repositoryTicketStatusHistory.AddHistoryAsync(ticketId, dto);
 
-                return Ok(new { message = "Ticket status history added successfully." });
+                return Ok(new { message = "Ticket status history added and user notified successfully." });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to add ticket status history.", error = ex.Message });
             }
         }
+
+
 
         [HttpPut("UpdateTDescription")]
         public async Task<IActionResult> UpdateTDescription([FromBody] UpdateTicketDescriptionDTO updateDto)

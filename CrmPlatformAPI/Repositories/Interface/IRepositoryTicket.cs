@@ -47,5 +47,6 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<TicketGroupedByCompanyDTO>> GetTicketsGroupedByBeneficiaryCompanyAsync(string username);
 
+
     }
 }

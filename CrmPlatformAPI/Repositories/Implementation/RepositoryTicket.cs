@@ -12,12 +12,14 @@ namespace CrmPlatformAPI.Repositories.Implementation
     {
         private readonly ApplicationDbContext _context;
         private readonly IRepositoryLLM _llmRepository;
+        private readonly IEmailService _emailService;
 
 
-        public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository)
+        public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository, IEmailService emailService)
         {
             _context = context;
             _llmRepository = llmRepository;
+            _emailService = emailService;
 
         }
         public async Task<IEnumerable<Ticket>> GetAllAsync()
@@ -632,5 +634,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 })
                 .ToListAsync();
         }
+
+
     }
 }

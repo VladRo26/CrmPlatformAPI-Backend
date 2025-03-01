@@ -15,5 +15,6 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task MarkStatusAsSeenAsync(string message, DateTime updatedAt, string updatedByUsername);
 
+
     }
 }
