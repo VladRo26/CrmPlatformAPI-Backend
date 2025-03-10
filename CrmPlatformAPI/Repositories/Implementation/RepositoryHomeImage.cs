@@ -24,5 +24,17 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return await _context.HomeImages.ToListAsync();
         }
 
+        public async Task<HomeImage> CreateAsync(HomeImage homeImage)
+        {
+            if (_context == null)
+            {
+                throw new Exception("Database context is not initialized.");
+            }
+
+            await _context.HomeImages.AddAsync(homeImage);
+            await _context.SaveChangesAsync();
+            return homeImage;
+        }
+
     }
 }

@@ -7,6 +7,8 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<Feedback>> GetByFromUserIdAsync(int fromUserId);
         Task<IEnumerable<Feedback>> GetByToUserIdAsync(int toUserId);
         Task<IEnumerable<Feedback>> GetByTicketIdAsync(int ticketId);
+        Task<bool> HasFeedbackFromUserAsync(int ticketId, string username);
+
 
 
 

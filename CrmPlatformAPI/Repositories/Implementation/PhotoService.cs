@@ -56,6 +56,27 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         }
 
+        public async Task<ImageUploadResult> AddHomeImageAsync(IFormFile file)
+        {
+            var uploadRes = new ImageUploadResult();
+
+            if (file.Length > 0)
+            {
+                using var stream = file.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(file.FileName, stream),
+                    Transformation = new Transformation().Height(900).Width(900).Crop("fill"),
+                    Folder = "CRMPlatform/HomeImages" // Optional: specify a separate folder
+                };
+
+                uploadRes = await _cloudinary.UploadAsync(uploadParams);
+            }
+            return uploadRes;
+        }
+
+
+
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
             var deleteParams = new DeletionParams(publicId);

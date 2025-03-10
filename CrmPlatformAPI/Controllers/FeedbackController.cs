@@ -302,6 +302,22 @@ namespace CrmPlatformAPI.Controllers
         }
 
 
+
+        public async Task<bool> HasFeedbackFromUserAsync(int ticketId, string username)
+        {
+            // Retrieve the user by username.
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                // Optionally, you could throw an exception if the user is not found.
+                return false;
+            }
+
+            // Check if any feedback exists for this ticket from this user.
+            return await _context.Feedbacks
+                .AnyAsync(f => f.TicketId == ticketId && f.FromUserId == user.Id);
+        }
+
     }
 
 
