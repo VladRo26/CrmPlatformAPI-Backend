@@ -7,5 +7,8 @@ namespace CrmPlatformAPI.Repositories.Interface
         Task<IEnumerable<HomeImage>> GetImagesAsync();
 
         Task<HomeImage> CreateAsync(HomeImage homeImage);
+
+        Task<HomeImage> DeleteImageAsync(string publicId);
+
     }
 }

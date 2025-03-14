@@ -302,7 +302,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
 
-
+        [HttpGet("has-feedback/{userId}")]
         public async Task<bool> HasFeedbackFromUserAsync(int ticketId, string username)
         {
             // Retrieve the user by username.

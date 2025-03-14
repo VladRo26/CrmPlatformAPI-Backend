@@ -67,7 +67,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 {
                     File = new FileDescription(file.FileName, stream),
                     Transformation = new Transformation().Height(900).Width(900).Crop("fill"),
-                    Folder = "CRMPlatform/HomeImages" // Optional: specify a separate folder
+                    Folder = "CRMPlatform" // Optional: specify a separate folder
                 };
 
                 uploadRes = await _cloudinary.UploadAsync(uploadParams);

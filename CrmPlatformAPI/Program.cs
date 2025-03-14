@@ -77,12 +77,12 @@ namespace CrmPlatformAPI
                 var userManager = services.GetRequiredService<UserManager<User>>();
                 var roleManager = services.GetRequiredService<RoleManager<Role>>();
                 await context.Database.MigrateAsync();
-                await Seed.SeedSoftwareComp(context);
-                await Seed.SeedBeneficiaryComp(context);
-                await Seed.SeedContract(context);
-                await Seed.SeedTickets(context);
-                await Seed.SeedTicketHistory(context);
-                await Seed.SeedFeedback(context);
+                //await Seed.SeedSoftwareComp(context);
+                //await Seed.SeedBeneficiaryComp(context);
+                //await Seed.SeedContract(context);
+                //await Seed.SeedTickets(context);
+                //await Seed.SeedTicketHistory(context);
+                //await Seed.SeedFeedback(context);
 
 
             }

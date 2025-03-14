@@ -35,10 +35,9 @@ namespace CrmPlatformAPI.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> CreateHomeImage([FromForm] CreateHomeImageDTO createHomeImageDTO)
         {
-            // Map the DTO to a HomeImage domain model.
+            // Map the DTO to the domain model.
             var homeImage = _mapper.Map<HomeImage>(createHomeImageDTO);
 
-            // Upload the image using the new method in PhotoService.
             if (createHomeImageDTO.File != null)
             {
                 var uploadResult = await _photoService.AddHomeImageAsync(createHomeImageDTO.File);
@@ -46,17 +45,47 @@ namespace CrmPlatformAPI.Controllers
                 {
                     return BadRequest(uploadResult.Error.Message);
                 }
+                // Manually set properties from the upload result.
                 homeImage.Url = uploadResult.SecureUrl.AbsoluteUri;
+                homeImage.PublicId = uploadResult.PublicId;
             }
 
             homeImage.Title = createHomeImageDTO.Title;
             homeImage.UploadDate = DateTime.Now;
 
-            // Save the new HomeImage record.
             var createdImage = await _repositoryHomeImage.CreateAsync(homeImage);
             var response = _mapper.Map<ImageDTO>(createdImage);
 
             return Ok(response);
         }
+
+
+        [HttpDelete("{*publicId}")]
+        public async Task<IActionResult> DeleteHomeImage(string publicId)
+        {
+            // First, delete the image record from the database.
+            var deletedImage = await _repositoryHomeImage.DeleteImageAsync(publicId);
+            if (deletedImage == null)
+            {
+                return NotFound(new { message = "Image not found in database" });
+            }
+
+            // Next, delete the image from Cloudinary.
+            var cloudinaryDeletionResult = await _photoService.DeletePhotoAsync(publicId);
+            if (cloudinaryDeletionResult.Result == "ok")
+            {
+                return Ok(new { message = "Image deleted successfully" });
+            }
+            else
+            {
+                // Optionally: you might consider restoring the record or logging the failure.
+                return BadRequest(new { message = "Image deleted from database but failed to delete from Cloudinary" });
+            }
+        }
+
+
+
     }
+
+
 }

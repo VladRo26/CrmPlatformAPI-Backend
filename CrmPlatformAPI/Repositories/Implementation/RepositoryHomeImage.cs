@@ -36,5 +36,21 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return homeImage;
         }
 
+        public async Task<HomeImage> DeleteImageAsync(string publicId)
+        {
+            if (_context == null)
+                throw new Exception("Database context is not initialized.");
+
+            // Find the image record by its PublicId.
+            var image = await _context.HomeImages.FirstOrDefaultAsync(x => x.PublicId == publicId);
+            if (image == null)
+                return null; // or throw an exception if preferred
+
+            _context.HomeImages.Remove(image);
+            await _context.SaveChangesAsync();
+            return image;
+        }
+
+
     }
 }
