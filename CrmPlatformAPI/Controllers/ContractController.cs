@@ -3,6 +3,7 @@ using CrmPlatformAPI.Models;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -20,7 +21,9 @@ namespace CrmPlatformAPI.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost]
+
         public async Task<IActionResult> CreateContract(CreateContractDTO createContractDTO)
         {
             var createContract = _mapper.Map<Contract>(createContractDTO);
@@ -121,6 +124,7 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost("create-contract")]
         public async Task<IActionResult> CreateContractByName([FromForm] CreateContractByNameDTO dto)
         {
@@ -143,6 +147,7 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateContractStatus(int id, [FromBody] UpdateContractStatusDTO dto)
         {

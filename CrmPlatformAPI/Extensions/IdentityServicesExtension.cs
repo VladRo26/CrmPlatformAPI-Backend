@@ -60,7 +60,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddAuthorizationBuilder()
                 .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
                 .AddPolicy("RequireModeratorRole", policy => policy.RequireRole("Moderator", "Admin"))
-                .AddPolicy("RequireUserRole", policy => policy.RequireRole("User", "Admin"))
+                .AddPolicy("RequireUserRole", policy => policy.RequireRole("User", "Moderator", "Admin"))
                 .AddPolicy("RequireDefaultRole", policy => policy.RequireRole("Default", "Admin", "Moderator"));
 
 

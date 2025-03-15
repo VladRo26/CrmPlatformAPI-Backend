@@ -6,6 +6,7 @@ using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -30,6 +31,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> GetAllTickets()
         {
             var tickets = await _repositoryTicket.GetAllAsync();
@@ -38,6 +41,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketById(int id)
         {
             var ticket = await _repositoryTicket.GetByIdAsync(id);
@@ -51,6 +56,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("CreateTicket")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> CreateTicket([FromBody] CreateTicketDTO createTicketDto)
         {
             try
@@ -84,6 +91,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpGet("ByUser/{userId:int}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsByUserId(int userId)
         {
             var tickets = await _repositoryTicket.GetByUserIdAsync(userId);
@@ -92,6 +101,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("ByTitle/{title}")]
+        [Authorize(Policy = "RequireDefaultRole")]
         public async Task<IActionResult> GetTicketsByTitle(string title)
         {
             var tickets = await _repositoryTicket.GetByTitleAsync(title);
@@ -100,6 +110,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("ByCompany/{name}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsByCompany(string name)
         {
             var tickets = await _repositoryTicket.GetByCompanyAsync(name);
@@ -109,6 +121,8 @@ namespace CrmPlatformAPI.Controllers
         //paginare
 
         [HttpGet("ByUserName")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsByUserName([FromQuery] TicketParams _ticketParams)
         {
             var tickets = await _repositoryTicket.GetByUserNameAsync(_ticketParams);
@@ -120,6 +134,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpGet("FeedbackByUserName/{username}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> GetFeedbackTicketByUserName(string username)
         {
             var tickets = await _repositoryTicket.GetFeedbackTicketByUserNameAsync(username);
@@ -129,6 +145,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpGet("ByHandlerUsername/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsByHandlerUsername(string username)
         {
             var tickets = await _repositoryTicket.GetByHandlerUsernameAsync(username);
@@ -143,6 +161,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("GenerateSummary/{id}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> GenerateSummary(int id)
         {
             try
@@ -166,6 +186,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPut("UpdateTicketTranslation/{id}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> UpdateTicketTranslation(int id, [FromBody] UpdateTranslationDTO updateTranslationDto)
         {
             try
@@ -191,11 +213,9 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
-
-
-
-
         [HttpPost("TranslateDescription/{id}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> TranslateDescription(int id, [FromQuery] string sourceLanguage, [FromQuery] string targetLanguage)
         {
             try
@@ -222,6 +242,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("GetHistoryByTicketId/{id}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> GetHistoryByTicketId(int id)
         {
             try
@@ -242,6 +264,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("TicketPerformance/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> TicketPerformance(string username)
         {
             try
@@ -287,6 +311,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPut("TakeOver/{ticketId}")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> TakeOverTicket(int ticketId, [FromQuery] int handlerId)
         {
             try
@@ -306,6 +332,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("ByContract/{contractId:int}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsByContractId(int contractId, [FromQuery] TicketContractsParams ticketContractsParams)
         {
             try
@@ -325,6 +353,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("AddStatusHistory")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> AddTicketStatusHistory(int ticketId, [FromBody] TicketStatusHistoryDTO dto)
         {
             try
@@ -347,6 +377,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpPut("UpdateTDescription")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> UpdateTDescription([FromBody] UpdateTicketDescriptionDTO updateDto)
         {
             try
@@ -381,6 +413,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("GroupedTicketsBySoftwareCompany/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetGroupedTicketsBySoftwareCompany(string username)
         {
             var ticketsData = await _repositoryTicket.GetTicketsGroupedBySoftwareCompanyAsync(username);
@@ -394,6 +428,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("GroupedTicketsByBeneficiaryCompany/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsGroupedByBeneficiaryCompany(string username)
         {
             var groupedTickets = await _repositoryTicket.GetTicketsGroupedByBeneficiaryCompanyAsync(username);
@@ -409,6 +445,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpGet("GroupedTicketsByContract/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetTicketsGroupedByContract(string username)
         {
             var groupedTickets = await _repositoryTicket.GetTicketsGroupedByContractAsync(username);
@@ -424,6 +462,8 @@ namespace CrmPlatformAPI.Controllers
 
 
         [HttpGet("GroupedTicketsByUserStatus/{username}")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetGroupedTicketsByUserStatus(string username)
         {
             var ticketsData = await _repositoryTicket.GetTicketsGroupedByUserStatusAsync(username);
@@ -437,6 +477,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("LastStatusHistoryByUser")]
+        [Authorize(Policy = "RequireDefaultRole")]
+
         public async Task<IActionResult> GetLastTicketStatusHistoryByUser([FromQuery] string username, [FromQuery] int count)
         {
             var history = await _repositoryTicketStatusHistory.GetLastTicketStatusHistoryByUserAsync(username, count);
@@ -445,6 +487,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPut("MarkAsSeen")]
+        [Authorize(Policy = "RequireUserRole")]
+
         public async Task<IActionResult> MarkStatusAsSeen([FromBody] MarkSeenDTO markSeenDto)
         {
             await _repositoryTicketStatusHistory.MarkStatusAsSeenAsync(markSeenDto.Message, markSeenDto.UpdatedAt, markSeenDto.UpdatedByUsername);

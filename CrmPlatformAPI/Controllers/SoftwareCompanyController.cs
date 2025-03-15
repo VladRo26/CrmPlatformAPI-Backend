@@ -27,8 +27,8 @@ namespace CrmPlatformAPI.Controllers
             _photoService = photoService;
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateSoftwareCompany(CreateSoftwareCompanyDTO createSoftwareCompanyDTO)
         {
             var createSoftwareCompany = _mapper.Map<SoftwareCompany>(createSoftwareCompanyDTO);
@@ -51,6 +51,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpGet("ByUserId/{userId}")]
+        [Authorize(Policy = "RequireUserRole")]
         public async Task<IActionResult> GetSoftwareCompanyByUserId(int userId)
         {
             var company = await _repositorySoftwareCompany.GetSoftwareCompanyByUserIdAsync(userId);
@@ -66,7 +67,8 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("register")]
-        [Authorize]
+        [Authorize(Policy = "RequireModeratorRole")]
+
         public async Task<IActionResult> RegisterSoftwareCompany([FromForm] CreateSoftwareCompanyWithPhotoDTO dto)
         {
             // Map DTO to domain model
@@ -108,7 +110,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPut("ByName/{companyName}")]
-        [Authorize]
+        [Authorize(Policy = "RequireModeratorRole")]
         public async Task<IActionResult> UpdateSoftwareCompanyByName(string companyName, [FromForm] UpdateSoftwareCompanyDTO dto)
         {
             // Retrieve the existing software company by name.

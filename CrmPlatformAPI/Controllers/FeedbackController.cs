@@ -4,6 +4,7 @@ using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,7 @@ namespace CrmPlatformAPI.Controllers
 
         }
 
+        [Authorize(Policy = "RequireUserRole")]
         [HttpGet("to-user/{toUserId}")]
         public async Task<ActionResult<IEnumerable<FeedbackDTO>>> GetFeedbackByToUserId(int toUserId)
         {
@@ -58,6 +60,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(feedbackDTOs);
         }
 
+        [Authorize(Policy = "RequireUserRole")]
         [HttpPost]
         public async Task<ActionResult<FeedbackDTO>> CreateFeedback(
       string username, int ticketId, string content, int rating)
@@ -118,23 +121,20 @@ namespace CrmPlatformAPI.Controllers
             return CreatedAtAction(nameof(GetFeedbackByToUserId), new { toUserId = feedback.ToUserId }, feedbackDto);
         }
 
+        [Authorize(Policy = "RequireUserRole")]
         [HttpPost("software-to-beneficiary")]
         public async Task<ActionResult<FeedbackDTO>> CreateFeedbackForBeneficiary(
     string username, int ticketId, string content, int rating)
         {
-            // Get the Software User (Handler) by username
             var softwareUser = await _userRepository.GetByUserNameAsync(username);
             if (softwareUser == null) return BadRequest("Invalid username.");
 
-            // Get the ticket by ID
             var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
             if (ticket == null) return BadRequest("Invalid ticket ID.");
 
-            // Ensure the logged-in software user is the handler of this ticket
             if (ticket.HandlerId != softwareUser.Id)
                 return BadRequest("You are not the handler of this ticket.");
 
-            // Get the Beneficiary User (Creator)
             var beneficiaryUser = await _userRepository.GetByIdAsync(ticket.CreatorId);
             if (beneficiaryUser == null) return BadRequest("Invalid ticket creator.");
 
@@ -187,7 +187,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
 
-
+        [Authorize(Policy = "RequireDefaultRole")]
         [HttpGet("sentiment/{feedbackId}")]
         public async Task<ActionResult<FeedBackSentimentDTO>> GetSentimentByFeedbackId(int feedbackId)
         {
@@ -205,6 +205,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(sentimentDto);
         }
 
+        [Authorize(Policy = "RequireUserRole")]
         [HttpPost("generate-feedback")]
         public async Task<IActionResult> GenerateFeedbackForUser([FromBody] GenerateFeedbackRequestDTO request)
         {
@@ -266,6 +267,7 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireDefaultRole")]
         [HttpGet("sentiment/average/{username}")]
         public async Task<ActionResult<AverageFeedbackSentimentDTO>> GetAverageSentimentByUsername(string username)
         {
@@ -274,7 +276,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
 
-
+        [Authorize(Policy = "RequireUserRole")]
         [HttpGet("check-eligibility/{username}/{ticketId}")]
         public async Task<ActionResult<bool>> CheckFeedbackEligibility(string username, int ticketId)
         {
@@ -301,7 +303,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(isEligible);
         }
 
-
+        [Authorize(Policy = "RequireUserRole")]
         [HttpGet("has-feedback/{userId}")]
         public async Task<bool> HasFeedbackFromUserAsync(int ticketId, string username)
         {

@@ -1,6 +1,7 @@
 ﻿using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace CrmPlatformAPI.Controllers
             _llmRepository = llmRepository;
         }
 
+        [Authorize(Policy = "RequireDefaultRole")]
         [HttpPost("generate-response")]
         public async Task<IActionResult> GenerateResponse([FromBody] string prompt)
         {
@@ -32,6 +34,7 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireDefaultRole")]
         [HttpPost("translate")]
         public async Task<IActionResult> TranslateText([FromQuery] string text, [FromQuery] string sourceLanguage, [FromQuery] string targetLanguage)
         {

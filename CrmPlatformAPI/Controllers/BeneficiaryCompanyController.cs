@@ -5,6 +5,7 @@ using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -28,6 +29,7 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequireModeratorRole")] 
         public async Task<IActionResult> CreateBeneficiaryCompany(CreateBeneficiaryCompanyDTO createBeneficiaryCompanyDTO)
         {
            var createBeneficiaryCompany = _mapper.Map<BeneficiaryCompany>(createBeneficiaryCompanyDTO);
@@ -63,6 +65,8 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize(Policy = "RequireDefaultRole")]
+
         [HttpGet("ByUserId/{userId}")]
         public async Task<IActionResult> GetBeneficiaryCompanyByUserId(int userId)
         {
@@ -78,6 +82,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterBeneficiaryCompany([FromForm] CreateBeneficiaryCompanyWithPhotoDTO dto)
         {
@@ -118,7 +123,9 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
-  [HttpPut("ByName/{companyName}")]
+        [Authorize(Policy = "RequireModeratorRole")]
+        [HttpPut("ByName/{companyName}")]
+
         public async Task<IActionResult> UpdateBeneficiaryCompanyByName(string companyName, [FromForm] UpdateBeneficiaryCompanyDTO dto)
         {
             // Retrieve the existing company by name.
@@ -165,6 +172,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize(Policy = "RequireDefaultRole")] // Applies the policy to all endpoints in this controller
         [HttpGet("ByName/{companyName}")]
         public async Task<IActionResult> GetBeneficiaryCompanyByName(string companyName)
         {

@@ -3,6 +3,7 @@ using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrmPlatformAPI.Controllers
@@ -32,6 +33,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost("upload")]
         public async Task<IActionResult> CreateHomeImage([FromForm] CreateHomeImageDTO createHomeImageDTO)
         {
@@ -59,7 +61,7 @@ namespace CrmPlatformAPI.Controllers
             return Ok(response);
         }
 
-
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpDelete("{*publicId}")]
         public async Task<IActionResult> DeleteHomeImage(string publicId)
         {
