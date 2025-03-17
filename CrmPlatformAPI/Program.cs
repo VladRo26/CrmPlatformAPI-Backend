@@ -62,10 +62,14 @@ namespace CrmPlatformAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseStaticFiles();
 
             app.MapControllers();
             app.MapHub<PresenceHub>("hubs/presence");
+            app.MapFallbackToController("Index", "Fallback");
 
             using var scope = app.Services.CreateScope();
 
