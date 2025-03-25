@@ -17,6 +17,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+  
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Anglar CLI
+        run: npm install -g @angular/cli@18.2.8
+
+      - name: Install deps and build angular app
+        run: |
+            cd "D:\Faculate\Licenta\CRM\front-end\client"
+            npm install
+            ng build 
+
+  
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
