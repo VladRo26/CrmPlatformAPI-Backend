@@ -39,7 +39,7 @@ jobs:
         working-directory: front-end
         run: |
           npm install
-          ng build --prod
+          ng build 
 
 
 
