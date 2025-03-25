@@ -28,9 +28,11 @@ jobs:
 
       - name: Install deps and build angular app
         run: |
-            cd "D:\Faculate\Licenta\CRM\front-end\client"
+            cd ../front-end/client
             npm install
-            ng build 
+            ng build   
+
+
 
   
 
