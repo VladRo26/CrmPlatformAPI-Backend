@@ -29,14 +29,19 @@ namespace CrmPlatformAPI.Extensions
 
             services.AddHttpClient("LLMClient", client =>
             {
-                client.BaseAddress = new Uri("http://127.0.0.1:8000"); // URL of FastAPI backend
+                // Read the LLM service BaseUrl from configuration
+                var llmBaseUrl = configuration["LLMService:BaseUrl"];
+                client.BaseAddress = new Uri(llmBaseUrl);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
             services.AddHttpClient("SentimentClient", client =>
             {
-                client.BaseAddress = new Uri("http://127.0.0.1:8000"); // Replace with your FastAPI base URL
+                // Read the Sentiment service BaseUrl from configuration
+                var sentimentBaseUrl = configuration["SentimentService:BaseUrl"];
+                client.BaseAddress = new Uri(sentimentBaseUrl);
             });
+
 
             services.AddCors();
             services.AddScoped<IRepositoryBeneficiaryCompany, RepositoryBeneficiaryCompany>();
