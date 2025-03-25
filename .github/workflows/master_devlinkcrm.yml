@@ -24,7 +24,7 @@ jobs:
             repository: VladRo26/CrmPlatformAngular-Frontend
             path: front-end
             ref: master
-
+              
 
   
       - name: Set up node.js
