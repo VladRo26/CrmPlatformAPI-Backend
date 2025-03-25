@@ -28,7 +28,7 @@ jobs:
 
       - name: Install deps and build angular app
         run: |
-            cd front-end/client
+            cd "${{ github.workspace }}/front-end/client"
             npm install
             ng build   
 
