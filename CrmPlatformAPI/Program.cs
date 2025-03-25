@@ -56,8 +56,11 @@ namespace CrmPlatformAPI
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .WithOrigins("http://localhost:4200", "https://localhost:4200",
-            "devlinkcrm-gabwfbfkf0bagjc5.westeurope-01.azurewebsites.net")); // am adaugat cors pentru a putea face requesturi din frontend
+            .WithOrigins(
+                "http://localhost:4200",
+                "https://localhost:4200",
+                "https://devlinkcrm-gabwfbfkf0bagjc5.westeurope-01.azurewebsites.net"
+            ));
 
 
             app.UseAuthentication();
