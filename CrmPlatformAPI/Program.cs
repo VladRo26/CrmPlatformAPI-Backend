@@ -59,17 +59,17 @@ namespace CrmPlatformAPI
             .WithOrigins(
                 "http://localhost:4200",
                 "https://localhost:4200",
-                "https://devlinkcrm-gabwfbfkf0bagjc5.westeurope-01.azurewebsites.net"
+                "https://crmplatformapi.fly.dev/"
             ));
 
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            //app.UseDefaultFiles();
+            //app.UseStaticFiles();
 
-            app.UseStaticFiles();
+            //app.UseStaticFiles();
 
             app.MapControllers();
             app.MapHub<PresenceHub>("hubs/presence");

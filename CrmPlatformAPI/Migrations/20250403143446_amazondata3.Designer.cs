@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CrmPlatformAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241124204625_migration10")]
-    partial class migration10
+    [Migration("20250403143446_amazondata3")]
+    partial class amazondata3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,6 +132,70 @@ namespace CrmPlatformAPI.Migrations
                     b.ToTable("Contracts");
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.FeedBackSentiment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FeedbackId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Negative")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Neutral")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Positive")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeedbackId");
+
+                    b.ToTable("FeedbackSentiments");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FromUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ToUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("Feedbacks");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.HomeImage", b =>
                 {
                     b.Property<int>("Id")
@@ -139,6 +203,9 @@ namespace CrmPlatformAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -234,6 +301,114 @@ namespace CrmPlatformAPI.Migrations
                     b.ToTable("SoftwareCompanies");
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CountryCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HandlerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Language")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LanguageCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TCountryCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TLanguage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TLanguageCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("HandlerId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.TicketStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Seen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TicketUserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("TicketStatusHistories");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
                 {
                     b.Property<int>("Id")
@@ -267,6 +442,9 @@ namespace CrmPlatformAPI.Migrations
                     b.Property<DateOnly>("HireDate")
                         .HasColumnType("date");
 
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -295,6 +473,9 @@ namespace CrmPlatformAPI.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -310,9 +491,6 @@ namespace CrmPlatformAPI.Migrations
 
                     b.Property<int>("UserType")
                         .HasColumnType("int");
-
-                    b.Property<float>("rating")
-                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -470,6 +648,41 @@ namespace CrmPlatformAPI.Migrations
                     b.Navigation("SoftwareCompany");
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.FeedBackSentiment", b =>
+                {
+                    b.HasOne("CrmPlatformAPI.Models.Domain.Feedback", "Feedback")
+                        .WithMany()
+                        .HasForeignKey("FeedbackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Feedback");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Feedback", b =>
+                {
+                    b.HasOne("CrmPlatformAPI.Models.Domain.User", "FromUser")
+                        .WithMany()
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CrmPlatformAPI.Models.Domain.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CrmPlatformAPI.Models.Domain.User", "ToUser")
+                        .WithMany()
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Photo", b =>
                 {
                     b.HasOne("CrmPlatformAPI.Models.Domain.User", "User")
@@ -479,6 +692,49 @@ namespace CrmPlatformAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Ticket", b =>
+                {
+                    b.HasOne("CrmPlatformAPI.Models.Domain.Contract", "Contract")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CrmPlatformAPI.Models.Domain.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CrmPlatformAPI.Models.Domain.User", "Handler")
+                        .WithMany()
+                        .HasForeignKey("HandlerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Handler");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.TicketStatusHistory", b =>
+                {
+                    b.HasOne("CrmPlatformAPI.Models.Domain.Ticket", "Ticket")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CrmPlatformAPI.Models.Domain.User", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Ticket");
+
+                    b.Navigation("UpdatedByUser");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
@@ -562,6 +818,11 @@ namespace CrmPlatformAPI.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Contract", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -574,6 +835,11 @@ namespace CrmPlatformAPI.Migrations
                     b.Navigation("Contracts");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("CrmPlatformAPI.Models.Domain.Ticket", b =>
+                {
+                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("CrmPlatformAPI.Models.Domain.User", b =>
