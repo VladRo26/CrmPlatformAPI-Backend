@@ -1,20 +1,25 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-# Copy project file and restore dependencies
-COPY CrmPlatformAPI/CrmPlatformAPI.csproj CrmPlatformAPI/
-RUN dotnet restore CrmPlatformAPI/CrmPlatformAPI.csproj
-
-# Copy the source code and build the project
-COPY CrmPlatformAPI/. ./CrmPlatformAPI/
-WORKDIR /src/CrmPlatformAPI
-RUN dotnet publish CrmPlatformAPI.csproj -c Release -o /app/publish /p:UseAppHost=false
-
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
-COPY --from=build /app/publish .
+EXPOSE 8081
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["CrmPlatformAPI/CrmPlatformAPI.csproj", "CrmPlatformAPI/"]
+RUN dotnet restore "./CrmPlatformAPI/CrmPlatformAPI.csproj"
+COPY . .
+WORKDIR "/src/CrmPlatformAPI"
+RUN dotnet build "./CrmPlatformAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./CrmPlatformAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CrmPlatformAPI.dll"]
