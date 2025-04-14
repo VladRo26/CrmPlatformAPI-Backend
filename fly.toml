@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for crmplatformapi-weathered-glitter-3603 on 2025-04-15T00:19:40+03:00
+# fly.toml app configuration file generated for crmplatformapi-little-breeze-9162 on 2025-04-15T00:29:13+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'crmplatformapi-weathered-glitter-3603'
+app = 'crmplatformapi-little-breeze-9162'
 primary_region = 'otp'
 
 [build]
