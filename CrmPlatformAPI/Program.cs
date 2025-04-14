@@ -73,7 +73,7 @@ namespace CrmPlatformAPI
 
             app.MapControllers();
             app.MapHub<PresenceHub>("hubs/presence");
-            app.MapFallbackToController("Index", "Fallback");
+           // app.MapFallbackToController("Index", "Fallback");
 
             using var scope = app.Services.CreateScope();
 
