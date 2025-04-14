@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for crmplatformapi-little-breeze-9162 on 2025-04-15T00:29:13+03:00
+# fly.toml app configuration file generated for crmplatformapi-blue-shadow-6275 on 2025-04-15T00:41:00+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'crmplatformapi-little-breeze-9162'
+app = 'crmplatformapi-blue-shadow-6275'
 primary_region = 'otp'
 
 [build]
