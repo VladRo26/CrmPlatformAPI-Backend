@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrmPlatformAPI", "CrmPlatformAPI\CrmPlatformAPI.csproj", "{77A87C8C-E86B-4633-B3B7-7C7AE65D27F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9606EFA7-FE43-4781-9555-D6A615227F94}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\fly-deploy.yml = .github\workflows\fly-deploy.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
