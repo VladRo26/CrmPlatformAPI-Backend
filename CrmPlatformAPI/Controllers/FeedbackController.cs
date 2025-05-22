@@ -231,29 +231,30 @@ namespace CrmPlatformAPI.Controllers
             {
                 return BadRequest("Ticket description is required to generate feedback.");
             }
+            var prompt = $@"
+        Write a professional and concise feedback message from me (the beneficiary of a support ticket) to the developer with the username: {user.UserName}.
+
+        Details:
+        - My experience as the beneficiary: {request.UserExperience}
+        - The issue described in the ticket: {ticket.Description}
+        - My rating for this support (1-5): {request.Rating}
+
+        Instructions:
+        - Write the feedback **as if I am personally addressing the developer** who resolved the ticket.
+        - Mention briefly the problem that was solved, based on the ticket description.
+        - The rating reflects my satisfaction with how the issue was handled.
+
+        Tone:
+        - For ratings 4-5: express appreciation and positive feedback.
+        - For rating 3: provide neutral or constructive feedback, possibly with suggestions.
+        - For ratings 1-2: be polite but express dissatisfaction and explain what could be improved.
+
+        Format:
+        - Keep the feedback short, clear, and respectful.
+        - Do not include any headings, formatting, or instructions — return only the plain text message.
+        ";
 
 
-
-
-   var prompt = $@"
-        Generate professional and concise feedback based on the following details:
-        - **User Experience:**  {request.UserExperience}
-        - **Ticket solved this problem:** {ticket.Description}
-        - **Rating (1-5):** {request.Rating}
-        - **Username:** {user.UserName}
-
-        Ensure:
-        - **The feedback is to user with username:** {user.UserName}.
-        - **I AM THE PERSON WHO CREATED THE TICKET AND WHO IS THE BENFICIARY. say a little about the problem that was fiexed.**
-        - **The rating is the rating that i have given to the user for fixing me the ticket with the description provided.**
-        - **Positive and appreciative feedback** for high ratings (4-5).
-        - **Constructive feedback with suggestions** for a neutral rating (3).
-        - **Polite but critical feedback** for low ratings (1-2).
-        - **Clear and concise wording**, avoiding unnecessary details.
-
-        **Write the feedback as the person who is given the feedback. I give the feedback to the user with the username provided.**
-        **Return only the generated feedback as text. No formatting needed.**
-    ";
 
             try
             {

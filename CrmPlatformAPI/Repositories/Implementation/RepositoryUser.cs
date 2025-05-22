@@ -40,7 +40,10 @@ namespace CrmPlatformAPI.Repositories.Implementation
                .Include(u => u.Photo)
                .AsQueryable();
 
-            query = query.Where(u => u.UserName != userParams.CurrentUserName);
+            query = query.Where(u =>
+                u.UserName != userParams.CurrentUserName &&
+                !EF.Functions.Like(u.UserName.ToLower(), "%admin%")
+                );
 
 
             if (!string.IsNullOrEmpty(userParams.CompanyName))

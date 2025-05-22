@@ -267,27 +267,40 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception($"Ticket with ID {ticketId} not found or has no description.");
             }
 
-            // Construct a detailed prompt using the ticket description
-            var prompt = $"Summarize this ticket description very very briefly: {ticket.Description}. Just write the summary";
+            // Use the ticket's language, default to English if missing
+            var originalLanguage = string.IsNullOrWhiteSpace(ticket.Language) ? "English" : ticket.Language;
 
-            // Use the LLM repository to generate a summary
+            // Build prompt in English, but instruct the model to respond in the original language
+            var prompt = $@"
+            You are a support assistant helping summarize issues related to software services.
+
+            All tickets are related to problems, bugs, or requests in a software system. Read the ticket description below and generate a **very brief summary (1–2 sentences max)** that clearly captures the main issue or request.
+
+            Focus on the **software-related problem** the user is experiencing. Be specific, clear, and concise.
+
+            Write the summary in **{originalLanguage}**.
+            Avoid repetition, unnecessary details, or formatting. Return only the plain text summary.
+
+            Ticket description:
+            {ticket.Description}
+            ";
+
+
+
+            // Generate the summary in the original language
             var summaryResponse = await _llmRepository.GenerateResponseAsync(prompt);
             var summary = summaryResponse?.Response ?? "No summary generated.";
 
-            // Check if the ticket's language is specified and translate if necessary
+            // If a translation language is provided, translate the summary
             if (!string.IsNullOrWhiteSpace(ticket.TLanguage))
             {
-                // Assuming the source language is English (or the language of the summary)
-               string sourceLanguage = ticket.TLanguage;
-
-                // Use the TranslateTextAsync function to translate the summary
-                summary = await _llmRepository.TranslateTextAsync(summary, sourceLanguage, ticket.TLanguage)
-                          ?? "Translation failed.";
+                var translated = await _llmRepository.TranslateTextAsync(summary, originalLanguage, ticket.TLanguage);
+                summary = translated ?? "Translation failed.";
             }
 
-            // Return the generated summary (translated, if applicable)
             return summary;
         }
+
 
 
 
