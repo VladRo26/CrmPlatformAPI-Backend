@@ -106,7 +106,10 @@ namespace CrmPlatformAPI.Controllers
             }
 
             // Call sentiment analysis and save the results
-            var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(content);
+            // Translate content to English before sentiment analysis
+            var translatedContent = await _repositoryLLM.TranslateTextAsync(content, ticket.Language, "English");
+            var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(translatedContent);
+
             var sentiment = new FeedBackSentiment
             {
                 FeedbackId = feedback.Id,
@@ -171,7 +174,10 @@ namespace CrmPlatformAPI.Controllers
             await _userRepository.UpdateAsync(beneficiaryUser);
 
             // Perform sentiment analysis
-            var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(content);
+            // Translate content to English before sentiment analysis
+            var translatedContent = await _repositoryLLM.TranslateTextAsync(content, ticket.Language, "English");
+            var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(translatedContent);
+
             var sentiment = new FeedBackSentiment
             {
                 FeedbackId = feedback.Id,
