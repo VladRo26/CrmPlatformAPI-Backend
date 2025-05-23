@@ -15,14 +15,18 @@ namespace CrmPlatformAPI.Repositories.Implementation
         private readonly IRepositoryLLM _llmRepository;
         private readonly IEmailService _emailService;
         private readonly FrontendSettings _frontendSettings;
+        private readonly IRepositoryTicketStatusHistory _statusHistoryRepo;
 
 
 
-        public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository, IEmailService emailService)
+
+        public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository, IEmailService emailService, 
+            IRepositoryTicketStatusHistory statusHistoryRepo)
         {
             _context = context;
             _llmRepository = llmRepository;
             _emailService = emailService;
+            _statusHistoryRepo = statusHistoryRepo;
 
 
         }
@@ -400,32 +404,32 @@ namespace CrmPlatformAPI.Repositories.Implementation
             if (ticket == null)
                 throw new Exception($"Ticket with ID {ticketId} not found.");
 
+            // Assign the handler and change status
             ticket.HandlerId = handlerId;
             ticket.Status = TicketStatus.InProgress;
+            _context.Tickets.Update(ticket); // Save assignment separately
 
-            var statusHistory = new TicketStatusHistory
+            await _context.SaveChangesAsync();
+
+            // Get handler username
+            var handlerUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == handlerId);
+            if (handlerUser == null)
+                throw new Exception("Handler user not found.");
+
+            // Use shared method to log and notify
+            await _statusHistoryRepo.AddHistoryAsync(ticketId, new TicketStatusHistoryDTO
             {
-                TicketId = ticketId,
-                Status = TicketStatus.InProgress,
-                Message = "This ticket has been assigned to me and I will begin working on it shortly.",
+                Status = TicketStatus.InProgress.ToString(),
+                Message = "The ticket has been assigned and work will begin shortly.",
                 UpdatedAt = DateTime.UtcNow,
-                UpdatedByUserId = handlerId,
-                TicketUserRole = TicketUserRole.Handler,
+                UpdatedByUsername = handlerUser.UserName,
+                TicketUserRole = TicketUserRole.Handler.ToString(),
                 Seen = false
-            };
+            });
 
-            try
-            {
-                _context.Tickets.Update(ticket);
-                await _context.TicketStatusHistories.AddAsync(statusHistory);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while taking over the ticket and logging status.", ex);
-            }
+            return true;
         }
+
 
 
         public async Task<PagedList<Ticket>> GetByContractIdAsync(int contractId, TicketContractsParams ticketContractsParams)
