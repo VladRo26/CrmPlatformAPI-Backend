@@ -5,6 +5,7 @@ using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CrmPlatformAPI.Repositories.Implementation
 {
@@ -13,6 +14,8 @@ namespace CrmPlatformAPI.Repositories.Implementation
         private readonly ApplicationDbContext _context;
         private readonly IRepositoryLLM _llmRepository;
         private readonly IEmailService _emailService;
+        private readonly FrontendSettings _frontendSettings;
+
 
 
         public RepositoryTicket(ApplicationDbContext context, IRepositoryLLM llmRepository, IEmailService emailService)
@@ -20,6 +23,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
             _context = context;
             _llmRepository = llmRepository;
             _emailService = emailService;
+
 
         }
         public async Task<IEnumerable<Ticket>> GetAllAsync()
@@ -329,34 +333,39 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             try
             {
-                // Start a transaction to ensure both the ticket and its status history are saved atomically
+                // ✅ Start transaction to save ticket and initial status together
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
-                // Add the ticket to the database
+                // ✅ Ensure CreatedAt is initialized
+                if (ticket.CreatedAt == default || ticket.CreatedAt == null)
+                {
+                    ticket.CreatedAt = DateTime.UtcNow;
+                }
+
+                // ✅ Ensure HandlerId is null on creation
+                ticket.HandlerId = null;
+
                 await _context.Tickets.AddAsync(ticket);
                 await _context.SaveChangesAsync();
 
-                // Create a new TicketStatusHistory entry for the ticket
+                // ✅ Create the first status history
                 var statusHistory = new TicketStatusHistory
                 {
                     TicketId = ticket.Id,
                     Status = TicketStatus.Open,
                     Message = ticket.Title,
                     UpdatedAt = DateTime.UtcNow,
-                    UpdatedByUserId = ticket.CreatorId, 
+                    UpdatedByUserId = ticket.CreatorId,
                     TicketUserRole = TicketUserRole.Creator
                 };
 
-                // Add the status history entry to the database
                 await _context.TicketStatusHistories.AddAsync(statusHistory);
                 await _context.SaveChangesAsync();
 
-                // Commit the transaction
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it appropriately
                 throw new Exception("An error occurred while adding the ticket and its status history.", ex);
             }
         }
@@ -381,30 +390,43 @@ namespace CrmPlatformAPI.Repositories.Implementation
         public async Task<bool> TakeOverTicketAsync(int ticketId, int handlerId)
         {
             if (_context == null)
-            {
                 throw new Exception("Database context is not initialized.");
-            }
 
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            var ticket = await _context.Tickets
+                .Include(t => t.Creator)
+                .Include(t => t.Handler)
+                .FirstOrDefaultAsync(t => t.Id == ticketId);
+
             if (ticket == null)
-            {
                 throw new Exception($"Ticket with ID {ticketId} not found.");
-            }
 
             ticket.HandlerId = handlerId;
+            ticket.Status = TicketStatus.InProgress;
+
+            var statusHistory = new TicketStatusHistory
+            {
+                TicketId = ticketId,
+                Status = TicketStatus.InProgress,
+                Message = "This ticket has been assigned to me and I will begin working on it shortly.",
+                UpdatedAt = DateTime.UtcNow,
+                UpdatedByUserId = handlerId,
+                TicketUserRole = TicketUserRole.Handler,
+                Seen = false
+            };
 
             try
             {
                 _context.Tickets.Update(ticket);
+                await _context.TicketStatusHistories.AddAsync(statusHistory);
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it appropriately
-                throw new Exception("An error occurred while taking over the ticket.", ex);
+                throw new Exception("An error occurred while taking over the ticket and logging status.", ex);
             }
         }
+
 
         public async Task<PagedList<Ticket>> GetByContractIdAsync(int contractId, TicketContractsParams ticketContractsParams)
         {
@@ -469,7 +491,9 @@ namespace CrmPlatformAPI.Repositories.Implementation
             else
             {
                 // Default sort by creation date descending
-                query = query.OrderByDescending(t => t.CreatedAt);
+                query = query.OrderByDescending(t => (DateTime?)t.CreatedAt ?? DateTime.MinValue);
+
+
             }
 
             return await PagedList<Ticket>.CreateAsync(query, ticketContractsParams.PageNumber, ticketContractsParams.PageSize);

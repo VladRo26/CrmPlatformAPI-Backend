@@ -66,6 +66,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddSignalR();
             services.AddSingleton<PresenceTracker>();
 
+
             return services;
 
         }   

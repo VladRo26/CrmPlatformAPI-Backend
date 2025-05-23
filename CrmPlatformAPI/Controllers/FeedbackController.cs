@@ -232,26 +232,30 @@ namespace CrmPlatformAPI.Controllers
                 return BadRequest("Ticket description is required to generate feedback.");
             }
             var prompt = $@"
-        Write a professional and concise feedback message from me (the beneficiary of a support ticket) to the developer with the username: {user.UserName}.
+            Write a professional and concise feedback message from me (the **beneficiary** of a support ticket) to the developer with the username: {user.UserName}.
 
-        Details:
-        - My experience as the beneficiary: {request.UserExperience}
-        - The issue described in the ticket: {ticket.Description}
-        - My rating for this support (1-5): {request.Rating}
+            Details:
+            - I am the person who created the ticket and needed help. I did not fix the problem myself.
+            - My experience as the beneficiary: {request.UserExperience}
+            - The issue described in the ticket: {ticket.Description}
+            - My rating for this support (1-5): {request.Rating}
 
-        Instructions:
-        - Write the feedback **as if I am personally addressing the developer** who resolved the ticket.
-        - Mention briefly the problem that was solved, based on the ticket description.
-        - The rating reflects my satisfaction with how the issue was handled.
+            Instructions:
+            - Write the feedback **as if I am personally addressing the developer** who resolved the ticket.
+            - Mention briefly the problem that was solved, based on the ticket description.
+            - Make it clear that I am the requester who benefited from the support.
+            - The rating reflects my satisfaction with how the issue was handled.
+            - Generate the feedback message in the following language: **{ticket.Language}**
 
-        Tone:
-        - For ratings 4-5: express appreciation and positive feedback.
-        - For rating 3: provide neutral or constructive feedback, possibly with suggestions.
-        - For ratings 1-2: be polite but express dissatisfaction and explain what could be improved.
+            Tone:
+            - For ratings 4-5: express appreciation and positive feedback.
+            - For rating 3: provide neutral or constructive feedback, possibly with suggestions.
+            - For ratings 1-2: be polite but express dissatisfaction and explain what could be improved.
 
-        Format:
-        - Keep the feedback short, clear, and respectful.
-        - Do not include any headings, formatting, or instructions — return only the plain text message.
+            Format:
+            - Keep the feedback short, clear, and respectful.
+            - Do not include any headings, formatting, or instructions — return only the plain text message.
+
         ";
 
 

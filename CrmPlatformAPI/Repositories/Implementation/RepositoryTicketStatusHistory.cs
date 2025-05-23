@@ -1,9 +1,11 @@
 ﻿using CrmPlatformAPI.Data;
+using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Helpers.Enums;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CrmPlatformAPI.Repositories.Implementation
 {
@@ -12,11 +14,15 @@ namespace CrmPlatformAPI.Repositories.Implementation
         private readonly ApplicationDbContext _context;
 
         private readonly IEmailService _emailService;
+        private readonly FrontendSettings _frontendSettings;
 
-        public RepositoryTicketStatusHistory(ApplicationDbContext context, IEmailService emailService)
+
+        public RepositoryTicketStatusHistory(ApplicationDbContext context, IEmailService emailService, IOptions<FrontendSettings> frontendSettings)
         {
             _context = context;
             _emailService = emailService;
+            _frontendSettings = frontendSettings.Value;
+
         }
 
         public async Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId)
@@ -109,16 +115,15 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 // 📧 Send Email Notification to the Other User
                 string subject = $"[Ticket #{ticketId}] Status Updated to {parsedStatus}";
                 string message = $@"
-            Hello {recipient.FirstName},<br><br>
-            The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
-            <b>New Status:</b> {parsedStatus} <br>
-            <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
-            <b>Message:</b> {dto.Message} <br><br>
-            Please check the ticket for more details.<br><br>
-            Regards,<br>
-            CRM Support Team
-        ";
-
+                Hello {recipient.FirstName},<br><br>
+                The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
+                <b>New Status:</b> {parsedStatus} <br>
+                <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
+                <b>Message:</b> {dto.Message} <br><br>
+                You can view the ticket <a href=""{_frontendSettings.BaseUrl}/tickets/{ticket.Id}"">here</a>.<br><br>
+                Regards,<br>
+                CRM Support Team
+                ";
                 await _emailService.SendEmailAsync(recipient.Email, subject, message);
             }
             catch (Exception ex)

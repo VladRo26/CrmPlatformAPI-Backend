@@ -36,6 +36,7 @@ namespace CrmPlatformAPI
                 {
                     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
                 });
+           builder.Services.Configure<FrontendSettings>(builder.Configuration.GetSection("FrontendSettings"));
 
 
             var app = builder.Build();
