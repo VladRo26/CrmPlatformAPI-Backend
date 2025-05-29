@@ -26,6 +26,9 @@ namespace CrmPlatformAPI.Data
 
         public DbSet<FeedBackSentiment> FeedbackSentiments { get; set; }
 
+        public DbSet<TicketAttachment> TicketAttachments { get; set; }
+
+        public DbSet<TicketStatusAttachment> TicketStatusAttachments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -158,7 +161,20 @@ namespace CrmPlatformAPI.Data
                 .HasOne(f => f.Ticket)
                 .WithMany() 
                 .HasForeignKey(f => f.TicketId)
-                .OnDelete(DeleteBehavior.SetNull); 
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<TicketAttachment>()
+                .HasOne(a => a.Ticket)
+                .WithMany(t => t.Attachments)
+                .HasForeignKey(a => a.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<TicketStatusAttachment>()
+                .HasOne(a => a.TicketStatusHistory)
+                .WithMany(h => h.Attachments)
+                .HasForeignKey(a => a.TicketStatusHistoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
         }

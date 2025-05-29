@@ -25,5 +25,8 @@ namespace CrmPlatformAPI.Models.DTO
 
         public string CountryCode { get; set; }
 
+        public IFormFileCollection? Attachments { get; set; }  
+
+
     }
 }

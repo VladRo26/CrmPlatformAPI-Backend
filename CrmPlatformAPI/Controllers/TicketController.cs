@@ -8,6 +8,7 @@ using CrmPlatformAPI.Repositories.Implementation;
 using CrmPlatformAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrmPlatformAPI.Controllers
 {
@@ -20,13 +21,18 @@ namespace CrmPlatformAPI.Controllers
         private readonly IRepositoryLLM _llmRepository;
         private readonly IRepositoryTicketStatusHistory _repositoryTicketStatusHistory;
         private readonly IMapper _mapper;
+        private readonly IRepositoryTicketAttachment _ticketAttachmentRepo;
 
 
-        public TicketController(IRepositoryTicket repositoryTicket, IMapper mapper, IRepositoryTicketStatusHistory repositoryTicketStatusHistory)
+
+        public TicketController(IRepositoryTicket repositoryTicket, IMapper mapper,
+            IRepositoryTicketStatusHistory repositoryTicketStatusHistory, IRepositoryTicketAttachment ticketAttachmentRepo)
         {
             _repositoryTicket = repositoryTicket;
             _mapper = mapper;
             _repositoryTicketStatusHistory = repositoryTicketStatusHistory;
+            _ticketAttachmentRepo = ticketAttachmentRepo;
+
 
         }
 
@@ -57,29 +63,25 @@ namespace CrmPlatformAPI.Controllers
 
         [HttpPost("CreateTicket")]
         [Authorize(Policy = "RequireUserRole")]
-
-        public async Task<IActionResult> CreateTicket([FromBody] CreateTicketDTO createTicketDto)
+        public async Task<IActionResult> CreateTicket([FromForm] CreateTicketDTO createTicketDto)
         {
             try
             {
                 if (createTicketDto == null)
-                {
                     return BadRequest(new { message = "Ticket data must be provided." });
+
+                var ticket = _mapper.Map<Ticket>(createTicketDto);
+                ticket.HandlerId = null;
+                ticket.CreatedAt = DateTime.UtcNow;
+
+                await _repositoryTicket.AddAsync(ticket); // Save the ticket
+
+                // ✅ Use repository to upload attachments
+                if (createTicketDto.Attachments != null && createTicketDto.Attachments.Any())
+                {
+                    await _ticketAttachmentRepo.AddAttachmentsAsync(ticket.Id, createTicketDto.Attachments);
                 }
 
-                // Map the DTO to the domain model
-                var ticket = _mapper.Map<Ticket>(createTicketDto);
-
-                // Ensure HandlerId is null
-                ticket.HandlerId = null;
-
-                // Set additional fields if needed (e.g., timestamps)
-                ticket.CreatedAt = DateTime.Now;
-
-                // Add the ticket to the repository
-                await _repositoryTicket.AddAsync(ticket);
-
-                // Return the created ticket
                 var ticketDto = _mapper.Map<TicketDTO>(ticket);
                 return CreatedAtAction(nameof(GetTicketById), new { id = ticketDto.Id }, ticketDto);
             }
@@ -353,9 +355,11 @@ namespace CrmPlatformAPI.Controllers
         }
 
         [HttpPost("AddStatusHistory")]
-        [Authorize(Policy = "RequireUserRole")]
-
-        public async Task<IActionResult> AddTicketStatusHistory(int ticketId, [FromBody] TicketStatusHistoryDTO dto)
+        //[Authorize(Policy = "RequireUserRole")]
+        public async Task<IActionResult> AddTicketStatusHistory(
+            int ticketId,
+            [FromForm] TicketStatusHistoryDTO dto,
+            [FromForm] IFormFileCollection? attachments)
         {
             try
             {
@@ -364,7 +368,7 @@ namespace CrmPlatformAPI.Controllers
                     return BadRequest(new { message = "Invalid request data." });
                 }
 
-                await _repositoryTicketStatusHistory.AddHistoryAsync(ticketId, dto);
+                await _repositoryTicketStatusHistory.AddHistoryAsync(ticketId, dto, attachments);
 
                 return Ok(new { message = "Ticket status history added and user notified successfully." });
             }
@@ -373,6 +377,7 @@ namespace CrmPlatformAPI.Controllers
                 return StatusCode(500, new { message = "Failed to add ticket status history.", error = ex.Message });
             }
         }
+
 
 
 
@@ -495,6 +500,19 @@ namespace CrmPlatformAPI.Controllers
             return Ok(new { message = "Status marked as seen." });
         }
 
+        [HttpGet("Attachments/{ticketId}")]
+        [Authorize(Policy = "RequireUserRole")]
+        public async Task<IActionResult> GetAttachmentsForTicket(int ticketId)
+        {
+            var attachments = await _ticketAttachmentRepo.GetAttachmentsByTicketIdAsync(ticketId);
 
+            if (attachments == null || !attachments.Any())
+            {
+                return Ok(new List<TicketAttachmentDTO>());
+            }
+
+            var attachmentDtos = _mapper.Map<IEnumerable<TicketAttachmentDTO>>(attachments);
+            return Ok(attachmentDtos);
+        }
     }
 }

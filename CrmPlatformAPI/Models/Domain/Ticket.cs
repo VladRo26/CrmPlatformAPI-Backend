@@ -44,5 +44,8 @@ namespace CrmPlatformAPI.Models.Domain
 
         public ICollection<TicketStatusHistory> StatusHistory { get; set; } = new List<TicketStatusHistory>();
 
+        public ICollection<TicketAttachment> Attachments { get; set; } = new List<TicketAttachment>();
+
+
     }
 }

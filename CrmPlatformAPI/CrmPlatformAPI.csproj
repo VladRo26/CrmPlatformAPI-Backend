@@ -1,12 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>151a24e2-ce44-412d-85a4-37b360a80346</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-  </PropertyGroup>
+  <TargetFramework>net8.0</TargetFramework>
+  <Nullable>enable</Nullable>
+  <ImplicitUsings>enable</ImplicitUsings>
+  <UserSecretsId>151a24e2-ce44-412d-85a4-37b360a80346</UserSecretsId>
+  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  <NoWarn>$(NoWarn);1591</NoWarn>
+</PropertyGroup>
+
 
   <ItemGroup>
     <Compile Remove="wwwroot\Images\**" />

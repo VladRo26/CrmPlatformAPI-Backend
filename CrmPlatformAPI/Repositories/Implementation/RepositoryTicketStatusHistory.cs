@@ -15,14 +15,16 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
         private readonly IEmailService _emailService;
         private readonly FrontendSettings _frontendSettings;
+        private readonly IFileService _fileService;
 
 
-        public RepositoryTicketStatusHistory(ApplicationDbContext context, IEmailService emailService, IOptions<FrontendSettings> frontendSettings)
+        public RepositoryTicketStatusHistory(ApplicationDbContext context, IEmailService emailService,
+            IOptions<FrontendSettings> frontendSettings, IFileService fileService)
         {
             _context = context;
             _emailService = emailService;
             _frontendSettings = frontendSettings.Value;
-
+            _fileService = fileService;
         }
 
         public async Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId)
@@ -40,12 +42,10 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .ToListAsync();
         }
 
-        public async Task AddHistoryAsync(int ticketId, TicketStatusHistoryDTO dto)
+        public async Task AddHistoryAsync(int ticketId, TicketStatusHistoryDTO dto, IFormFileCollection? attachments = null)
         {
             if (_context == null)
-            {
                 throw new Exception("Database context is not initialized.");
-            }
 
             // Fetch the ticket and user
             var ticket = await _context.Tickets
@@ -54,41 +54,25 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 .FirstOrDefaultAsync(t => t.Id == ticketId);
 
             if (ticket == null)
-            {
                 throw new Exception($"Ticket with ID {ticketId} not found.");
-            }
 
-            // Find the user who updated the ticket
             var updatedByUser = (ticket.Creator?.UserName == dto.UpdatedByUsername) ? ticket.Creator
                                : (ticket.Handler?.UserName == dto.UpdatedByUsername) ? ticket.Handler
                                : null;
 
             if (updatedByUser == null)
-            {
                 throw new Exception($"User '{dto.UpdatedByUsername}' is not associated with the ticket as Creator or Handler.");
-            }
 
-            // Validate and convert TicketUserRole
             if (!Enum.TryParse<TicketUserRole>(dto.TicketUserRole, true, out var ticketUserRole))
-            {
                 throw new Exception("Invalid role for TicketUserRole.");
-            }
 
-            // Validate and convert Status
             if (!Enum.TryParse<TicketStatus>(dto.Status, true, out var parsedStatus))
-            {
                 throw new Exception("Invalid status.");
-            }
 
-            // Determine the other user (recipient of the email)
             var recipient = (updatedByUser.Id == ticket.CreatorId) ? ticket.Handler : ticket.Creator;
-
             if (recipient == null)
-            {
                 throw new Exception("No other user found on the ticket to notify.");
-            }
 
-            // Create TicketStatusHistory record
             var history = new TicketStatusHistory
             {
                 TicketId = ticketId,
@@ -97,33 +81,67 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 UpdatedAt = dto.UpdatedAt != default ? dto.UpdatedAt : DateTime.UtcNow,
                 UpdatedByUserId = updatedByUser.Id,
                 TicketUserRole = ticketUserRole,
-                Seen = false // The other user hasn't seen this update yet
+                Seen = false
             };
 
             try
             {
-                // Add the status history entry
                 await _context.TicketStatusHistories.AddAsync(history);
+                await _context.SaveChangesAsync(); // Required for history.Id
 
-                // Update the ticket status to match the latest history status
+                // 🔗 Collect attachment links
+                List<string> attachmentLinks = new();
+
+                if (attachments != null && attachments.Count > 0)
+                {
+                    foreach (var file in attachments)
+                    {
+                        var result = await _fileService.UploadFileAsync(file);
+
+                        var attachment = new TicketStatusAttachment
+                        {
+                            TicketStatusHistoryId = history.Id,
+                            FileName = file.FileName,
+                            FileType = file.ContentType,
+                            Url = result.SecureUrl.AbsoluteUri,
+                            PublicId = result.PublicId,
+                            UploadedAt = DateTime.UtcNow
+                        };
+
+                        _context.TicketStatusAttachments.Add(attachment);
+
+                        // 📎 Generate HTML link for email
+                        string link = $@"<a href=""{attachment.Url}"">{attachment.FileName}</a>";
+                        attachmentLinks.Add(link);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                // ✅ Update ticket status
                 ticket.Status = parsedStatus;
                 _context.Tickets.Update(ticket);
-
-                // Save changes
                 await _context.SaveChangesAsync();
 
-                // 📧 Send Email Notification to the Other User
+                // 📨 Email
                 string subject = $"[Ticket #{ticketId}] Status Updated to {parsedStatus}";
+
+                string attachmentSection = attachmentLinks.Any()
+                    ? $"<b>Attachments:</b><br>{string.Join("<br>", attachmentLinks)}<br><br>"
+                    : "";
+
                 string message = $@"
-                Hello {recipient.FirstName},<br><br>
-                The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
-                <b>New Status:</b> {parsedStatus} <br>
-                <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
-                <b>Message:</b> {dto.Message} <br><br>
-                You can view the ticket <a href=""{_frontendSettings.BaseUrl}/tickets/{ticket.Id}"">here</a>.<br><br>
-                Regards,<br>
-                CRM Support Team
-                ";
+            Hello {recipient.FirstName},<br><br>
+            The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
+            <b>New Status:</b> {parsedStatus} <br>
+            <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
+            <b>Message:</b> {dto.Message} <br><br>
+            {attachmentSection}
+            You can view the ticket <a href=""{_frontendSettings.BaseUrl}/tickets/{ticket.Id}"">here</a>.<br><br>
+            Regards,<br>
+            CRM Support Team
+        ";
+
                 await _emailService.SendEmailAsync(recipient.Email, subject, message);
             }
             catch (Exception ex)
@@ -131,9 +149,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception("An error occurred while updating the ticket status and sending the notification email.", ex);
             }
         }
-
-
-
 
 
         public async Task<IEnumerable<TicketStatusHistory>> GetLastTicketStatusHistoryByUserAsync(string username, int count)
@@ -170,6 +185,27 @@ namespace CrmPlatformAPI.Repositories.Implementation
             }
         }
 
+        public async Task AddAttachmentsToStatusAsync(int ticketStatusHistoryId, IFormFileCollection attachments)
+        {
+            foreach (var file in attachments)
+            {
+                var result = await _fileService.UploadFileAsync(file);
+
+                var attachment = new TicketStatusAttachment
+                {
+                    TicketStatusHistoryId = ticketStatusHistoryId,
+                    FileName = file.FileName,
+                    FileType = file.ContentType,
+                    Url = result.SecureUrl.AbsoluteUri,
+                    PublicId = result.PublicId,
+                    UploadedAt = DateTime.UtcNow
+                };
+
+                _context.TicketStatusAttachments.Add(attachment);
+            }
+
+            await _context.SaveChangesAsync();
+        }
 
 
     }

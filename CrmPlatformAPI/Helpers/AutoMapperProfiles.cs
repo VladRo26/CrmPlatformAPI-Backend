@@ -135,7 +135,9 @@ namespace CrmPlatformAPI.Helpers
             CreateMap<CreateTicketDTO, Ticket>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<TicketStatus>(src.Status, true)))
                 .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => Enum.Parse<TicketPriority>(src.Priority, true)))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enum.Parse<TicketType>(src.Type, true)));
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enum.Parse<TicketType>(src.Type, true)))
+                .ForMember(dest => dest.Attachments, opt => opt.Ignore());
+
 
             CreateMap<Ticket, TicketDTO>()
              .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
@@ -162,6 +164,11 @@ namespace CrmPlatformAPI.Helpers
 
             CreateMap<UpdateSoftwareCompanyDTO, SoftwareCompany>()
                 .ForMember(dest => dest.CompanyPhoto, opt => opt.Ignore());
+
+            CreateMap<TicketAttachment, TicketAttachmentDTO>();
+
+
+
 
 
 

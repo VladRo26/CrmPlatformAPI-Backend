@@ -9,7 +9,7 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<TicketStatusHistory>> GetHistoryByTicketIdAsync(int ticketId);
 
-        Task AddHistoryAsync(int ticketId, TicketStatusHistoryDTO dto);
+        Task AddHistoryAsync(int ticketId, TicketStatusHistoryDTO dto, IFormFileCollection? attachments);
 
         Task<IEnumerable<TicketStatusHistory>> GetLastTicketStatusHistoryByUserAsync(string username, int count);
 

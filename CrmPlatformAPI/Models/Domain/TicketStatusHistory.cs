@@ -19,6 +19,7 @@ namespace CrmPlatformAPI.Models.Domain
         public User UpdatedByUser { get; set; }
 
         public TicketUserRole TicketUserRole { get; set; } // Use enum for Creator/Handler
+        public ICollection<TicketStatusAttachment> Attachments { get; set; } = new List<TicketStatusAttachment>();
 
         public bool Seen { get; set; } = false;
 

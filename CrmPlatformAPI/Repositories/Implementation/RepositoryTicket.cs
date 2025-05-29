@@ -416,7 +416,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
             if (handlerUser == null)
                 throw new Exception("Handler user not found.");
 
-            // Use shared method to log and notify
             await _statusHistoryRepo.AddHistoryAsync(ticketId, new TicketStatusHistoryDTO
             {
                 Status = TicketStatus.InProgress.ToString(),
@@ -425,7 +424,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 UpdatedByUsername = handlerUser.UserName,
                 TicketUserRole = TicketUserRole.Handler.ToString(),
                 Seen = false
-            });
+            }, attachments: null);
 
             return true;
         }
