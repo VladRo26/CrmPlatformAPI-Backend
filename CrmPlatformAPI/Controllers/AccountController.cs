@@ -102,7 +102,9 @@ namespace CrmPlatformAPI.Controllers
                 CompanyName = companyName,
                 HireDate = user.HireDate,
                 PhotoUrl = user.Photo?.Url,
-                UserType = user.UserType
+                UserType = user.UserType,
+                Rating = user.Rating
+
             };
         }
 
@@ -154,7 +156,8 @@ namespace CrmPlatformAPI.Controllers
                 PhotoUrl = user.Photo?.Url,
                 CompanyName = companyName,
                 HireDate = user.HireDate,
-                UserType = user.UserType
+                UserType = user.UserType,
+                Rating = user.Rating
             };
         }
 
