@@ -89,6 +89,7 @@ namespace CrmPlatformAPI.Extensions
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRepositoryTicketAttachment, RepositoryTicketAttachment>();
+            services.AddScoped<IRepositoryTicketStatusAttachment, RepositoryTicketStatusAttachment>();
             services.AddScoped<ActivityLog>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));

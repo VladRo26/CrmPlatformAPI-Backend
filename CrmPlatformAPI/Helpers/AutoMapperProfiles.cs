@@ -167,6 +167,9 @@ namespace CrmPlatformAPI.Helpers
 
             CreateMap<TicketAttachment, TicketAttachmentDTO>();
 
+            CreateMap<TicketStatusAttachment, TicketAttachmentDTO>();
+
+
 
 
 

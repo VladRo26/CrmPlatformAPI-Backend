@@ -5,6 +5,7 @@ namespace CrmPlatformAPI.Models.DTO
 {
     public class TicketStatusHistoryDTO
     {
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
