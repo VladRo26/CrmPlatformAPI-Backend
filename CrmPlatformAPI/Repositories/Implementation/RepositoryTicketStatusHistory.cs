@@ -89,7 +89,6 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 await _context.TicketStatusHistories.AddAsync(history);
                 await _context.SaveChangesAsync(); // Required for history.Id
 
-                // 🔗 Collect attachment links
                 List<string> attachmentLinks = new();
 
                 if (attachments != null && attachments.Count > 0)
