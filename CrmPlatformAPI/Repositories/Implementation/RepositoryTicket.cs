@@ -328,7 +328,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
             return translatedText ?? "No translation generated.";
         }
 
-        public async Task AddAsync(Ticket ticket)
+        public async Task AddAsync(Ticket ticket, IFormFileCollection? attachments)
         {
             if (_context == null)
             {
@@ -337,36 +337,34 @@ namespace CrmPlatformAPI.Repositories.Implementation
 
             try
             {
-                // ✅ Start transaction to save ticket and initial status together
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
-                // ✅ Ensure CreatedAt is initialized
                 if (ticket.CreatedAt == default || ticket.CreatedAt == null)
-                {
-                    ticket.CreatedAt = DateTime.UtcNow;
-                }
+                    ticket.CreatedAt = DateTime.Now;
 
-                // ✅ Ensure HandlerId is null on creation
                 ticket.HandlerId = null;
 
                 await _context.Tickets.AddAsync(ticket);
                 await _context.SaveChangesAsync();
 
-                // ✅ Create the first status history
-                var statusHistory = new TicketStatusHistory
+                ticket.Creator = await _context.Users.FirstOrDefaultAsync(u => u.Id == ticket.CreatorId);
+                if (ticket.Creator == null)
+                    throw new Exception($"Creator with ID {ticket.CreatorId} not found.");
+
+                var statusDto = new TicketStatusHistoryDTO
                 {
-                    TicketId = ticket.Id,
-                    Status = TicketStatus.Open,
+                    Status = TicketStatus.Open.ToString(),
                     Message = ticket.Title,
-                    UpdatedAt = DateTime.UtcNow,
-                    UpdatedByUserId = ticket.CreatorId,
-                    TicketUserRole = TicketUserRole.Creator
+                    UpdatedAt = DateTime.Now,
+                    UpdatedByUsername = ticket.Creator.UserName,
+                    TicketUserRole = TicketUserRole.Creator.ToString()
                 };
 
-                await _context.TicketStatusHistories.AddAsync(statusHistory);
-                await _context.SaveChangesAsync();
+                await _statusHistoryRepo.AddHistoryAsync(ticket.Id, statusDto, attachments);
 
                 await transaction.CommitAsync();
+
+
             }
             catch (Exception ex)
             {

@@ -147,7 +147,7 @@ namespace CrmPlatformAPI.Controllers
             }
         }
 
-        [Authorize(Policy = "RequireModeratorRole")]
+        [Authorize(Policy = "RequireUserRole")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateContractStatus(int id, [FromBody] UpdateContractStatusDTO dto)
         {

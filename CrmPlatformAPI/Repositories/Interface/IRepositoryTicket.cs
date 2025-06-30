@@ -1,6 +1,7 @@
 ﻿using CrmPlatformAPI.Helpers;
 using CrmPlatformAPI.Models.Domain;
 using CrmPlatformAPI.Models.DTO;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace CrmPlatformAPI.Repositories.Interface
@@ -24,12 +25,11 @@ namespace CrmPlatformAPI.Repositories.Interface
 
         Task<IEnumerable<Ticket>> GetByHandlerUsernameAsync(string handlerUsername);
 
-
         Task<string> GenerateSummaryForTicketAsync(int ticketId);
 
         Task<string> TranslateDescriptionForTicketAsync(int ticketId, string sourceLanguage, string targetLanguage);
 
-        Task AddAsync(Ticket ticket);
+        Task AddAsync(Ticket ticket, IFormFileCollection? attachments);
         Task<bool> TakeOverTicketAsync(int ticketId, int handlerId);
 
         Task<bool> UpdateAsync(Ticket ticket);

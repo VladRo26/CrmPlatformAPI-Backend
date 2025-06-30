@@ -74,7 +74,7 @@ namespace CrmPlatformAPI.Controllers
                 ticket.HandlerId = null;
                 ticket.CreatedAt = DateTime.UtcNow;
 
-                await _repositoryTicket.AddAsync(ticket); // Save the ticket
+                await _repositoryTicket.AddAsync(ticket, createTicketDto.Attachments);
 
                 // ✅ Use repository to upload attachments
                 if (createTicketDto.Attachments != null && createTicketDto.Attachments.Any())

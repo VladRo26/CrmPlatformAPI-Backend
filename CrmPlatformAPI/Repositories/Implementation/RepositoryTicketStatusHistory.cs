@@ -70,8 +70,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 throw new Exception("Invalid status.");
 
             var recipient = (updatedByUser.Id == ticket.CreatorId) ? ticket.Handler : ticket.Creator;
-            if (recipient == null)
-                throw new Exception("No other user found on the ticket to notify.");
+           
 
             var history = new TicketStatusHistory
             {
@@ -122,26 +121,29 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 _context.Tickets.Update(ticket);
                 await _context.SaveChangesAsync();
 
-                // 📨 Email
-                string subject = $"[Ticket #{ticketId}] Status Updated to {parsedStatus}";
+                if (recipient != null)
+                {
+                    string subject = $"[Ticket #{ticketId}] Status Updated to {parsedStatus}";
 
-                string attachmentSection = attachmentLinks.Any()
-                    ? $"<b>Attachments:</b><br>{string.Join("<br>", attachmentLinks)}<br><br>"
-                    : "";
+                    string attachmentSection = attachmentLinks.Any()
+                        ? $"<b>Attachments:</b><br>{string.Join("<br>", attachmentLinks)}<br><br>"
+                        : "";
 
-                string message = $@"
-            Hello {recipient.FirstName},<br><br>
-            The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
-            <b>New Status:</b> {parsedStatus} <br>
-            <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
-            <b>Message:</b> {dto.Message} <br><br>
-            {attachmentSection}
-            You can view the ticket <a href=""{_frontendSettings.BaseUrl}/tickets/{ticket.Id}"">here</a>.<br><br>
-            Regards,<br>
-            CRM Support Team
-        ";
+                                string message = $@"
+                        Hello {recipient.FirstName},<br><br>
+                        The status of the ticket <b>{ticket.Title}</b> has been updated.<br>
+                        <b>New Status:</b> {parsedStatus} <br>
+                        <b>Updated By:</b> {updatedByUser.FirstName} {updatedByUser.LastName} <br>
+                        <b>Message:</b> {dto.Message} <br><br>
+                        {attachmentSection}
+                        You can view the ticket <a href=""{_frontendSettings.BaseUrl}/tickets/{ticket.Id}"">here</a>.<br><br>
+                        Regards,<br>
+                        CRM Support Team
+                    ";
 
-                await _emailService.SendEmailAsync(recipient.Email, subject, message);
+                    await _emailService.SendEmailAsync(recipient.Email, subject, message);
+                }
+                   
             }
             catch (Exception ex)
             {
