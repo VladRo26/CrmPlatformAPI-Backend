@@ -110,13 +110,18 @@ namespace CrmPlatformAPI.Controllers
             var translatedContent = await _repositoryLLM.TranslateTextAsync(content, ticket.Language, "English");
             var sentimentResponse = await _sentimentAnalysisRepository.AnalyzeSentimentAsync(translatedContent);
 
+            var positiveScore = sentimentResponse.Scores[sentimentResponse.Labels.FindIndex(l => l.Equals("positive", StringComparison.OrdinalIgnoreCase))];
+            var neutralScore = sentimentResponse.Scores[sentimentResponse.Labels.FindIndex(l => l.Equals("neutral", StringComparison.OrdinalIgnoreCase))];
+            var negativeScore = sentimentResponse.Scores[sentimentResponse.Labels.FindIndex(l => l.Equals("negative", StringComparison.OrdinalIgnoreCase))];
+
             var sentiment = new FeedBackSentiment
             {
                 FeedbackId = feedback.Id,
-                Positive = sentimentResponse.Scores[0],
-                Neutral = sentimentResponse.Scores[1],
-                Negative = sentimentResponse.Scores[2]
+                Positive = positiveScore,
+                Neutral = neutralScore,
+                Negative = negativeScore
             };
+
 
             await _feedbackSentimentRepository.AddSentimentAsync(sentiment);
 

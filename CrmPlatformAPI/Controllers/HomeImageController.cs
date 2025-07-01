@@ -53,7 +53,7 @@ namespace CrmPlatformAPI.Controllers
             }
 
             homeImage.Title = createHomeImageDTO.Title;
-            homeImage.UploadDate = DateTime.Now;
+            homeImage.UploadDate = DateTime.UtcNow;
 
             var createdImage = await _repositoryHomeImage.CreateAsync(homeImage);
             var response = _mapper.Map<ImageDTO>(createdImage);

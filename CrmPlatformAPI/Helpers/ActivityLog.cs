@@ -25,7 +25,7 @@ namespace CrmPlatformAPI.Helpers
             {
                 return;
             }
-            user.LastActive = DateTime.Now;
+            user.LastActive = DateTime.UtcNow;
 
             await repo.SaveAllAsync();
 

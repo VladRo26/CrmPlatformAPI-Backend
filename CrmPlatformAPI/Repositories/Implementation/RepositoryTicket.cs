@@ -340,7 +340,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
                 if (ticket.CreatedAt == default || ticket.CreatedAt == null)
-                    ticket.CreatedAt = DateTime.Now;
+                    ticket.CreatedAt = DateTime.UtcNow;
 
                 ticket.HandlerId = null;
 
@@ -355,7 +355,7 @@ namespace CrmPlatformAPI.Repositories.Implementation
                 {
                     Status = TicketStatus.Open.ToString(),
                     Message = ticket.Title,
-                    UpdatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.UtcNow,
                     UpdatedByUsername = ticket.Creator.UserName,
                     TicketUserRole = TicketUserRole.Creator.ToString()
                 };
