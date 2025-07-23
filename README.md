@@ -21,7 +21,7 @@ The purpose of this project was to build a scalable, modern CRM application that
 > AI features (LLM integration, translation, summarization, sentiment analysis) are implemented in a separate Python-based repository. Link to this repository:
 **https://github.com/VladRo26/Python-LLM-CrmPlatform**
 
---
+---
 
 ## Development Environment
 
