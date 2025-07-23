@@ -71,7 +71,7 @@ This separation allows maintainability, testing, and scalability.
 - Tables include: Users, Roles, Companies, Projects, Tickets, TicketStatusHistory, Attachments, Feedback
 
 An Entity-Relationship Diagram (ERD) was created to visualize and document the database structure. You can view it here:
-**<img width="979" height="599" alt="image" src="https://github.com/user-attachments/assets/296c187e-a2ca-4eac-a106-11a761f18f51" />**
+**<img width="979" height="599" alt="image" src="https://github.com/user-attachments/assets/4b8e49fe-7b26-414e-baf6-38613ca424fd" />**
 
 ---
 
