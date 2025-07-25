@@ -1,5 +1,8 @@
 # CrmPlatformAPI
 
+📄 **Full Romanian-language documentation (PDF):**  
+[📘 View the full Bachelor's thesis documentation (Romanian)](https://github.com/user-attachments/files/21430154/Documentatie_Licenta_TurisGavriil-Vlad_gr.462.pdf)
+
 This folder contains the backend implementation of the CRM web platform developed as my Bachelor's thesis project at the University of Bucharest, Faculty of Mathematics and Computer Science.
 
 ## Project Overview
